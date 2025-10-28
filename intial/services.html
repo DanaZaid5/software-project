@@ -63,31 +63,87 @@
     cursor: pointer;
   }
 
-  .filter-tags{
+  /* ---- PROFESSIONAL PROFILE ---- */
+  .professional-profile{
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
+    gap: 24px;
     align-items: center;
   }
 
-  .filter-tag{
-    padding: 8px 14px;
-    border: 1px solid #eaeaea;
-    border-radius: 999px;
-    background: white;
-    font-size: 13px;
-    cursor: pointer;
-    transition: all .2s ease;
+  .professional-photo{
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    border: 3px solid #eaeaea;
   }
 
-  .filter-tag:hover{
-    border-color: var(--accent);
+  .professional-info{
+    flex: 1;
   }
 
-  .filter-tag.active{
-    background: var(--accent);
-    color: white;
-    border-color: var(--accent);
+  .professional-name{
+    margin: 0 0 8px;
+    font-size: 28px;
+    font-weight: 700;
+  }
+
+  .professional-title{
+    color: var(--muted);
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+
+  .professional-stats{
+    display: flex;
+    gap: 24px;
+    margin-bottom: 12px;
+  }
+
+  .stat-item{
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value{
+    font-weight: 700;
+    font-size: 20px;
+  }
+
+  .stat-label{
+    color: var(--muted);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .professional-bio{
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 12px 0 0;
+  }
+
+  @media (max-width: 768px) {
+    .professional-profile{
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .professional-stats{
+      justify-content: center;
+    }
   }
 
   /* ---- SERVICE CARDS GRID ---- */
@@ -298,7 +354,41 @@
         <span>›</span>
         <a href="#">Market</a>
         <span>›</span>
-        <strong>Services</strong>
+        <strong>Sarah M.</strong>
+      </div>
+
+      <!-- Professional Profile -->
+      <div class="professional-profile">
+        <div class="professional-photo">
+          <img src="img/pro1.jpg" alt="Sarah M." style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+        </div>
+        <div class="professional-info">
+          <h1 class="professional-name">Sarah M.</h1>
+          <p class="professional-title">Professional Makeup Artist & Beauty Specialist</p>
+          <div class="professional-stats">
+            <div class="stat-item">
+              <span class="stat-value">★ 4.9</span>
+              <span class="stat-label">Rating</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">127</span>
+              <span class="stat-label">Reviews</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">8</span>
+              <span class="stat-label">Services</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">5+ years</span>
+              <span class="stat-label">Experience</span>
+            </div>
+          </div>
+          <p class="professional-bio">
+            Certified makeup artist specializing in bridal, evening, and special occasion makeup. 
+            Passionate about enhancing natural beauty and creating flawless looks that last. 
+            Using premium products and techniques tailored to your unique features.
+          </p>
+        </div>
       </div>
 
       <!-- Filters -->
@@ -376,7 +466,7 @@
             <h3 class="service-title">Soft Waves Styling</h3>
             <div class="service-provider">
               <span class="provider-avatar"></span>
-              <span>Hessa L.</span>
+              <span>Sarah M.</span>
             </div>
             <p class="service-description">
               Elegant soft waves perfect for photos and events. Heat protection included.
@@ -416,7 +506,7 @@
             <h3 class="service-title">Evening Glam</h3>
             <div class="service-provider">
               <span class="provider-avatar"></span>
-              <span>Dana R.</span>
+              <span>Sarah M.</span>
             </div>
             <p class="service-description">
               Bold, glamorous makeup for evening events. Includes false lashes and contouring.
@@ -456,7 +546,7 @@
             <h3 class="service-title">Hydrating Facial</h3>
             <div class="service-provider">
               <span class="provider-avatar"></span>
-              <span>Layan T.</span>
+              <span>Sarah M.</span>
             </div>
             <p class="service-description">
               Deep hydration treatment for smooth, glowing skin. Perfect makeup prep.
@@ -496,7 +586,7 @@
             <h3 class="service-title">Gel Manicure</h3>
             <div class="service-provider">
               <span class="provider-avatar"></span>
-              <span>Aisha K.</span>
+              <span>Sarah M.</span>
             </div>
             <p class="service-description">
               Long-lasting gel manicure with nail shaping and cuticle care.
@@ -536,7 +626,7 @@
             <h3 class="service-title">Bridal Makeup Package</h3>
             <div class="service-provider">
               <span class="provider-avatar"></span>
-              <span>Noor A.</span>
+              <span>Sarah M.</span>
             </div>
             <p class="service-description">
               Complete bridal makeup with trial session. Includes hair styling and touch-up kit.
