@@ -1,0 +1,636 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Services - Glammd</title>
+
+  <!-- Fonts: display + ui -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+  
+  <!-- Page Styles -->
+  <style>
+  /* Override body background */
+  body{ background:#f8f8f8; }
+
+  /* ---- BREADCRUMBS ---- */
+  .breadcrumbs{ 
+    font-size:13px; 
+    color:var(--muted); 
+    margin-bottom:24px; 
+    padding-top:20px;
+  }
+  .breadcrumbs a{ color:var(--muted); text-decoration:none; transition:color .2s ease; }
+  .breadcrumbs a:hover{ color:var(--text) }
+  .breadcrumbs span{ margin:0 6px; }
+
+  /* ---- FILTERS ---- */
+  .filters{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    padding: 20px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+
+  .filter-group{
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+  }
+
+  .filter-label{
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+  }
+
+  .filter-select{
+    padding: 10px 14px;
+    border: 1px solid #eaeaea;
+    border-radius: 8px;
+    background: white;
+    font-family: inherit;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .filter-tags{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+
+  .filter-tag{
+    padding: 8px 14px;
+    border: 1px solid #eaeaea;
+    border-radius: 999px;
+    background: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all .2s ease;
+  }
+
+  .filter-tag:hover{
+    border-color: var(--accent);
+  }
+
+  .filter-tag.active{
+    background: var(--accent);
+    color: white;
+    border-color: var(--accent);
+  }
+
+  /* ---- SERVICE CARDS GRID ---- */
+  .services-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
+    margin-bottom: 40px;
+  }
+
+  .service-card{
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all .3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+
+  .service-card:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.1);
+  }
+
+  .service-image{
+    width: 100%;
+    height: 200px;
+    background: linear-gradient(135deg, #f5f5f5 0%, #e8e8e8 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 48px;
+    border-bottom: 1px solid #eaeaea;
+  }
+
+  .service-content{
+    padding: 20px;
+  }
+
+  .service-category{
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f0f0f0;
+    border-radius: 999px;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+
+  .service-title{
+    margin: 0 0 8px;
+    font-weight: 700;
+    font-size: 20px;
+    line-height: 1.3;
+  }
+
+  .service-provider{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  .provider-avatar{
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: #ddd;
+  }
+
+  .service-description{
+    margin: 0 0 16px;
+    color: var(--muted);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .service-meta{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 16px;
+    border-top: 1px solid #eaeaea;
+    margin-bottom: 12px;
+  }
+
+  .service-price{
+    font-weight: 700;
+    font-size: 20px;
+    letter-spacing: -0.5px;
+  }
+
+  .service-duration{
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .service-rating{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+  }
+
+  .stars{
+    color: #fbbf24;
+    letter-spacing: 1px;
+  }
+
+  /* ---- REVIEWS SECTION ---- */
+  .reviews-preview{
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid #eaeaea;
+  }
+
+  .review-item{
+    margin-bottom: 12px;
+    padding: 12px;
+    background: #f8f8f8;
+    border-radius: 8px;
+  }
+
+  .review-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 6px;
+  }
+
+  .reviewer-name{
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  .review-stars{
+    color: #fbbf24;
+    font-size: 12px;
+  }
+
+  .review-text{
+    margin: 0;
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .service-footer{
+    padding: 0 20px 20px;
+  }
+
+  .btn-book{
+    width: 100%;
+    padding: 12px 20px;
+    background: var(--accent);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: opacity .2s ease;
+    font-family: inherit;
+  }
+
+  .btn-book:hover{
+    opacity: .9;
+  }
+
+  /* ---- RESPONSIVE ---- */
+  @media (max-width: 768px) {
+    .services-grid{
+      grid-template-columns: 1fr;
+    }
+
+    .filters{
+      flex-direction: column;
+    }
+
+    .filter-group{
+      width: 100%;
+    }
+  }
+  </style>
+</head>
+<body class="has-solid-header">
+  <!-- Header (from index.html) -->
+  <header id="siteHeader" class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Glammd</a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Log out</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="page">
+    <div class="container">
+      <!-- Breadcrumbs -->
+      <div class="breadcrumbs">
+        <a href="#">Client Dashboard</a>
+        <span>›</span>
+        <a href="#">Market</a>
+        <span>›</span>
+        <strong>Services</strong>
+      </div>
+
+      <!-- Filters -->
+      <div class="filters">
+        <div class="filter-group">
+          <label class="filter-label">Category</label>
+          <select class="filter-select" id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="makeup">Makeup</option>
+            <option value="hair">Hair</option>
+            <option value="skin">Skin Care</option>
+            <option value="nails">Nails</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label class="filter-label">Price Range</label>
+          <select class="filter-select" id="priceFilter">
+            <option value="">All Prices</option>
+            <option value="0-500">Under SAR 500</option>
+            <option value="500-1000">SAR 500 - 1,000</option>
+            <option value="1000+">SAR 1,000+</option>
+          </select>
+        </div>
+
+      </div>
+
+      <!-- Services Grid -->
+      <div class="services-grid">
+        <!-- Service Card 1 -->
+        <article class="service-card">
+          <div class="service-image">💄</div>
+          <div class="service-content">
+            <span class="service-category">Makeup</span>
+            <h3 class="service-title">Signature Glow Makeup</h3>
+            <div class="service-provider">
+              <span class="provider-avatar"></span>
+              <span>Sarah M.</span>
+            </div>
+            <p class="service-description">
+              Flawless, radiant makeup perfect for special occasions. Includes skin prep and long-lasting finish.
+            </p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">SAR 1,200</div>
+                <div class="service-duration">90 min</div>
+              </div>
+              <div class="service-rating">
+                <span class="stars">★★★★★</span>
+                <span>(48)</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Preview -->
+            <div class="reviews-preview">
+              <div class="review-item">
+                <div class="review-header">
+                  <span class="reviewer-name">Aisha K.</span>
+                  <span class="review-stars">★★★★★</span>
+                </div>
+                <p class="review-text">Flawless finish and super professional. Makeup lasted all night!</p>
+              </div>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn-book">Book Now</button>
+          </div>
+        </article>
+
+        <!-- Service Card 2 -->
+        <article class="service-card">
+          <div class="service-image">💇</div>
+          <div class="service-content">
+            <span class="service-category">Hair</span>
+            <h3 class="service-title">Soft Waves Styling</h3>
+            <div class="service-provider">
+              <span class="provider-avatar"></span>
+              <span>Hessa L.</span>
+            </div>
+            <p class="service-description">
+              Elegant soft waves perfect for photos and events. Heat protection included.
+            </p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">SAR 300</div>
+                <div class="service-duration">45 min</div>
+              </div>
+              <div class="service-rating">
+                <span class="stars">★★★★★</span>
+                <span>(32)</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Preview -->
+            <div class="reviews-preview">
+              <div class="review-item">
+                <div class="review-header">
+                  <span class="reviewer-name">Dana R.</span>
+                  <span class="review-stars">★★★★★</span>
+                </div>
+                <p class="review-text">Exactly what I wanted. Soft & elegant waves, perfect for photos.</p>
+              </div>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn-book">Book Now</button>
+          </div>
+        </article>
+
+        <!-- Service Card 3 -->
+        <article class="service-card">
+          <div class="service-image">✨</div>
+          <div class="service-content">
+            <span class="service-category">Makeup</span>
+            <h3 class="service-title">Evening Glam</h3>
+            <div class="service-provider">
+              <span class="provider-avatar"></span>
+              <span>Dana R.</span>
+            </div>
+            <p class="service-description">
+              Bold, glamorous makeup for evening events. Includes false lashes and contouring.
+            </p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">SAR 650</div>
+                <div class="service-duration">60 min</div>
+              </div>
+              <div class="service-rating">
+                <span class="stars">★★★★☆</span>
+                <span>(27)</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Preview -->
+            <div class="reviews-preview">
+              <div class="review-item">
+                <div class="review-header">
+                  <span class="reviewer-name">Lama S.</span>
+                  <span class="review-stars">★★★★☆</span>
+                </div>
+                <p class="review-text">Loved the look! Arrived on time and very friendly.</p>
+              </div>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn-book">Book Now</button>
+          </div>
+        </article>
+
+        <!-- Service Card 4 -->
+        <article class="service-card">
+          <div class="service-image">🧴</div>
+          <div class="service-content">
+            <span class="service-category">Skin Care</span>
+            <h3 class="service-title">Hydrating Facial</h3>
+            <div class="service-provider">
+              <span class="provider-avatar"></span>
+              <span>Layan T.</span>
+            </div>
+            <p class="service-description">
+              Deep hydration treatment for smooth, glowing skin. Perfect makeup prep.
+            </p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">SAR 450</div>
+                <div class="service-duration">75 min</div>
+              </div>
+              <div class="service-rating">
+                <span class="stars">★★★★★</span>
+                <span>(41)</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Preview -->
+            <div class="reviews-preview">
+              <div class="review-item">
+                <div class="review-header">
+                  <span class="reviewer-name">Noor A.</span>
+                  <span class="review-stars">★★★★★</span>
+                </div>
+                <p class="review-text">Great prep — skin looked smooth and hydrated under makeup.</p>
+              </div>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn-book">Book Now</button>
+          </div>
+        </article>
+
+        <!-- Service Card 5 -->
+        <article class="service-card">
+          <div class="service-image">💅</div>
+          <div class="service-content">
+            <span class="service-category">Nails</span>
+            <h3 class="service-title">Gel Manicure</h3>
+            <div class="service-provider">
+              <span class="provider-avatar"></span>
+              <span>Aisha K.</span>
+            </div>
+            <p class="service-description">
+              Long-lasting gel manicure with nail shaping and cuticle care.
+            </p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">SAR 180</div>
+                <div class="service-duration">50 min</div>
+              </div>
+              <div class="service-rating">
+                <span class="stars">★★★★★</span>
+                <span>(56)</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Preview -->
+            <div class="reviews-preview">
+              <div class="review-item">
+                <div class="review-header">
+                  <span class="reviewer-name">Reem K.</span>
+                  <span class="review-stars">★★★★★</span>
+                </div>
+                <p class="review-text">Perfect nails! Very professional and clean work.</p>
+              </div>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn-book">Book Now</button>
+          </div>
+        </article>
+
+        <!-- Service Card 6 -->
+        <article class="service-card">
+          <div class="service-image">👰</div>
+          <div class="service-content">
+            <span class="service-category">Makeup</span>
+            <h3 class="service-title">Bridal Makeup Package</h3>
+            <div class="service-provider">
+              <span class="provider-avatar"></span>
+              <span>Noor A.</span>
+            </div>
+            <p class="service-description">
+              Complete bridal makeup with trial session. Includes hair styling and touch-up kit.
+            </p>
+            <div class="service-meta">
+              <div>
+                <div class="service-price">SAR 2,500</div>
+                <div class="service-duration">3 hours</div>
+              </div>
+              <div class="service-rating">
+                <span class="stars">★★★★★</span>
+                <span>(19)</span>
+              </div>
+            </div>
+            
+            <!-- Reviews Preview -->
+            <div class="reviews-preview">
+              <div class="review-item">
+                <div class="review-header">
+                  <span class="reviewer-name">Sarah M.</span>
+                  <span class="review-stars">★★★★★</span>
+                </div>
+                <p class="review-text">Made my wedding day perfect! Absolutely stunning results.</p>
+              </div>
+            </div>
+          </div>
+          <div class="service-footer">
+            <button class="btn-book">Book Now</button>
+          </div>
+        </article>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer (from index.html) -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2025 Glammd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- JavaScript -->
+  <script>
+    // Get all service cards
+    const serviceCards = document.querySelectorAll('.service-card');
+    const categoryFilter = document.getElementById('categoryFilter');
+    const priceFilter = document.getElementById('priceFilter');
+
+    // Filter function
+    function filterServices() {
+      const selectedCategory = categoryFilter.value.toLowerCase();
+      const selectedPrice = priceFilter.value;
+
+      serviceCards.forEach(card => {
+        const category = card.querySelector('.service-category').textContent.toLowerCase();
+        const priceText = card.querySelector('.service-price').textContent;
+        const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+
+        let showCard = true;
+
+        // Category filter
+        if (selectedCategory && !category.includes(selectedCategory)) {
+          showCard = false;
+        }
+
+        // Price filter
+        if (selectedPrice) {
+          if (selectedPrice === '0-500' && price > 500) showCard = false;
+          if (selectedPrice === '500-1000' && (price < 500 || price > 1000)) showCard = false;
+          if (selectedPrice === '1000+' && price < 1000) showCard = false;
+        }
+
+        card.style.display = showCard ? 'block' : 'none';
+      });
+    }
+
+    // Add event listeners to filters
+    categoryFilter.addEventListener('change', filterServices);
+    priceFilter.addEventListener('change', filterServices);
+
+    // Book buttons
+    const bookButtons = document.querySelectorAll('.btn-book');
+    bookButtons.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const card = e.target.closest('.service-card');
+        const title = card.querySelector('.service-title').textContent;
+        alert(`Booking: ${title}\n\nThis would open a booking modal.`);
+      });
+    });
+  </script>
+</body>
+</html>
