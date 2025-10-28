@@ -1,0 +1,777 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sign Up - Glammd</title>
+
+  <!-- Fonts: display + ui -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Embedded Styles -->
+  <style>
+    /* ===== Common Base Styles ===== */
+    :root{
+      --bg:#fff; --text:#0f0f12; --muted:#6b6b76;
+      --accent:#111; --accent-text:#fff; --container:1200px;
+      --hero-image: url("img/download.jpeg");
+      --hero-min-h: min(78svh, 820px);
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; display:flex; flex-direction:column; min-height:100svh;
+      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
+      color:var(--text); background:var(--bg);
+    }
+    .container{max-width:var(--container); margin-inline:auto; padding-inline:20px; width:100%}
+
+    /* ===== Header ===== */
+    .site-header{
+      position:fixed; top:0; left:0; right:0; z-index:50;
+      height:64px;
+      display:block;
+      transition:
+        background .25s ease, border-color .25s ease,
+        backdrop-filter .25s ease, -webkit-backdrop-filter .25s ease, box-shadow .25s ease;
+      background: transparent;
+      border-bottom: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      box-shadow: none;
+    }
+
+    .site-header.show{
+      backdrop-filter: saturate(150%) blur(8px);
+      -webkit-backdrop-filter: saturate(150%) blur(8px);
+      background: color-mix(in srgb, white 75%, transparent);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 1px 10px rgba(0,0,0,.04);
+    }
+
+    .header-inner{
+      height:64px; display:flex; align-items:center; justify-content:space-between;
+    }
+    .brand{ text-decoration:none; color:var(--text); font-weight:700; font-size:22px; letter-spacing:.2px }
+    .nav{ display:flex; gap:10px }
+    .nav-link{ text-decoration:none; color:var(--text); padding:10px 14px; border-radius:999px; transition: background .2s ease }
+    .nav-link:hover{ background: rgba(0,0,0,.05) }
+    .cta{ text-decoration:none; color:var(--accent-text); background:var(--accent); padding:10px 16px; border-radius:999px; font-weight:600; transition: opacity .2s ease }
+    .cta:hover{ opacity: .85 }
+
+    /* ===== Hero Section ===== */
+    .hero{
+      position: relative;
+      min-height: auto;
+      padding: 120px 0 80px;
+
+      background-image:
+        linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
+        var(--hero-image);
+      background-size: cover;
+      background-position: center 20%;
+      background-repeat: no-repeat;
+    }
+
+    .hero::after{
+      content:"";
+      position:absolute; inset:0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0) 60%,
+        rgba(255,255,255,0.4) 85%,
+        rgba(255,255,255,1) 100%
+      );
+      pointer-events:none;
+    }
+
+    .hero-overlay{
+      position:absolute; inset:0;
+      background: linear-gradient(180deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.06) 40%, rgba(255,255,255,.08) 100%);
+    }
+
+    .hero-content{
+      position: relative;
+      z-index: 10;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    /* ===== Sign Up Form Card ===== */
+    .signup-card{
+      position: relative;
+      z-index: 10;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border-radius: 16px;
+      padding: 40px;
+      width: 100%;
+      box-shadow: 0 10px 40px rgba(0,0,0,.1), 0 2px 8px rgba(0,0,0,.06);
+      border: 1px solid rgba(0,0,0,.08);
+    }
+
+    /* ===== Welcome Message Side ===== */
+    .welcome-side{
+      position: relative;
+      z-index: 10;
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .welcome-title{
+      margin: 0 0 20px;
+      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-weight: 900;
+      font-size: clamp(36px, 5vw, 56px);
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .welcome-text{
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    .welcome-features{
+      list-style: none;
+      padding: 0;
+      margin: 32px 0 0;
+    }
+
+    .welcome-features li{
+      padding: 12px 0;
+      font-size: 16px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .welcome-features li::before{
+      content: "✓";
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      background: var(--accent);
+      color: white;
+      border-radius: 50%;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .signup-title{
+      margin: 0 0 8px;
+      font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+      font-weight: 800;
+      font-size: 32px;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+    }
+
+    .signup-subtitle{
+      margin: 0 0 32px;
+      color: var(--muted);
+      font-size: 15px;
+    }
+
+    .form-group{
+      margin-bottom: 20px;
+    }
+
+    .form-label{
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .form-input{
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color .2s ease, box-shadow .2s ease;
+      background: white;
+    }
+
+    .form-input:focus{
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(0,0,0,.05);
+    }
+
+    .form-input.error{
+      border-color: #dc2626;
+    }
+
+    .error-message{
+      display: none;
+      margin-top: 6px;
+      font-size: 13px;
+      color: #dc2626;
+    }
+
+    .error-message.show{
+      display: block;
+    }
+
+    .password-toggle{
+      position: relative;
+    }
+
+    .toggle-password-btn{
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 4px;
+      font-size: 14px;
+      transition: color .2s ease;
+    }
+
+    .toggle-password-btn:hover{
+      color: var(--text);
+    }
+
+    .form-checkbox-group{
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .form-checkbox{
+      margin-top: 3px;
+      cursor: pointer;
+    }
+
+    .form-checkbox-label{
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      cursor: pointer;
+    }
+
+    .form-checkbox-label a{
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .form-checkbox-label a:hover{
+      text-decoration: underline;
+    }
+
+    .user-type-group{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .user-type-option{
+      position: relative;
+    }
+
+    .user-type-radio{
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .user-type-label{
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px 16px;
+      border: 2px solid rgba(0,0,0,.12);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all .2s ease;
+      background: white;
+      text-align: center;
+    }
+
+    .user-type-radio:checked + .user-type-label{
+      border-color: var(--accent);
+      background: rgba(0,0,0,.02);
+    }
+
+    .user-type-label:hover{
+      border-color: rgba(0,0,0,.25);
+    }
+
+    .user-type-icon{
+      margin-bottom: 8px;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .user-type-radio:checked + .user-type-label .user-type-icon{
+      color: var(--accent);
+    }
+
+    .user-type-title{
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .user-type-desc{
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.3;
+    }
+
+    .submit-btn{
+      width: 100%;
+      padding: 14px 24px;
+      background: var(--accent);
+      color: var(--accent-text);
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity .2s ease, transform .1s ease;
+      font-family: inherit;
+    }
+
+    .submit-btn:hover{
+      opacity: .9;
+    }
+
+    .submit-btn:active{
+      transform: scale(0.98);
+    }
+
+    .submit-btn:disabled{
+      opacity: .5;
+      cursor: not-allowed;
+    }
+
+    .divider{
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .divider::before,
+    .divider::after{
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: rgba(0,0,0,.1);
+    }
+
+    .divider::before{
+      margin-right: 12px;
+    }
+
+    .divider::after{
+      margin-left: 12px;
+    }
+
+    .signin-link{
+      text-align: center;
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .signin-link a{
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .signin-link a:hover{
+      text-decoration: underline;
+    }
+
+    /* ===== Footer ===== */
+    .site-footer{ 
+      flex-shrink:0; 
+      background:#f8f8f8; 
+      border-top:1px solid rgba(0,0,0,.08); 
+      padding:40px 0; 
+      font-size:14px; 
+      color:var(--muted);
+      margin-top: auto;
+    }
+    .footer-inner{ 
+      display:flex; 
+      flex-wrap:wrap; 
+      align-items:center; 
+      justify-content:space-between; 
+      gap:10px; 
+      text-align:center;
+    }
+    .footer-links a{ 
+      color:var(--muted); 
+      text-decoration:none; 
+      margin-left:16px; 
+      transition:color .2s ease;
+    }
+    .footer-links a:hover{ 
+      color:var(--text);
+    }
+
+    /* ===== Responsive ===== */
+    @media (max-width: 968px) {
+      .hero-content{
+        grid-template-columns: 1fr;
+        gap: 40px;
+        padding: 80px 0 40px;
+      }
+
+      .welcome-side{
+        order: 2;
+        text-align: center;
+      }
+
+      .signup-card{
+        order: 1;
+      }
+
+      .welcome-features{
+        display: inline-block;
+        text-align: left;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .signup-card{
+        padding: 32px 24px;
+      }
+
+      .signup-title{
+        font-size: 28px;
+      }
+
+      .user-type-group{
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header id="siteHeader" class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Glammd</a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Log in</a>
+        <a href="signup.html" class="cta">Sign up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero with Sign Up Form -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <div class="signup-card">
+        <h1 class="signup-title">Create your account</h1>
+        <p class="signup-subtitle">Join our community of clients and beauty professionals</p>
+        
+        <form id="signupForm" novalidate>
+          <div class="form-group">
+            <label class="form-label">I am a</label>
+            <div class="user-type-group">
+              <div class="user-type-option">
+                <input 
+                  type="radio" 
+                  id="userTypeClient" 
+                  name="userType" 
+                  value="client" 
+                  class="user-type-radio"
+                  checked
+                  required
+                />
+                <label for="userTypeClient" class="user-type-label">
+                  <div class="user-type-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                  </div>
+                  <div class="user-type-title">Client</div>
+                  <div class="user-type-desc">Book services</div>
+                </label>
+              </div>
+              <div class="user-type-option">
+                <input 
+                  type="radio" 
+                  id="userTypeProfessional" 
+                  name="userType" 
+                  value="professional" 
+                  class="user-type-radio"
+                  required
+                />
+                <label for="userTypeProfessional" class="user-type-label">
+                  <div class="user-type-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                      <path d="M2 17l10 5 10-5"></path>
+                      <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                  </div>
+                  <div class="user-type-title">Professional</div>
+                  <div class="user-type-desc">Offer services</div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="fullName" class="form-label">Full Name</label>
+            <input 
+              type="text" 
+              id="fullName" 
+              name="fullName" 
+              class="form-input" 
+              placeholder="Enter your full name"
+              required
+            />
+            <div class="error-message" id="fullNameError">Please enter your full name</div>
+          </div>
+
+          <div class="form-group">
+            <label for="email" class="form-label">Email</label>
+            <input 
+              type="email" 
+              id="email" 
+              name="email" 
+              class="form-input" 
+              placeholder="Enter your email"
+              required
+            />
+            <div class="error-message" id="emailError">Please enter a valid email address</div>
+          </div>
+
+          <div class="form-group">
+            <label for="password" class="form-label">Password</label>
+            <div class="password-toggle">
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                class="form-input" 
+                placeholder="Create a password"
+                required
+              />
+              <button type="button" class="toggle-password-btn" id="togglePassword">
+                Show
+              </button>
+            </div>
+            <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+          </div>
+
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <div class="password-toggle">
+              <input 
+                type="password" 
+                id="confirmPassword" 
+                name="confirmPassword" 
+                class="form-input" 
+                placeholder="Confirm your password"
+                required
+              />
+              <button type="button" class="toggle-password-btn" id="toggleConfirmPassword">
+                Show
+              </button>
+            </div>
+            <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+          </div>
+
+          <div class="form-checkbox-group">
+            <input 
+              type="checkbox" 
+              id="terms" 
+              name="terms" 
+              class="form-checkbox"
+              required
+            />
+            <label for="terms" class="form-checkbox-label">
+              I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+            </label>
+          </div>
+
+          <button type="submit" class="submit-btn">Create Account</button>
+        </form>
+
+        <div class="divider">or</div>
+
+        <div class="signin-link">
+          Already have an account? <a href="index.html">Log in</a>
+        </div>
+      </div>
+
+      <div class="welcome-side">
+        <h2 class="welcome-title">Your beauty journey starts here</h2>
+        <p class="welcome-text">
+          Join thousands of clients and professionals who trust Glammd to connect, book, and deliver exceptional beauty experiences.
+        </p>
+        <ul class="welcome-features">
+          <li>Connect clients with beauty professionals</li>
+          <li>Book and manage appointments easily</li>
+          <li>Secure payments and trusted reviews</li>
+          <li>Grow your business or find your perfect service</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2025 Glammd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Embedded JavaScript -->
+  <script>
+    // Header scroll effect
+    const header = document.getElementById('siteHeader');
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+      
+      if (currentScroll > 50) {
+        header.classList.add('show');
+      } else {
+        header.classList.remove('show');
+      }
+      
+      lastScroll = currentScroll;
+    });
+
+    // Password toggle functionality
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('password');
+    const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+
+    togglePassword.addEventListener('click', () => {
+      const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      passwordInput.setAttribute('type', type);
+      togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
+    });
+
+    toggleConfirmPassword.addEventListener('click', () => {
+      const type = confirmPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+      confirmPasswordInput.setAttribute('type', type);
+      toggleConfirmPassword.textContent = type === 'password' ? 'Show' : 'Hide';
+    });
+
+    // Form validation and submission
+    const signupForm = document.getElementById('signupForm');
+    const fullNameInput = document.getElementById('fullName');
+    const emailInput = document.getElementById('email');
+    const termsCheckbox = document.getElementById('terms');
+
+    // Email validation regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    // Clear error on input
+    [fullNameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
+      input.addEventListener('input', () => {
+        input.classList.remove('error');
+        const errorElement = document.getElementById(`${input.id}Error`);
+        if (errorElement) {
+          errorElement.classList.remove('show');
+        }
+      });
+    });
+
+    signupForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      let isValid = true;
+
+      // Validate full name
+      if (fullNameInput.value.trim() === '') {
+        fullNameInput.classList.add('error');
+        document.getElementById('fullNameError').classList.add('show');
+        isValid = false;
+      }
+
+      // Validate email
+      if (!emailRegex.test(emailInput.value.trim())) {
+        emailInput.classList.add('error');
+        document.getElementById('emailError').classList.add('show');
+        isValid = false;
+      }
+
+      // Validate password
+      if (passwordInput.value.length < 8) {
+        passwordInput.classList.add('error');
+        document.getElementById('passwordError').classList.add('show');
+        isValid = false;
+      }
+
+      // Validate password match
+      if (passwordInput.value !== confirmPasswordInput.value) {
+        confirmPasswordInput.classList.add('error');
+        document.getElementById('confirmPasswordError').classList.add('show');
+        isValid = false;
+      }
+
+      // Validate terms checkbox
+      if (!termsCheckbox.checked) {
+        alert('Please agree to the Terms of Service and Privacy Policy');
+        isValid = false;
+      }
+
+      if (isValid) {
+        // Get selected user type
+        const userType = document.querySelector('input[name="userType"]:checked').value;
+        
+        // Form is valid - you can submit to your backend here
+        console.log('Form submitted successfully!');
+        console.log({
+          userType: userType,
+          fullName: fullNameInput.value,
+          email: emailInput.value,
+          password: passwordInput.value
+        });
+        
+        // Show success message (you can customize this)
+        alert(`Account created successfully! Welcome to Glammd as a ${userType}.`);
+        
+        // Optionally redirect to login or home page
+        // window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>
