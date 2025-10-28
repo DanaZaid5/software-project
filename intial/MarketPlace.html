@@ -30,32 +30,60 @@
       letter-spacing: 1px;
     }
 
-    .filters {
-      display: flex;
-      gap: 15px;
-      margin: 30px 0;
+    .filters{
       justify-content: left;
-      flex-wrap: wrap;
-    }
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 32px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+      align-items: center;
+      background: white;
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+  }
 
-    .filters select {
-      padding: 10px 20px;
-      border: 1px solid #f8bfcf;
-      border-radius: 90px; 
-      font-size: 15px;
-      background-color: #fff6f9; 
-      color: #555;
-      cursor: pointer;
-      transition: 0.3s;
-      box-shadow: 0 2px 6px rgba(255, 192, 203, 0.25);
-    }
+  .filter-group{
+    flex: 1 1 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 200px;
+    max-width: 350px;
+    
+ 
+  }
 
-    .filters select:hover {
-      background-color: #ffe6ee; 
-      border-color: #ff9cb5;
-      box-shadow: 0 0 8px rgba(255, 155, 175, 0.4);
-    }
+  .filter-label{
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    font-weight: 600;
+  }
 
+  .filter-select {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 16px;
+  padding: 15px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  border: none;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  width: 100%;
+  
+   }
+  .filter-select:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 6px 18px rgba(255, 117, 140, 0.25);
+}
    
     .salon-list {
       display: flex;
@@ -260,24 +288,29 @@ main.page{ flex:1 0 auto; padding-top:64px }  /* offset for fixed header */
   <link rel="stylesheet" href="common.css">
 </head>
 
-  <section class="filters">
-    <select>
-      <option>Service</option>
+<section class="filters">
+  <div class="filter-group">
+    <label class="filter-label">Service</label>
+    <select class="filter-select">
+      <option>All</option>
       <option>Haircut</option>
       <option>Makeup</option>
       <option>Nails</option>
     </select>
+  </div>
 
-    <select>
-      <option>Rate</option>
+  <div class="filter-group">
+    <label class="filter-label">Rate</label>
+    <select class="filter-select">
+      <option>Default</option>
       <option>High to Low</option>
       <option>Low to High</option>
     </select>
-  </section>
-
+  </div>
+</section>
   <main class="salon-list">
-    <div class="salon-card">
-      <img src="https://via.placeholder.com/100" alt="Salon Image">
+    <div class="salon-card" onclick="window.location.href='services.html'">
+      <img src="img/pro1.jpg" alt="Salon Image">
       <div class="salon-info">
         <h3>Sarah M.</h3>
         <p>Makeup artist</p>
