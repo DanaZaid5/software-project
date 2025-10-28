@@ -146,6 +146,115 @@
     }
   }
 
+  /* ---- TABS ---- */
+  .tabs{
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid #eaeaea;
+    padding-bottom: 0;
+  }
+
+  .tab{
+    padding: 12px 24px;
+    background: transparent;
+    border: none;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    transition: all .2s ease;
+  }
+
+  .tab:hover{
+    color: var(--text);
+  }
+
+  .tab.active{
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .tab-content{
+    display: none;
+  }
+
+  .tab-content.active{
+    display: block;
+  }
+
+  /* ---- REVIEWS SECTION ---- */
+  .reviews-grid{
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 20px;
+  }
+
+  .review-card{
+    background: white;
+    border: 1px solid #eaeaea;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.04);
+  }
+
+  .review-card-header{
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 12px;
+  }
+
+  .review-client{
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .review-client-avatar{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #ddd;
+  }
+
+  .review-client-info{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .review-client-name{
+    font-weight: 600;
+    font-size: 15px;
+  }
+
+  .review-service-name{
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .review-rating{
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .review-card-text{
+    color: var(--muted);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .review-date{
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 12px;
+  }
+
   /* ---- SERVICE CARDS GRID ---- */
   .services-grid{
     display: grid;
@@ -360,7 +469,7 @@
       <!-- Professional Profile -->
       <div class="professional-profile">
         <div class="professional-photo">
-          <img src="img/pro1.jpg" alt="Sarah M." style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            <img src="img/pro1.jpg" alt="Sarah M." style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
         </div>
         <div class="professional-info">
           <h1 class="professional-name">Sarah M.</h1>
@@ -391,6 +500,14 @@
         </div>
       </div>
 
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab active" data-tab="services">Services</button>
+        <button class="tab" data-tab="reviews">Reviews</button>
+      </div>
+
+      <!-- Services Tab -->
+      <div class="tab-content active" id="services-content">
       <!-- Filters -->
       <div class="filters">
         <div class="filter-group">
@@ -417,17 +534,13 @@
       </div>
 
       <!-- Services Grid -->
-      <div class="services-grid">
+      <div class="services-grid" id="services-grid">
         <!-- Service Card 1 -->
         <article class="service-card">
           <div class="service-image">💄</div>
           <div class="service-content">
             <span class="service-category">Makeup</span>
             <h3 class="service-title">Signature Glow Makeup</h3>
-            <div class="service-provider">
-              <span class="provider-avatar"></span>
-              <span>Sarah M.</span>
-            </div>
             <p class="service-description">
               Flawless, radiant makeup perfect for special occasions. Includes skin prep and long-lasting finish.
             </p>
@@ -464,10 +577,6 @@
           <div class="service-content">
             <span class="service-category">Hair</span>
             <h3 class="service-title">Soft Waves Styling</h3>
-            <div class="service-provider">
-              <span class="provider-avatar"></span>
-              <span>Sarah M.</span>
-            </div>
             <p class="service-description">
               Elegant soft waves perfect for photos and events. Heat protection included.
             </p>
@@ -504,10 +613,6 @@
           <div class="service-content">
             <span class="service-category">Makeup</span>
             <h3 class="service-title">Evening Glam</h3>
-            <div class="service-provider">
-              <span class="provider-avatar"></span>
-              <span>Sarah M.</span>
-            </div>
             <p class="service-description">
               Bold, glamorous makeup for evening events. Includes false lashes and contouring.
             </p>
@@ -544,10 +649,6 @@
           <div class="service-content">
             <span class="service-category">Skin Care</span>
             <h3 class="service-title">Hydrating Facial</h3>
-            <div class="service-provider">
-              <span class="provider-avatar"></span>
-              <span>Sarah M.</span>
-            </div>
             <p class="service-description">
               Deep hydration treatment for smooth, glowing skin. Perfect makeup prep.
             </p>
@@ -584,10 +685,6 @@
           <div class="service-content">
             <span class="service-category">Nails</span>
             <h3 class="service-title">Gel Manicure</h3>
-            <div class="service-provider">
-              <span class="provider-avatar"></span>
-              <span>Sarah M.</span>
-            </div>
             <p class="service-description">
               Long-lasting gel manicure with nail shaping and cuticle care.
             </p>
@@ -624,10 +721,6 @@
           <div class="service-content">
             <span class="service-category">Makeup</span>
             <h3 class="service-title">Bridal Makeup Package</h3>
-            <div class="service-provider">
-              <span class="provider-avatar"></span>
-              <span>Sarah M.</span>
-            </div>
             <p class="service-description">
               Complete bridal makeup with trial session. Includes hair styling and touch-up kit.
             </p>
@@ -658,6 +751,151 @@
           </div>
         </article>
       </div>
+      </div>
+      <!-- End Services Tab -->
+
+      <!-- Reviews Tab -->
+      <div class="tab-content" id="reviews-content">
+        <div class="reviews-grid">
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Aisha K.</span>
+                  <span class="review-service-name">Signature Glow Makeup</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Flawless finish and super professional. Makeup lasted all night! Sarah is incredibly talented and made me feel so confident.</p>
+            <div class="review-date">2 weeks ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Dana R.</span>
+                  <span class="review-service-name">Soft Waves Styling</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Exactly what I wanted. Soft & elegant waves, perfect for photos. Very professional and friendly service!</p>
+            <div class="review-date">3 weeks ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Lama S.</span>
+                  <span class="review-service-name">Evening Glam</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★☆</span>
+              </div>
+            </div>
+            <p class="review-card-text">Loved the look! Arrived on time and very friendly. The makeup was bold and beautiful, exactly what I asked for.</p>
+            <div class="review-date">1 month ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Noor A.</span>
+                  <span class="review-service-name">Hydrating Facial</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Great prep — skin looked smooth and hydrated under makeup. Sarah really knows her skincare!</p>
+            <div class="review-date">1 month ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Reem K.</span>
+                  <span class="review-service-name">Gel Manicure</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Perfect nails! Very professional and clean work. The gel lasted for weeks without chipping.</p>
+            <div class="review-date">2 months ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Hessa M.</span>
+                  <span class="review-service-name">Bridal Makeup Package</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Made my wedding day perfect! Absolutely stunning results. Sarah is a true artist and made me feel like a princess.</p>
+            <div class="review-date">2 months ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Layla T.</span>
+                  <span class="review-service-name">Signature Glow Makeup</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Amazing experience! Sarah listened to what I wanted and delivered perfectly. Will definitely book again.</p>
+            <div class="review-date">3 months ago</div>
+          </article>
+
+          <article class="review-card">
+            <div class="review-card-header">
+              <div class="review-client">
+                <span class="review-client-avatar"></span>
+                <div class="review-client-info">
+                  <span class="review-client-name">Maha K.</span>
+                  <span class="review-service-name">Evening Glam</span>
+                </div>
+              </div>
+              <div class="review-rating">
+                <span class="stars">★★★★★</span>
+              </div>
+            </div>
+            <p class="review-card-text">Stunning work! The contouring was flawless and the lashes looked so natural. Highly recommend!</p>
+            <div class="review-date">3 months ago</div>
+          </article>
+        </div>
+      </div>
+      <!-- End Reviews Tab -->
+
     </div>
   </main>
 
@@ -675,6 +913,24 @@
 
   <!-- JavaScript -->
   <script>
+    // Tabs functionality
+    const tabs = document.querySelectorAll('.tab');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+        
+        // Remove active class from all tabs and contents
+        tabs.forEach(t => t.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked tab and corresponding content
+        tab.classList.add('active');
+        document.getElementById(`${targetTab}-content`).classList.add('active');
+      });
+    });
+
     // Get all service cards
     const serviceCards = document.querySelectorAll('.service-card');
     const categoryFilter = document.getElementById('categoryFilter');
