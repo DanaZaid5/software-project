@@ -270,6 +270,8 @@
     overflow: hidden;
     transition: all .3s ease;
     box-shadow: 0 2px 8px rgba(0,0,0,.04);
+    display: flex;
+    flex-direction: column;
   }
 
   .service-card:hover{
@@ -290,6 +292,9 @@
 
   .service-content{
     padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
   }
 
   .service-category{
@@ -342,6 +347,7 @@
     padding-top: 16px;
     border-top: 1px solid #eaeaea;
     margin-bottom: 12px;
+    margin-top: auto;
   }
 
   .service-price{
@@ -367,43 +373,6 @@
     letter-spacing: 1px;
   }
 
-  /* ---- REVIEWS SECTION ---- */
-  .reviews-preview{
-    margin-top: 12px;
-    padding-top: 12px;
-    border-top: 1px solid #eaeaea;
-  }
-
-  .review-item{
-    margin-bottom: 12px;
-    padding: 12px;
-    background: #f8f8f8;
-    border-radius: 8px;
-  }
-
-  .review-header{
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 6px;
-  }
-
-  .reviewer-name{
-    font-weight: 600;
-    font-size: 13px;
-  }
-
-  .review-stars{
-    color: #fbbf24;
-    font-size: 12px;
-  }
-
-  .review-text{
-    margin: 0;
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.5;
-  }
 
   .service-footer{
     padding: 0 20px 20px;
@@ -554,17 +523,6 @@
                 <span>(48)</span>
               </div>
             </div>
-            
-            <!-- Reviews Preview -->
-            <div class="reviews-preview">
-              <div class="review-item">
-                <div class="review-header">
-                  <span class="reviewer-name">Aisha K.</span>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-text">Flawless finish and super professional. Makeup lasted all night!</p>
-              </div>
-            </div>
           </div>
           <div class="service-footer">
             <button class="btn-book">Book Now</button>
@@ -588,17 +546,6 @@
               <div class="service-rating">
                 <span class="stars">★★★★★</span>
                 <span>(32)</span>
-              </div>
-            </div>
-            
-            <!-- Reviews Preview -->
-            <div class="reviews-preview">
-              <div class="review-item">
-                <div class="review-header">
-                  <span class="reviewer-name">Dana R.</span>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-text">Exactly what I wanted. Soft & elegant waves, perfect for photos.</p>
               </div>
             </div>
           </div>
@@ -626,17 +573,6 @@
                 <span>(27)</span>
               </div>
             </div>
-            
-            <!-- Reviews Preview -->
-            <div class="reviews-preview">
-              <div class="review-item">
-                <div class="review-header">
-                  <span class="reviewer-name">Lama S.</span>
-                  <span class="review-stars">★★★★☆</span>
-                </div>
-                <p class="review-text">Loved the look! Arrived on time and very friendly.</p>
-              </div>
-            </div>
           </div>
           <div class="service-footer">
             <button class="btn-book">Book Now</button>
@@ -660,17 +596,6 @@
               <div class="service-rating">
                 <span class="stars">★★★★★</span>
                 <span>(41)</span>
-              </div>
-            </div>
-            
-            <!-- Reviews Preview -->
-            <div class="reviews-preview">
-              <div class="review-item">
-                <div class="review-header">
-                  <span class="reviewer-name">Noor A.</span>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-text">Great prep — skin looked smooth and hydrated under makeup.</p>
               </div>
             </div>
           </div>
@@ -698,17 +623,6 @@
                 <span>(56)</span>
               </div>
             </div>
-            
-            <!-- Reviews Preview -->
-            <div class="reviews-preview">
-              <div class="review-item">
-                <div class="review-header">
-                  <span class="reviewer-name">Reem K.</span>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-text">Perfect nails! Very professional and clean work.</p>
-              </div>
-            </div>
           </div>
           <div class="service-footer">
             <button class="btn-book">Book Now</button>
@@ -732,17 +646,6 @@
               <div class="service-rating">
                 <span class="stars">★★★★★</span>
                 <span>(19)</span>
-              </div>
-            </div>
-            
-            <!-- Reviews Preview -->
-            <div class="reviews-preview">
-              <div class="review-item">
-                <div class="review-header">
-                  <span class="reviewer-name">Sarah M.</span>
-                  <span class="review-stars">★★★★★</span>
-                </div>
-                <p class="review-text">Made my wedding day perfect! Absolutely stunning results.</p>
               </div>
             </div>
           </div>
