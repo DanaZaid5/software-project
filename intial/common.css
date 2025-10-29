@@ -43,3 +43,24 @@ main.page{ flex:1 0 auto; padding-top:64px }  /* offset for fixed header */
 .footer-inner{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; text-align:center }
 .footer-links a{ color:var(--muted); text-decoration:none; margin-left:16px; transition:color .2s ease }
 .footer-links a:hover{ color:var(--text) }
+
+
+/* ===== Breadcrumbs (shared) ===== */
+.breadcrumbs-wrap { padding: 12px 0 6px; }
+.breadcrumbs {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px;
+  font-size: 14px; color: var(--muted);
+  list-style: none; margin: 0; padding: 0;
+}
+.breadcrumbs a {
+  color: var(--muted); text-decoration: none;
+}
+.breadcrumbs a:hover { color: var(--text); }
+.breadcrumbs li { display: inline-flex; align-items: center; gap: 6px; }
+.breadcrumbs li + li::before {
+  content: "›"; opacity: .6;
+}
+.breadcrumbs .current {
+  color: var(--text); font-weight: 600;
+}
+
