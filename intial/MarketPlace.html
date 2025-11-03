@@ -1,179 +1,51 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Glammd</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="common.css">
+
   <style>
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Poppins', sans-serif;
-    }
-
-    :root {
-    --hero-image: url("img/download.jpeg");
-    --hero-min-h: min(78svh, 820px);
-    --bg: linear-gradient(135deg, #fdfbfb, #ebedee); 
-  }
-
-  body {
-    margin: 0;
-    font-family: 'Poppins', sans-serif;
-    background: var(--bg);
-    color: #333;
-    min-height: 100vh;
-  }
-  .cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-  color: var(--accent-text);
-  background: var(--accent);
-  padding: 10px 16px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 14px;
+:root {
+  --hero-image: url("img/download.jpeg");
+  --hero-min-h: min(78svh, 51.25rem); /* 820px */
 }
 
-
-    header {
-      background: linear-gradient(90deg, #ff7eb3, #ff758c);
-      color: white;
-      padding: 20px;
-      text-align: center;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      font-size: 22px;
-      letter-spacing: 1px;
-    }
-
-    .filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  margin: 30px 25px;
-  justify-content: flex-start;
-}
-
-.filter-group {
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-  border-radius: 16px;
-  padding: 15px 20px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  transition: transform 0.2s, box-shadow 0.2s;
-  cursor: pointer;
-  min-width: 180px;
-}
-
-.filter-group:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 6px 25px rgba(255,117,140,0.2);
-}
-
-.filter-label {
-  font-size: 12px;
-  color: #888;
-  font-weight: 600;
-  margin-bottom: 8px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.filter-select {
-  border: none;
-  font-size: 14px;
-  padding: 8px 12px;
-  border-radius: 12px;
-  box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
-  background: #fdfdfd;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.filter-select:hover {
-  box-shadow: inset 0 2px 6px rgba(0,0,0,0.15);
-}
-   
-    .salon-list {
-      display: flex;
-      flex-direction: column;
-      gap: 20px;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    .salon-card {
-      display: flex;
-      align-items: center;
-      background: white;
-      border-radius: 16px;
-      padding: 15px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-      transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .salon-card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 18px rgba(255, 117, 140, 0.25);
-    }
-
-    .salon-card img {
-      width: 90px;
-      height: 90px;
-      border-radius: 12px;
-      object-fit: cover;
-      margin-right: 15px;
-      border: 2px solid #ffb6c1;
-    }
-
-    .salon-info h3 {
-      margin-bottom: 6px;
-      font-size: 18px;
-      font-weight: 600;
-      color: #444;
-    }
-
-    .salon-info p {
-      font-size: 14px;
-      color: #777;
-    }
 .home .site-header {
-      background: transparent;
-      border-bottom: none;
-      backdrop-filter: none;
-      box-shadow: none;
-    }
+  background: transparent;
+  border-bottom: none;
+  backdrop-filter: none;
+  box-shadow: none;
+}
 
-    .home .site-header.show {
-      backdrop-filter: saturate(150%) blur(8px);
-      background: color-mix(in srgb, white 75%, transparent);
-      border-bottom: 1px solid rgba(0,0,0,.06);
-      box-shadow: 0 1px 10px rgba(0,0,0,.04);
-    }
+.home .site-header.show {
+  backdrop-filter: saturate(150%) blur(0.5rem);
+  background: color-mix(in srgb, white 75%, transparent);
+  border-bottom: 0.0625rem solid rgba(0,0,0,.06);
+  box-shadow: 0 0.0625rem 0.625rem rgba(0,0,0,.04);
+}
 
-/* ===== Home hero ===== */
 .hero {
-    position: relative;
-    min-height: var(--hero-min-h);
-    display: grid;
-    place-items: center;
-    background-image:
-      linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
-      var(--hero-image);
-    background-size: cover;
-    background-position: center 20%;
-  }
+  position: relative;
+  min-height: var(--hero-min-h);
+  display: grid;
+  place-items: center;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
+    var(--hero-image);
+  background-size: cover;
+  background-position: center 20%;
+  background-repeat: no-repeat;
+}
 
-/* smoother fade image → white (fade starts lower) */
-.hero::after{
-  content:"";
-  position:absolute; inset:0;
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
   background: linear-gradient(
     to bottom,
     rgba(255,255,255,0) 0%,
@@ -181,39 +53,136 @@
     rgba(255,255,255,0.4) 85%,
     rgba(255,255,255,1) 100%
   );
-  pointer-events:none;
+  pointer-events: none;
 }
 
-/* optional subtle overlay; keep or remove to taste */
-.hero-overlay{
-  position:absolute; inset:0;
-  background: linear-gradient(180deg, rgba(255,255,255,.0) 0%, rgba(255,255,255,.06) 40%, rgba(255,255,255,.08) 100%);
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.0) 0%,
+    rgba(255,255,255,.06) 40%,
+    rgba(255,255,255,.08) 100%
+  );
 }
 
-.hero-content{
+.hero-content {
   position: relative;
   text-align: center;
-  padding: 72px 0 40px;
+  padding: 4.5rem 0 2.5rem; /* 72px 0 40px */
 }
 
-.hero-title{
+.hero-title {
   margin: 0;
-  font-family: "Playfair Display", Georgia, "Times New Roman", serif;
+  font-family: "Playfair Display", Georgia, serif;
   font-weight: 900;
-  font-size: clamp(40px, 6vw, 84px);
+  font-size: clamp(2.5rem, 6vw, 5.25rem); /* 40px–84px */
   line-height: 0.95;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.03125rem; /* -0.5px */
 }
 
-.hero-sub{
-  margin-top: 18px;
-  color: var(--muted);
-  font-size: clamp(16px, 2.3vw, 20px);
-}
+    /* ===== Filters & cards (your marketplace UI) ===== */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 2rem 1.5rem;
+      justify-content: flex-start;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 1rem;
+      padding: 0.9375rem 1.25rem;
+      box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      min-width: 11.25rem;
+    }
+
+    .filter-group:hover {
+      transform: translateY(-0.25rem);
+      box-shadow: 0 0.375rem 1.5625rem rgba(255,117,140,0.2);
+    }
+
+    .filter-label {
+      font-size: 0.75rem;
+      color: #888;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.0625rem;
+    }
+
+    .filter-select {
+      border: none;
+      font-size: 0.875rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.75rem;
+      box-shadow: inset 0 0.0625rem 0.1875rem rgba(0,0,0,0.1);
+      background: #fdfdfd;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .filter-select:hover {
+      box-shadow: inset 0 0.125rem 0.375rem rgba(0,0,0,0.15);
+    }
+
+    .salon-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      border-radius: 0.9375rem;
+      box-shadow: 0 0.25rem 0.75rem rgba(0,0,0,0.05);
+    }
+
+    .salon-card {
+      display: flex;
+      align-items: center;
+      background: white;
+      border-radius: 1rem;
+      padding: 0.9375rem;
+      box-shadow: 0 0.25rem 0.9375rem rgba(0, 0, 0, 0.08);
+      transition: transform 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+    }
+
+    .salon-card:hover {
+      transform: translateY(-0.25rem);
+      box-shadow: 0 0.375rem 1.125rem rgba(255, 117, 140, 0.25);
+    }
+
+    .salon-card img {
+      width: 5.625rem;
+      height: 5.625rem;
+      border-radius: 0.75rem;
+      object-fit: cover;
+      margin-right: 0.9375rem;
+      border: 0.125rem solid #ffb6c1;
+    }
+
+    .salon-info h3 {
+      margin-bottom: 0.375rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: #444;
+    }
+
+    .salon-info p {
+      font-size: 0.875rem;
+      color: #777;
+    }
+
 
   </style>
 </head>
-<body class= "home">
+
+<body class="home">
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
@@ -232,86 +201,81 @@
       <h1 class="hero-title">Book local beauty and wellness services</h1>
     </div>
   </section>
-</body>
-  <title>Glammd — PAGE TITLE</title>
-
-  <!-- Fonts -->
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
-  <!-- Shared Styles -->
-  <link rel="stylesheet" href="common.css">
-</head>
-
-<section class="filters">
-  <div class="filter-group">
-    <label class="filter-label">Service</label>
-    <select class="filter-select">
-      <option>All</option>
-      <option>Haircut</option>
-      <option>Makeup</option>
-      <option>Nails</option>
-    </select>
-  </div>
-
-  <div class="filter-group">
-    <label class="filter-label">Rate</label>
-    <select class="filter-select">
-      <option>Default</option>
-      <option>High to Low</option>
-      <option>Low to High</option>
-    </select>
-  </div>
-</section>
-
-  </div>
-</section>
-  <main class="salon-list">
-    <div class="salon-card" onclick="window.location.href='services.html'">
-      <img src="img/pro1.jpg" alt="Salon Image">
-      <div class="salon-info">
-        <h3>Sarah M.</h3>
-        <p>Makeup artist</p>
-        <p>Riyadh, Saudi Arabia</p>
+  
+ <!-- Marketplace content -->
+  <main class="page">
+ <section class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Service</label>
+        <select class="filter-select">
+          <option>All</option>
+          <option>Haircut</option>
+          <option>Makeup</option>
+          <option>Nails</option>
+        </select>
       </div>
-    </div>
 
-    <div class="salon-card">
-      <img src="https://via.placeholder.com/100" alt="Salon Image">
-      <div class="salon-info">
-        <h3>Aljohara alsultan</h3>
-        <p>Hairstylest</p>
-        <p>Jeddah, Saudi Arabia</p>
+      <div class="filter-group">
+        <label class="filter-label">Rate</label>
+        <select class="filter-select">
+          <option>Default</option>
+          <option>High to Low</option>
+          <option>Low to High</option>
+        </select>
       </div>
-    </div>
+    </section>
 
-    <div class="salon-card">
-      <img src="https://via.placeholder.com/100" alt="Salon Image">
-      <div class="salon-info">
-        <h3>Layan Abdulaziz</h3>
-        <p>nail artist</p>
-        <p>Riyadh, Saudi Arabia</p>
+    <section class="salon-list">
+      <div class="salon-card" onclick="window.location.href='services.html'">
+        <img src="img/pro1.jpg" alt="Salon Image">
+        <div class="salon-info">
+          <h3>Sarah M.</h3>
+          <p>Makeup artist</p>
+          <p>Riyadh, Saudi Arabia</p>
+        </div>
       </div>
-    </div>
 
-    <div class="salon-card">
-      <img src="https://via.placeholder.com/100" alt="Salon Image">
-      <div class="salon-info">
-        <h3>Noura</h3>
-        <p>Makeup artist</p>
-        <p>Riyadh, Saudi Arabia</p>
+      <div class="salon-card">
+        <img src="https://via.placeholder.com/100" alt="Salon Image">
+        <div class="salon-info">
+          <h3>Aljohara alsultan</h3>
+          <p>Hairstylist</p>
+          <p>Jeddah, Saudi Arabia</p>
+        </div>
       </div>
-    </div>
+
+      <div class="salon-card">
+        <img src="https://via.placeholder.com/100" alt="Salon Image">
+        <div class="salon-info">
+          <h3>Layan Abdulaziz</h3>
+          <p>Nail artist</p>
+          <p>Riyadh, Saudi Arabia</p>
+        </div>
+      </div>
+
+      <div class="salon-card">
+        <img src="https://via.placeholder.com/100" alt="Salon Image">
+        <div class="salon-info">
+          <h3>Noura</h3>
+          <p>Makeup artist</p>
+          <p>Riyadh, Saudi Arabia</p>
+        </div>
+      </div>
+    </section>
   </main>
-</body>
-<footer class="site-footer">
-  <div class="container footer-inner">
-    <p>© 2025 Glammd. All rights reserved.</p>
-    <div class="footer-links">
-      <a href="#">Privacy Policy</a>
-      <a href="#">Terms of Service</a>
-      <a href="#">Contact</a>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2025 Glammd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
     </div>
-  </div>
-</footer>
-<script src="homeScript.js"></script>
+  </footer>
+
+  <script src="homeScript.js"></script>
+</body>
 </html>
