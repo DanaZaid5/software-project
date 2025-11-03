@@ -12,12 +12,32 @@
       font-family: 'Poppins', sans-serif;
     }
 
-    body {
-      background: linear-gradient(135deg, #fdfbfb, #ebedee);
-      color: #333;
-      padding: 30px;
-      min-height: 100vh;
-    }
+    :root {
+    --hero-image: url("img/download.jpeg");
+    --hero-min-h: min(78svh, 820px);
+    --bg: linear-gradient(135deg, #fdfbfb, #ebedee); 
+  }
+
+  body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    background: var(--bg);
+    color: #333;
+    min-height: 100vh;
+  }
+  .cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--accent-text);
+  background: var(--accent);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+}
+
 
     header {
       background: linear-gradient(90deg, #ff7eb3, #ff758c);
@@ -129,90 +149,32 @@
       font-size: 14px;
       color: #777;
     }
-    :root{
-  --bg:#fff; --text:#0f0f12; --muted:#6b6b76;
-  --accent:#111; --accent-text:#fff; --container:1200px;
-}
+.home .site-header {
+      background: transparent;
+      border-bottom: none;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
 
-*{box-sizing:border-box}
-html,body{height:100%}
-body{
-  margin:0; display:flex; flex-direction:column; min-height:100svh;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,"Helvetica Neue",Arial,sans-serif;
-  color:var(--text); background:var(--bg);
-}
-.container{max-width:var(--container); margin-inline:auto; padding-inline:20px; width:100%}
-
-/* ===== Header (base look for all pages) ===== */
-.site-header{
-  position:fixed; top:0; left:0; right:0; z-index:50;
-  height:64px;
-  display:block;
-  transition:
-    background .25s ease, border-color .25s ease,
-    backdrop-filter .25s ease, -webkit-backdrop-filter .25s ease, box-shadow .25s ease;
-}
-.header-inner{
-  height:64px; display:flex; align-items:center; justify-content:space-between;
-}
-.brand{ text-decoration:none; color:var(--text); font-weight:700; font-size:22px; letter-spacing:.2px }
-.nav{ display:flex; gap:10px }
-.nav-link{ text-decoration:none; color:var(--text); padding:10px 14px; border-radius:999px }
-.cta{ text-decoration:none; color:var(--accent-text); background:var(--accent); padding:10px 16px; border-radius:999px; font-weight:600 }
-
-/* Default: inner pages have a solid bar from the start */
-.has-solid-header .site-header{
-  backdrop-filter:saturate(150%) blur(8px); -webkit-backdrop-filter:saturate(150%) blur(8px);
-  background:color-mix(in srgb, white 75%, transparent);
-  border-bottom:1px solid rgba(0,0,0,.06);
-  box-shadow:0 1px 10px rgba(0,0,0,.04);
-}
-
-/* Layout regions */
-main.page{ flex:1 0 auto; padding-top:64px }  /* offset for fixed header */
-.site-footer{ flex-shrink:0; background:#f8f8f8; border-top:1px solid rgba(0,0,0,.08); padding:40px 0; font-size:14px; color:var(--muted) }
-.footer-inner{ display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:10px; text-align:center }
-.footer-links a{ color:var(--muted); text-decoration:none; margin-left:16px; transition:color .2s ease }
-.footer-links a:hover{ color:var(--text) }
-:root{
-  /* Home hero image + height cap (safe on large screens) */
-  --hero-image: url("img/download.jpeg");
-  --hero-min-h: min(78svh, 820px);
-}
-
-/* ===== Home header behavior (transparent at top, bar on scroll) ===== */
-.home .site-header{
-  /* base header is defined in common.css; here we only override visuals */
-  background: transparent;
-  border-bottom: none;
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
-  box-shadow: none;
-}
-
-.home .site-header.show{
-  backdrop-filter: saturate(150%) blur(8px);
-  -webkit-backdrop-filter: saturate(150%) blur(8px);
-  background: color-mix(in srgb, white 75%, transparent);
-  border-bottom: 1px solid rgba(0,0,0,.06);
-  box-shadow: 0 1px 10px rgba(0,0,0,.04);
-}
+    .home .site-header.show {
+      backdrop-filter: saturate(150%) blur(8px);
+      background: color-mix(in srgb, white 75%, transparent);
+      border-bottom: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 1px 10px rgba(0,0,0,.04);
+    }
 
 /* ===== Home hero ===== */
-.hero{
-  position: relative;
-  min-height: var(--hero-min-h);
-  display: grid;
-  place-items: center;
-
-  background-image:
-    /* soft wash to keep text legible on any image */
-    linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
-    var(--hero-image);
-  background-size: cover;
-  background-position: center 20%;
-  background-repeat: no-repeat;
-}
+.hero {
+    position: relative;
+    min-height: var(--hero-min-h);
+    display: grid;
+    place-items: center;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
+      var(--hero-image);
+    background-size: cover;
+    background-position: center 20%;
+  }
 
 /* smoother fade image → white (fade starts lower) */
 .hero::after{
@@ -258,27 +220,25 @@ main.page{ flex:1 0 auto; padding-top:64px }  /* offset for fixed header */
   </style>
 </head>
 <body class= "home">
-    <!-- Header (hidden until scroll) -->
-    <header id="siteHeader" class="site-header">
-      <div class="container header-inner">
-        <a class="brand" href="#">Glammd</a>
-        <nav class="nav">
-          <a href="#" class="nav-link">Log in</a>
-          <a href="signup.html" class="cta">Sign up</a>
-        </nav>
-      </div>
-    </header>
-  
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero-overlay"></div>
-      <div class="container hero-content">
-        <h1 class="hero-title">Book local beauty and wellness services</h1>
-        <!-- Optional subtext. Delete if you want it ultra-minimal -->
-        <!-- <p class="hero-sub">Discover top professionals near you</p> -->
-      </div>
-    </section>
-<body>
+  <!-- Header -->
+  <header id="siteHeader" class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="#">Glammd</a>
+      <nav class="nav">
+        <a href="#" class="nav-link">Log in</a>
+        <a href="signup.html" class="cta">Sign up</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+      <h1 class="hero-title">Book local beauty and wellness services</h1>
+    </div>
+  </section>
+</body>
   <title>Glammd — PAGE TITLE</title>
 
   <!-- Fonts -->
