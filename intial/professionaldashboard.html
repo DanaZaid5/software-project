@@ -5,18 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>My Dashboard</title>
 
-
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
- 
   *,*::before,*::after{ box-sizing:border-box }
   :root{
     --bg:#f8f8f8; --panel:#ffffff; --ink:#111; --muted:#6f6f6f; --line:#eaeaea;
     --accent:#111; --success:#0f7b47; --danger:#a11616;
     --r-sm:8px; --r-md:14px; --sh-1:0 1px 2px rgba(0,0,0,.04); --sh-2:0 8px 24px rgba(0,0,0,.06);
-
-
     --text:#0f0f12; --accent-text:#fff; --container:1200px;
   }
   html,body{height:100%}
@@ -30,7 +26,6 @@
   .site-header{
     position:fixed; top:0; left:0; right:0; z-index:50; height:64px; display:block;
     transition: background .25s ease, border-color .25s ease, backdrop-filter .25s ease, -webkit-backdrop-filter .25s ease, box-shadow .25s ease;
-    /* solid header look like board */
     backdrop-filter:saturate(150%) blur(8px); -webkit-backdrop-filter:saturate(150%) blur(8px);
     background:color-mix(in srgb, white 75%, transparent);
     border-bottom:1px solid rgba(0,0,0,.06);
@@ -44,13 +39,9 @@
     padding:10px 14px; border-radius:999px;
   }
 
-  /* Page offset for fixed header */
   main.page{ padding-top:64px }
-
-  /* ---- CONTAINER ---- */
   .wrap{ max-width:1120px; margin:28px auto 80px; padding:0 16px; }
 
-  /* ---- TABS ---- */
   .tabs{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
   .tabs a{ text-decoration:none; color:var(--muted); padding:10px 14px; border:1px solid var(--line); border-radius:999px; background:#fff; transition:all .2s ease; }
   .tabs a:hover{ color:var(--ink); transform:translateY(-1px) }
@@ -58,14 +49,12 @@
   :target ~ .tabs a[href="#services"], :target ~ .tabs a[href="#offers"], :target ~ .tabs a[href="#reviews"]{ color:var(--muted); background:#fff; border-color:var(--line); }
   #offers:target ~ .tabs a[href="#offers"], #reviews:target ~ .tabs a[href="#reviews"]{ color:#fff; background:var(--accent); border-color:var(--accent); }
 
-  /* ---- SECTIONS ---- */
   .section{ display:none; }
   .section.default-visible{ display:block; }
   #offers:target ~ .content #services, #reviews:target ~ .content #services{ display:none; }
   #offers:target ~ .content #offers{ display:block; }
   #reviews:target ~ .content #reviews{ display:block; }
 
-  /* ---- CARDS / PANELS ---- */
   .panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md); box-shadow:var(--sh-2); padding:20px; }
   .panel h2{ font-size:18px; margin:0 0 18px 0; letter-spacing:.3px; }
   .muted{ color:var(--muted) }
@@ -73,7 +62,6 @@
   .grid{ display:grid; gap:16px; }
   @media (min-width:860px){ .grid-2{ grid-template-columns:1.2fr 1fr; } .grid-3{ grid-template-columns:repeat(3,1fr); } }
 
-  /* ---- FORMS ---- */
   label{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--muted) }
   .form-row{ display:grid; gap:12px; margin-bottom:14px; }
   .form-row.inline{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
@@ -87,7 +75,6 @@
   .btn.success{ background:var(--success); border-color:var(--success) }
   .btn.danger{ background:var(--danger); border-color:var(--danger) }
 
-  /* ---- SERVICE LIST ---- */
   .list{ display:grid; gap:12px; margin-top:6px; }
   .item{
     display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;
@@ -98,7 +85,6 @@
   .price{ font-weight:600; letter-spacing:.3px }
   .actions{ display:flex; align-items:center; gap:8px; }
 
-  /* ---- TABLE (OFFERS) ---- */
   .table{ width:100%; border-collapse:collapse; font-size:14px; }
   .table th, .table td{ text-align:left; padding:12px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
   .table th{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--muted) }
@@ -126,10 +112,28 @@
   .tag:active{ transform:translateY(1px) }
 
   .foot-hint{ display:flex; justify-content:center; margin-top:20px; color:var(--muted); font-size:12px; }
+
+  /* ---- NOTES (details) ---- */
+  details.notes{
+    border:1px dashed var(--line);
+    border-radius:999px;
+    padding:6px 10px;
+    display:inline-block;
+    background:#fff;
+  }
+  details.notes > summary{
+    list-style:none;
+    cursor:pointer;
+    font-size:12px;
+    color:var(--ink);
+    outline:none;
+  }
+  details.notes > summary::-webkit-details-marker{ display:none }
+  details.notes[open]{ background:color-mix(in srgb, var(--panel) 70%, #f5f5f5) }
+  .note-text{ margin-top:8px; font-size:13px; color:var(--muted); max-width:48ch; }
 </style>
 </head>
 <body class="has-solid-header">
-
 
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
@@ -152,6 +156,7 @@
       </nav>
 
       <div class="content">
+        <!-- SERVICES -->
         <section id="services" class="section default-visible">
           <div class="grid grid-2">
             <div class="panel">
@@ -244,57 +249,129 @@
                   </div>
                 </div>
               </div>
-              
             </div>
           </div>
         </section>
-        <section id="offers" class="section">
-            <div class="panel">
-              <h2>Incoming offers</h2>
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Client</th>
-                    <th>Service</th>
-                    <th>Requested Time</th>
-                    <th>Actions</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>Aisha K.</td>
-                    <td><span class="chip">Makeup</span></td>
-                    <td>2025-11-14 17:00</td>
-                    <td class="actions">
-                      <button class="btn success">Accept</button>
-                      <button class="btn ghost">Decline</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Lama S.</td>
-                    <td><span class="chip">Makeup</span></td>
-                    <td>2025-11-09 19:30</td>
-                    <td class="actions">
-                      <button class="btn success">Accept</button>
-                      <button class="btn ghost">Decline</button>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td>Noor A.</td>
-                    <td><span class="chip">Hair</span></td>
-                    <td>2025-11-03 16:00</td>
-                    <td class="actions">
-                      <button class="btn success">Accept</button>
-                      <button class="btn ghost">Decline</button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
-          
-       
 
+        <!-- OFFERS -->
+        <section id="offers" class="section">
+          <div class="panel" style="margin-bottom:16px;">
+            <h2>Pending offers</h2>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Service</th>
+                  <th>Requested Time</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Aisha K.</td>
+                  <td><span class="chip">Makeup</span></td>
+                  <td>2025-11-14 17:00</td>
+                  <td>
+                    <details class="notes">
+                      <summary>View</summary>
+                      <div class="note-text">Soft glam; please avoid heavy contour. I’m allergic to lavender oil.</div>
+                    </details>
+                  </td>
+                  <td class="actions">
+                    <button class="btn success">Accept</button>
+                    <button class="btn ghost">Decline</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Lama S.</td>
+                  <td><span class="chip">Makeup</span></td>
+                  <td>2025-11-09 19:30</td>
+                  <td>
+                    <details class="notes">
+                      <summary>View</summary>
+                      <div class="note-text">Smokey eye, nude lip. I have sensitive skin—prefer fragrance-free products.</div>
+                    </details>
+                  </td>
+                  <td class="actions">
+                    <button class="btn success">Accept</button>
+                    <button class="btn ghost">Decline</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Noor A.</td>
+                  <td><span class="chip">Hair</span></td>
+                  <td>2025-11-03 16:00</td>
+                  <td>
+                    <details class="notes">
+                      <summary>View</summary>
+                      <div class="note-text">Loose waves; bring anti-frizz if possible. Event is outdoors.</div>
+                    </details>
+                  </td>
+                  <td class="actions">
+                    <button class="btn success">Accept</button>
+                    <button class="btn ghost">Decline</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="panel">
+            <h2>Confirmed bookings</h2>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Service</th>
+                  <th>Date & Time</th>
+                  <th>Notes</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Reem H.</td>
+                  <td><span class="chip">Makeup</span></td>
+                  <td>2025-11-06 18:00</td>
+                  <td>
+                    <details class="notes" open>
+                      <summary>View</summary>
+                      <div class="note-text">Matte base; please cover acne scars gently. Bring oil-control primer.</div>
+                    </details>
+                  </td>
+                  <td><span class="chip">Confirmed</span></td>
+                </tr>
+                <tr>
+                  <td>Maha A.</td>
+                  <td><span class="chip">Hair</span></td>
+                  <td>2025-11-10 15:30</td>
+                  <td>
+                    <details class="notes">
+                      <summary>View</summary>
+                      <div class="note-text">Half-up style with curls. Avoid hairspray with strong scent.</div>
+                    </details>
+                  </td>
+                  <td><span class="chip">Confirmed</span></td>
+                </tr>
+                <tr>
+                  <td>Joud K.</td>
+                  <td><span class="chip">Skincare</span></td>
+                  <td>2025-11-12 12:00</td>
+                  <td>
+                    <details class="notes">
+                      <summary>View</summary>
+                      <div class="note-text">Hydrating facial; allergic to tea tree. Patch test first, please.</div>
+                    </details>
+                  </td>
+                  <td><span class="chip">Confirmed</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- REVIEWS -->
         <section id="reviews" class="section">
           <div class="panel">
             <h2>Reviews</h2>
