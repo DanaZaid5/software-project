@@ -5,16 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Book Service – Glammd</title>
 <link rel="stylesheet" href="style.css" /> <!-- your combined CSS file -->
+<link href="https://fonts.googleapis.com/css2?family=Tartuffo&display=swap" rel="stylesheet">
 <style>
 *{
     font-family: 'Tartuffo', serif;
-	}
+}
 :root {
   --hero-image: url("img/download.jpeg");
   --accent: #c07eff;
   --muted: #777;
   --text: #333;
 }
+
+/* Hero Section */
 .hero {
   position: relative;
   min-height: 100vh;
@@ -39,6 +42,8 @@
   );
   pointer-events: none;
 }
+
+/* Booking Container */
 .booking-container {
   background: #fff;
   border-radius: 20px;
@@ -55,6 +60,8 @@
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+
+/* Booking Header */
 .booking-header {
   display: flex;
   align-items: center;
@@ -77,6 +84,8 @@
   color: var(--muted);
   font-size: 14px;
 }
+
+/* Service Details */
 .service-details {
   margin-top: 15px;
   color: var(--text);
@@ -90,26 +99,36 @@
   color: var(--muted);
   margin-bottom: 15px;
 }
-.form-group {
-  margin-bottom: 20px;
+
+/* Form Tags */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 8px;
 }
-label {
-  font-weight: 600;
-  display: block;
-  margin-bottom: 8px;
-}
-select, input[type="color"] {
-  width: 100%;
-  padding: 10px;
-  border-radius: 10px;
-  border: 1px solid #ccc;
-  font-size: 15px;
+.tag {
+  padding: 8px 15px;
+  background: #f0f0f0;
+  border-radius: 12px;
   cursor: pointer;
   transition: 0.3s;
+  user-select: none;
 }
-select:hover, input[type="color"]:hover {
-  border-color: var(--accent);
+.tag.active {
+  background: #000; /* black */
+  color: #fff;       /* white text */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
 }
+.tag:hover {
+  background: #333; /* slightly lighter black on hover */
+  color: #fff;
+  transform: translateY(-2px);
+}
+
+
+/* Color Palette */
 .color-options {
   display: flex;
   gap: 10px;
@@ -127,16 +146,13 @@ select:hover, input[type="color"]:hover {
   transform: scale(1.1);
   border-color: var(--accent);
 }
-/* Active selection */
 .color-choice.active {
   border-color: var(--accent);
   box-shadow: 0 0 10px rgba(192,126,255,0.6);
   transform: scale(1.15);
 }
-select:focus {
-  border: 2px solid var(--accent);
-}
-/* Button glow animation */
+
+/* Button */
 .submit-btn {
   display: inline-block;
   margin-top: 10px;
@@ -150,11 +166,11 @@ select:focus {
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
 .submit-btn:hover {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(178,122,255,0.5);
 }
+
 /* Popup */
 .popup {
   position: fixed;
@@ -205,6 +221,20 @@ select:focus {
   transform: translateY(-3px);
   box-shadow: 0 6px 18px rgba(178,122,255,0.5);
 }
+
+/* Header */
+.site-header {
+  position: fixed; top:0; left:0; right:0; z-index:50; height:64px; display:block;
+  backdrop-filter:saturate(150%) blur(8px);
+  background:color-mix(in srgb, white 75%, transparent);
+  border-bottom:1px solid rgba(0,0,0,.06);
+  box-shadow:0 1px 10px rgba(0,0,0,.04);
+}
+.header-inner{ height:64px; display:flex; align-items:center; justify-content:space-between; }
+.brand{ text-decoration:none; color:#333; font-weight:700; font-size:22px; letter-spacing:.2px }
+.nav{ display:flex; gap:10px }
+.nav-link{ text-decoration:none; color:#333; padding:10px 14px; border-radius:999px; }
+
 </style>
 </head>
 
@@ -238,16 +268,17 @@ select:focus {
     </div>
 
     <form id="bookingForm">
+      <!-- Makeup Tone -->
       <div class="form-group">
-        <label for="tone">Makeup Tone</label>
-        <select id="tone" required>
-          <option value="">Select tone</option>
-          <option value="natural">Natural</option>
-          <option value="soft-glam">Soft Glam</option>
-          <option value="bold">Bold</option>
-        </select>
+        <label>Makeup Tone</label>
+        <div class="tags" id="toneTags">
+          <div class="tag">Natural</div>
+          <div class="tag">Soft Glam</div>
+          <div class="tag">Bold</div>
+        </div>
       </div>
-
+<br>
+      <!-- Color Palette -->
       <div class="form-group">
         <label>Color Palette</label>
         <div class="color-options">
@@ -257,31 +288,31 @@ select:focus {
           <div class="color-choice" style="background:#f2cc8f;"></div>
         </div>
       </div>
-
+<br>
+      <!-- Skin Type -->
       <div class="form-group">
-        <label for="skin-type">Skin Type</label>
-        <select id="skin-type" required>
-          <option value="">Select skin type</option>
-          <option value="normal">Normal</option>
-          <option value="oily">Oily</option>
-          <option value="dry">Dry</option>
-          <option value="combination">Combination</option>
-        </select>
+        <label>Skin Type</label>
+        <div class="tags" id="skinTags">
+          <div class="tag">Normal</div>
+          <div class="tag">Oily</div>
+          <div class="tag">Dry</div>
+          <div class="tag">Combination</div>
+        </div>
       </div>
-
+<br>
+      <!-- Preferred Time -->
       <div class="form-group">
-        <label for="time">Preferred Time</label>
-        <select id="time" required>
-          <option value="">Select time</option>
-          <option>10:00 AM</option>
-          <option>10:30 AM</option>
-          <option>11:00 AM</option>
-          <option>11:30 AM</option>
-          <option>12:00 PM</option>
-          <option>12:30 PM</option>
-          <option>1:00 PM</option>
-          <option>1:30 PM</option>
-        </select>
+        <label>Preferred Time</label>
+        <div class="tags" id="timeTags">
+          <div class="tag">10:00 AM</div>
+          <div class="tag">10:30 AM</div>
+          <div class="tag">11:00 AM</div>
+          <div class="tag">11:30 AM</div>
+          <div class="tag">12:00 PM</div>
+          <div class="tag">12:30 PM</div>
+          <div class="tag">1:00 PM</div>
+          <div class="tag">1:30 PM</div>
+        </div>
       </div>
 
       <div class="form-group">
@@ -303,6 +334,7 @@ select:focus {
 </div>
 
 <script>
+// Popup & Redirect
 const form = document.getElementById('bookingForm');
 const popup = document.getElementById('popup');
 
@@ -310,13 +342,13 @@ form.addEventListener('submit', e => {
   e.preventDefault();
   popup.classList.add('active');
 
-  // Redirect after 2 seconds (2000ms)
+  // Redirect after 2 seconds
   setTimeout(() => {
     window.location.href = 'clientdashboard.html'; 
   }, 2000);
 });
 
-// highlight active color
+// Color palette
 const colors = document.querySelectorAll('.color-choice');
 colors.forEach(c => {
   c.addEventListener('click', () => {
@@ -324,6 +356,23 @@ colors.forEach(c => {
     c.classList.add('active');
   });
 });
+
+// Tag selection function
+function setupTags(groupId) {
+  const container = document.getElementById(groupId);
+  const tags = container.querySelectorAll('.tag');
+  tags.forEach(tag => {
+    tag.addEventListener('click', () => {
+      tags.forEach(t => t.classList.remove('active'));
+      tag.classList.add('active');
+    });
+  });
+}
+
+// Initialize all tag groups
+setupTags('toneTags');
+setupTags('skinTags');
+setupTags('timeTags');
 </script>
 
 </body>
