@@ -6,7 +6,7 @@
 <title>My Dashboard</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-
+  <link rel="stylesheet" href="common.css">
 <style>
   *,*::before,*::after{ box-sizing:border-box }
   :root{
@@ -42,7 +42,106 @@
   main.page{ padding-top:64px }
   .wrap{ max-width:1120px; margin:28px auto 80px; padding:0 16px; }
 
-  .tabs{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  /* ===== Professional Profile ===== */
+  .professional-profile{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:var(--r-md);
+    box-shadow:var(--sh-2);
+    padding:20px;
+    margin-bottom:16px;
+    display:flex;
+    gap:20px;
+    align-items:center;
+  }
+  .professional-photo{
+    width:96px;
+    height:96px;
+    border-radius:50%;
+    overflow:hidden;
+    flex-shrink:0;
+    box-shadow:0 4px 14px rgba(0,0,0,.12);
+  }
+  .professional-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    border-radius:inherit;
+  }
+  .professional-info{
+    flex:1;
+    min-width:0;
+  }
+  .profile-header-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:12px;
+    margin-bottom:6px;
+  }
+  .professional-name{
+    margin:0 0 4px;
+    font-size:20px;
+    font-weight:700;
+    letter-spacing:.3px;
+  }
+  .professional-title{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+  }
+  .edit-profile-btn{
+    white-space:nowrap;
+  }
+  .btn-xs{
+    padding:6px 10px;
+    font-size:12px;
+    border-radius:999px;
+  }
+  .professional-stats{
+    display:flex;
+    flex-wrap:wrap;
+    gap:16px;
+    margin:8px 0;
+  }
+  .stat-item{
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+    min-width:90px;
+  }
+  .stat-value{
+    font-weight:600;
+    font-size:15px;
+  }
+  .stat-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--muted);
+  }
+  .professional-bio{
+    margin:4px 0 0;
+    color:var(--muted);
+    font-size:13px;
+    max-width:52ch;
+  }
+
+  @media (max-width:768px){
+    .professional-profile{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .profile-header-row{
+      flex-direction:column;
+      align-items:flex-start;
+    }
+    .edit-profile-btn{
+      align-self:flex-start;
+    }
+  }
+
+  .tabs{ display:flex; gap:8px; margin:18px 0; flex-wrap:wrap; }
   .tabs a{ text-decoration:none; color:var(--muted); padding:10px 14px; border:1px solid var(--line); border-radius:999px; background:#fff; transition:all .2s ease; }
   .tabs a:hover{ color:var(--ink); transform:translateY(-1px) }
   .tabs a[href="#services"]{ color:#fff; background:var(--accent); border-color:var(--accent); }
@@ -69,7 +168,11 @@
     width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-sm); background:#fff; outline:none; min-width:0;
   }
   textarea{ min-height:100px; resize:vertical }
-  .btn{ appearance:none; border:1px solid var(--ink); background:var(--ink); color:#fff; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600; transition:transform .1s ease, opacity .2s ease; }
+  .btn{
+    appearance:none; border:1px solid var(--ink); background:var(--ink); color:#fff;
+    padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600;
+    transition:transform .1s ease, opacity .2s ease;
+  }
   .btn:active{ transform:translateY(1px) }
   .btn.ghost{ background:transparent; color:var(--ink); border-color:var(--line); }
   .btn.success{ background:var(--success); border-color:var(--success) }
@@ -146,6 +249,86 @@
 
   <main class="page">
     <div class="wrap">
+
+      <!-- Professional profile card + Edit button -->
+      <section class="professional-profile">
+        <div class="professional-photo">
+          <img src="img/pro1.jpg" alt="Sarah M.">
+        </div>
+        <div class="professional-info">
+          <div class="profile-header-row">
+            <div>
+              <h1 class="professional-name" id="proName">Sarah M.</h1>
+              <p class="professional-title" id="proTitle">Professional Makeup Artist &amp; Beauty Specialist</p>
+            </div>
+            <button class="btn ghost btn-xs edit-profile-btn" type="button" id="editProfileBtn">
+              Edit profile
+            </button>
+          </div>
+
+          <div class="professional-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="proRating">★ 4.9</span>
+              <span class="stat-label">Rating</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="proReviews">127</span>
+              <span class="stat-label">Reviews</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="proServices">8</span>
+              <span class="stat-label">Services</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="proExperience">5+ years</span>
+              <span class="stat-label">Experience</span>
+            </div>
+          </div>
+
+          <p class="professional-bio" id="proBio">
+            Certified makeup artist specializing in bridal, evening, and special occasion looks.
+            Passionate about enhancing natural beauty and creating flawless results that last,
+            using premium products and techniques tailored to each client.
+          </p>
+        </div>
+      </section>
+
+      <!-- Profile settings panel -->
+      <section class="panel" id="profile-settings" style="margin-bottom:24px;">
+        <h2>Profile settings</h2>
+<form id="profileForm">
+  <div class="form-row inline">
+    <div>
+      <label for="profileName">Name</label>
+      <input type="text" id="profileName" placeholder="Your name" value="Sarah M.">
+    </div>
+    <div>
+      <label for="profileTitle">Title</label>
+      <input type="text" id="profileTitle" placeholder="Your professional title" value="Professional Makeup Artist &amp; Beauty Specialist">
+    </div>
+  </div>
+
+  <!-- Profile photo upload -->
+  <div class="form-row">
+    <div>
+      <label for="profilePhoto">Profile photo</label>
+      <input type="file" id="profilePhoto" accept="image/*">
+    </div>
+  </div>
+
+  <div class="form-row">
+    <div>
+      <label for="profileBio">Bio</label>
+      <textarea id="profileBio" placeholder="Tell clients about your experience, style, and what you specialize in.">Certified makeup artist specializing in bridal, evening, and special occasion looks.
+Passionate about enhancing natural beauty and creating flawless results that last,
+using premium products and techniques tailored to each client.</textarea>
+    </div>
+  </div>
+
+  <button class="btn" type="submit">Save profile</button>
+</form>
+
+      </section>
 
       <div id="services"></div><div id="offers"></div><div id="reviews"></div>
 
@@ -324,7 +507,7 @@
                 <tr>
                   <th>Client</th>
                   <th>Service</th>
-                  <th>Date & Time</th>
+                  <th>Date &amp; Time</th>
                   <th>Notes</th>
                   <th>Status</th>
                 </tr>
@@ -406,7 +589,7 @@
                   </div>
                   <div class="stars">★★★★★</div>
                 </div>
-                <p>Exactly what I wanted. Soft & elegant waves, perfect for photos.</p>
+                <p>Exactly what I wanted. Soft &amp; elegant waves, perfect for photos.</p>
               </article>
 
               <article class="review">
@@ -426,5 +609,85 @@
       </div>
     </div>
   </main>
+  
+    <!-- Footer (from index.html) -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2025 Glammd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Smooth scroll to profile settings
+    const editBtn = document.getElementById('editProfileBtn');
+    const profileSettings = document.getElementById('profile-settings');
+
+    if (editBtn && profileSettings) {
+      editBtn.addEventListener('click', () => {
+        profileSettings.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+    }
+
+    // Simple front-end profile update
+    const profileForm = document.getElementById('profileForm');
+    const proName = document.getElementById('proName');
+    const proTitle = document.getElementById('proTitle');
+    const proBio = document.getElementById('proBio');
+    const inputName = document.getElementById('profileName');
+    const inputTitle = document.getElementById('profileTitle');
+    const textareaBio = document.getElementById('profileBio');
+
+    const defaultName = proName.textContent.trim();
+    const defaultTitle = proTitle.textContent.trim();
+    const defaultBio = proBio.textContent.trim();
+
+    if (profileForm) {
+      profileForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const newName = (inputName.value || '').trim();
+        const newTitle = (inputTitle.value || '').trim();
+        const newBio = (textareaBio.value || '').trim();
+
+        proName.textContent = newName || defaultName;
+        proTitle.textContent = newTitle || defaultTitle;
+        proBio.textContent = newBio || defaultBio;
+
+        // Tiny visual feedback
+        profileForm.querySelector('button[type="submit"]').textContent = 'Saved ✔';
+        setTimeout(() => {
+          profileForm.querySelector('button[type="submit"]').textContent = 'Save profile';
+        }, 1500);
+      });
+    }
+	
+	<script>
+  const photoInput = document.getElementById('profilePhoto');
+  const proPhoto = document.getElementById('proPhoto'); // must exist in your .professional-photo <img>
+  const photoTrigger = document.querySelector('.professional-photo');
+
+  if (photoTrigger && photoInput && proPhoto) {
+    // Click on photo opens file picker
+    photoTrigger.addEventListener('click', () => photoInput.click());
+
+    // Preview chosen photo
+    photoInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        proPhoto.src = ev.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+</script>
+
+  </script>
 </body>
 </html>
