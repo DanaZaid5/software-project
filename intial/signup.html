@@ -482,7 +482,7 @@
     <div class="container header-inner">
       <a class="brand" href="index.html">Glammd</a>
       <nav class="nav">
-        <a href="index.html" class="nav-link">Log in</a>
+        <a href="login.html" class="nav-link">Log in</a>
         <a href="signup.html" class="cta">Sign up</a>
       </nav>
     </div>
@@ -626,7 +626,7 @@
         <div class="divider">or</div>
 
         <div class="signin-link">
-          Already have an account? <a href="index.html">Log in</a>
+          Already have an account? <a href="login.html">Log in</a>
         </div>
       </div>
 
@@ -765,11 +765,15 @@
           password: passwordInput.value
         });
         
-        // Show success message (you can customize this)
+        // Show success message
         alert(`Account created successfully! Welcome to Glammd as a ${userType}.`);
         
-        // Optionally redirect to login or home page
-        // window.location.href = 'index.html';
+        // Redirect based on user type
+        if (userType === 'client') {
+          window.location.href = '#';
+        } else if (userType === 'professional') {
+          window.location.href = 'professionaldashboard.html';
+        }
       }
     });
   </script>
