@@ -216,11 +216,11 @@
       </div>
 
       <div class="filter-group">
-        <label class="filter-label">Rate</label>
+        <label class="filter-label">city</label>
         <select class="filter-select">
-          <option>Default</option>
-          <option>High to Low</option>
-          <option>Low to High</option>
+          <option>All</option>
+          <option>Riyadh</option>
+          <option>Jeddah</option>
         </select>
       </div>
     </section>
@@ -236,7 +236,7 @@
       </div>
 
       <div class="salon-card">
-        <img src="https://via.placeholder.com/100" alt="Salon Image">
+        <img src="img/Aljohara.png" alt="Salon Image">
         <div class="salon-info">
           <h3>Aljohara alsultan</h3>
           <p>Hairstylist</p>
@@ -245,16 +245,16 @@
       </div>
 
       <div class="salon-card">
-        <img src="https://via.placeholder.com/100" alt="Salon Image">
+        <img src="img/layan.png" alt="Salon Image">
         <div class="salon-info">
           <h3>Layan Abdulaziz</h3>
-          <p>Nail artist</p>
+          <p>Nails artist</p>
           <p>Riyadh, Saudi Arabia</p>
         </div>
       </div>
 
       <div class="salon-card">
-        <img src="https://via.placeholder.com/100" alt="Salon Image">
+        <img src="img/Noura.png" alt="Salon Image">
         <div class="salon-info">
           <h3>Noura</h3>
           <p>Makeup artist</p>
@@ -276,6 +276,41 @@
     </div>
   </footer>
 
-  <script src="homeScript.js"></script>
+  <script src="homeScript.js">
+  </script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const serviceSelect = document.querySelectorAll(".filter-select")[0];
+  const citySelect = document.querySelectorAll(".filter-select")[1];
+  const salonCards = document.querySelectorAll(".salon-card");
+
+ 
+  serviceSelect.addEventListener("change", filterSalons);
+  citySelect.addEventListener("change", filterSalons);
+
+  function filterSalons() {
+    const selectedService = serviceSelect.value.toLowerCase();
+    const selectedCity = citySelect.value.toLowerCase();
+
+    salonCards.forEach(card => {
+      const infoParagraphs = card.querySelectorAll(".salon-info p");
+      const serviceText = infoParagraphs[0].textContent.toLowerCase(); 
+      const cityText = infoParagraphs[1].textContent.toLowerCase();    
+
+      const matchesService =
+        selectedService === "all" || serviceText.includes(selectedService);
+      const matchesCity =
+        selectedCity === "all" || cityText.includes(selectedCity);
+
+      // Show or hide card
+      if (matchesService && matchesCity) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+});
+  </script>
 </body>
 </html>
