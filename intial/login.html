@@ -5,11 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Log In - Glammd</title>
 
-
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
   <style>
- 
     :root{
       --bg:#fff; --text:#0f0f12; --muted:#6b6b76;
       --accent:#111; --accent-text:#fff; --container:1200px;
@@ -26,7 +25,7 @@
     }
     .container{max-width:var(--container); margin-inline:auto; padding-inline:20px; width:100%}
 
-   
+    /* Header */
     .site-header{
       position:fixed; top:0; left:0; right:0; z-index:50;
       height:64px; display:block; transition:
@@ -49,9 +48,9 @@
     .cta{ text-decoration:none; color:var(--accent-text); background:var(--accent); padding:10px 16px; border-radius:999px; font-weight:600; transition: opacity .2s ease }
     .cta:hover{ opacity:.85 }
 
-    
+    /* Hero */
     .hero{
-      position: relative;
+      position: relative; min-height: var(--hero-min-h);
       padding: 120px 0 80px;
       background-image:
         linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
@@ -59,6 +58,10 @@
       background-size: cover;
       background-position: center 20%;
       background-repeat: no-repeat;
+     
+  padding-bottom: 160px; /* ✅ extra room for card + image fade */
+
+
     }
     .hero::after{
       content:""; position:absolute; inset:0;
@@ -78,6 +81,7 @@
       display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
     }
 
+    /* Login card */
     .login-card{
       position: relative; z-index: 10;
       background: rgba(255, 255, 255, 0.95);
@@ -94,18 +98,13 @@
     .login-subtitle{ margin: 0 0 24px; color: var(--muted); font-size: 15px; }
 
     .form-group{ margin-bottom: 20px; }
-    .form-label{
-      display:block; margin-bottom:8px; font-weight:500; font-size:14px; color:var(--text);
-    }
+    .form-label{ display:block; margin-bottom:8px; font-weight:500; font-size:14px; color:var(--text); }
     .form-input{
       width:100%; padding:12px 16px; border:1px solid rgba(0,0,0,.12);
       border-radius:8px; font-size:15px; font-family:inherit;
       transition: border-color .2s ease, box-shadow .2s ease; background:white;
     }
     .form-input:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px rgba(0,0,0,.05); }
-    .form-input.error{ border-color:#dc2626; }
-    .error-message{ display:none; margin-top:6px; font-size:13px; color:#dc2626; }
-    .error-message.show{ display:block; }
 
     .password-toggle{ position:relative; }
     .toggle-password-btn{
@@ -114,14 +113,10 @@
     }
     .toggle-password-btn:hover{ color:var(--text); }
 
-    .form-row-inline{ display:flex; justify-content:space-between; align-items:center; margin: 8px 0 16px; }
-    .remember{
-      display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px;
-    }
+    .form-row-inline{ display:flex; justify-content:space-between; align-items:center; margin: 8px 0 16px; gap:12px; flex-wrap:wrap; }
+    .remember{ display:flex; align-items:center; gap:8px; color:var(--muted); font-size:14px; }
     .remember input{ cursor:pointer; }
-    .forgot{
-      font-size:14px; text-decoration:none; color:var(--muted);
-    }
+    .forgot{ font-size:14px; text-decoration:none; color:var(--muted); }
     .forgot:hover{ text-decoration:underline; color:var(--text); }
 
     .submit-btn{
@@ -131,7 +126,6 @@
     }
     .submit-btn:hover{ opacity:.9; }
     .submit-btn:active{ transform:scale(0.98); }
-    .submit-btn:disabled{ opacity:.5; cursor:not-allowed; }
 
     .divider{ display:flex; align-items:center; margin:24px 0; color:var(--muted); font-size:13px; }
     .divider::before,.divider::after{ content:""; flex:1; height:1px; background:rgba(0,0,0,.1); }
@@ -141,6 +135,7 @@
     .signup-link a{ color:var(--accent); text-decoration:none; font-weight:600; }
     .signup-link a:hover{ text-decoration:underline; }
 
+    /* Welcome side */
     .welcome-side{ position:relative; z-index:10; color:var(--text); padding:20px; }
     .welcome-title{
       margin:0 0 20px; font-family:"Playfair Display", Georgia, "Times New Roman", serif;
@@ -154,6 +149,7 @@
       width:24px; height:24px; background:var(--accent); color:#fff; border-radius:50%; font-weight:600; font-size:14px; flex-shrink:0;
     }
 
+    /* Footer */
     .site-footer{
       flex-shrink:0; background:#f8f8f8; border-top:1px solid rgba(0,0,0,.08);
       padding:40px 0; font-size:14px; color:var(--muted); margin-top:auto;
@@ -164,6 +160,7 @@
     .footer-links a{ color:var(--muted); text-decoration:none; margin-left:16px; transition:color .2s ease; }
     .footer-links a:hover{ color:var(--text); }
 
+    /* Responsive */
     @media (max-width: 968px){
       .hero-content{ grid-template-columns:1fr; gap:40px; padding:80px 0 40px; }
       .welcome-side{ order:2; text-align:center; }
@@ -188,42 +185,38 @@
     </div>
   </header>
 
-
   <section class="hero">
     <div class="hero-overlay"></div>
     <div class="container hero-content">
+      <!-- Left: Card -->
       <div class="login-card">
         <h1 class="login-title">Welcome back</h1>
         <p class="login-subtitle">Log in to manage bookings and services</p>
 
-        <form id="loginForm" novalidate>
+        <form id="loginForm">
+          <!-- Email (text to avoid email-format validation) -->
           <div class="form-group">
             <label for="email" class="form-label">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              class="form-input"
-              placeholder="Enter your email"
-              required
-            />
-            <div class="error-message" id="emailError">Please enter a valid email address</div>
+            <input type="text" id="email" name="email" class="form-input" placeholder="Enter your email" required />
           </div>
 
+          <!-- Password -->
           <div class="form-group">
             <label for="password" class="form-label">Password</label>
             <div class="password-toggle">
-              <input
-                type="password"
-                id="password"
-                name="password"
-                class="form-input"
-                placeholder="Enter your password"
-                required
-              />
+              <input type="password" id="password" name="password" class="form-input" placeholder="Enter your password" required />
               <button type="button" class="toggle-password-btn" id="togglePassword">Show</button>
             </div>
-            <div class="error-message" id="passwordError">Password must be at least 8 characters</div>
+          </div>
+
+          <!-- Sign in as -->
+          <div class="form-group">
+            <label for="role" class="form-label">Sign in as</label>
+            <select id="role" name="role" class="form-input" required>
+              <option value="" disabled selected>Select role</option>
+              <option value="client">Client</option>
+              <option value="professional">Professional</option>
+            </select>
           </div>
 
           <div class="form-row-inline">
@@ -244,7 +237,7 @@
         </div>
       </div>
 
-      
+  
       <div class="welcome-side">
         <h2 class="welcome-title">Your beauty, organized</h2>
         <p class="welcome-text">
@@ -259,7 +252,6 @@
     </div>
   </section>
 
-
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© 2025 Glammd. All rights reserved.</p>
@@ -272,14 +264,13 @@
   </footer>
 
   <script>
-  
+   
     const header = document.getElementById('siteHeader');
     window.addEventListener('scroll', () => {
-      const scrolled = window.pageYOffset > 50;
-      header.classList.toggle('show', scrolled);
+      header.classList.toggle('show', window.pageYOffset > 50);
     });
 
-    // Show/Hide password
+
     const togglePassword = document.getElementById('togglePassword');
     const passwordInput = document.getElementById('password');
     togglePassword.addEventListener('click', () => {
@@ -288,47 +279,23 @@
       togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
     });
 
-    // Validation
+    // Frontend-only: require non-empty fields, then redirect by role
     const loginForm = document.getElementById('loginForm');
-    const emailInput = document.getElementById('email');
-    const emailError = document.getElementById('emailError');
-    const passwordError = document.getElementById('passwordError');
-
-    const emailRegex = /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/;
-
-    [emailInput, passwordInput].forEach(input => {
-      input.addEventListener('input', () => {
-        input.classList.remove('error');
-        const errId = input.id + 'Error';
-        const el = document.getElementById(errId);
-        if (el) el.classList.remove('show');
-      });
-    });
+    const roleSelect = document.getElementById('role');
 
     loginForm.addEventListener('submit', (e) => {
+     
+      if (!loginForm.checkValidity()) {
+ 
+        return;
+      }
       e.preventDefault();
-      let valid = true;
 
-      if (!emailRegex.test(emailInput.value.trim())) {
-        valid = false;
-        emailInput.classList.add('error');
-        emailError.classList.add('show');
-      }
-
-      if (passwordInput.value.length < 8) {
-        valid = false;
-        passwordInput.classList.add('error');
-        passwordError.classList.add('show');
-      }
-
-      if (valid) {
-        // Replace with real submission
-        console.log('Login submitted', {
-          email: emailInput.value,
-          remember: document.getElementById('rememberMe').checked
-        });
-        alert('Logged in successfully (demo).');
-        // window.location.href = 'dashboard.html';
+      const role = roleSelect.value;
+      if (role === 'client') {
+        window.location.href = 'client_dashboard.html';
+      } else {
+        window.location.href = 'professionaldashboard.html';
       }
     });
   </script>
