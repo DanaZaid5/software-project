@@ -75,6 +75,7 @@ body{ background:#f8f8f8; }
 .btn-book{
   width:100%; padding:0.75rem 1.25rem; background:var(--accent); color:#fff; border:none;
   border-radius:0.5rem; font-weight:600; font-size:0.9375rem; cursor:pointer; transition:opacity .2s ease; font-family:inherit;
+  text-decoration:none; display:inline-block; text-align:center;
 }
 .btn-book:hover{ opacity:.9; }
 
@@ -186,7 +187,7 @@ body{ background:#f8f8f8; }
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -213,7 +214,7 @@ body{ background:#f8f8f8; }
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
       </div>
@@ -231,12 +232,5 @@ body{ background:#f8f8f8; }
       </div>
     </div>
   </footer>
-
-  <!-- Optional Script -->
-  <script>
-    const params = new URLSearchParams(location.search);
-    const name = params.get('name');
-    if (name) document.getElementById('board-title')?.textContent = name;
-  </script>
 </body>
 </html>
