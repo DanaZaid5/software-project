@@ -297,6 +297,51 @@
     flex-direction: column;
     position: relative;
   }
+  
+  .favorite-btn {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 2;
+  }
+  
+  .favorite-btn:hover {
+    background: #f8f8f8;
+  }
+  
+  .favorite-btn.active {
+    background: #ff4d6d;
+    border-color: #ff4d6d;
+  }
+  
+  .favorite-btn svg {
+    width: 20px;
+    height: 20px;
+    fill: #ccc;
+    transition: fill 0.2s ease;
+  }
+  
+  .favorite-btn.active svg {
+    fill: white;
+  }
+  
+  .favorite-btn:hover svg {
+    fill: #ff4d6d;
+  }
+  
+  .favorite-btn.active:hover svg {
+    fill: white;
+  }
 
   .service-card:hover {
     transform: translateY(-0.25rem);
@@ -552,6 +597,11 @@
       <div class="services-grid" id="services-grid">
         <!-- Service Card 1 -->
         <article class="service-card">
+          <button class="favorite-btn" aria-label="Add to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
           <div class="service-image">💄</div>
           <div class="service-content">
             <span class="service-category">Makeup</span>
@@ -571,12 +621,17 @@
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
 
         <!-- Service Card 2 -->
         <article class="service-card">
+          <button class="favorite-btn" aria-label="Add to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
           <div class="service-image">💇</div>
           <div class="service-content">
             <span class="service-category">Hair</span>
@@ -596,12 +651,17 @@
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
 
         <!-- Service Card 3 -->
         <article class="service-card">
+          <button class="favorite-btn" aria-label="Add to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
           <div class="service-image">✨</div>
           <div class="service-content">
             <span class="service-category">Makeup</span>
@@ -621,12 +681,17 @@
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
 
         <!-- Service Card 4 -->
         <article class="service-card">
+          <button class="favorite-btn" aria-label="Add to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
           <div class="service-image">🧴</div>
           <div class="service-content">
             <span class="service-category">Skin Care</span>
@@ -646,12 +711,17 @@
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
 
         <!-- Service Card 5 -->
         <article class="service-card">
+          <button class="favorite-btn" aria-label="Add to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
           <div class="service-image">💅</div>
           <div class="service-content">
             <span class="service-category">Nails</span>
@@ -671,12 +741,17 @@
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
 
         <!-- Service Card 6 -->
         <article class="service-card">
+          <button class="favorite-btn" aria-label="Add to favorites">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            </svg>
+          </button>
           <div class="service-image">👰</div>
           <div class="service-content">
             <span class="service-category">Makeup</span>
@@ -696,7 +771,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <button class="btn-book">Book Now</button>
+            <a href="booking.html" class="btn-book">Book Now</a>
           </div>
         </article>
       </div>
@@ -916,16 +991,71 @@
     // Add event listeners to filters
     categoryFilter.addEventListener('change', filterServices);
     priceFilter.addEventListener('change', filterServices);
-
-    // Book buttons
-    const bookButtons = document.querySelectorAll('.btn-book');
-    bookButtons.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        const card = e.target.closest('.service-card');
-        const title = card.querySelector('.service-title').textContent;
-        alert(`Booking: ${title}\n\nThis would open a booking modal.`);
+    
+    // Add click event listeners to all favorite buttons
+    document.addEventListener('DOMContentLoaded', function() {
+      const favoriteBtns = document.querySelectorAll('.favorite-btn');
+      
+      favoriteBtns.forEach(btn => {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          this.classList.toggle('active');
+          
+          // Optional: Save to localStorage to persist the favorite state
+          const serviceCard = this.closest('.service-card');
+          const serviceTitle = serviceCard.querySelector('.service-title').textContent;
+          const isFavorite = this.classList.contains('active');
+          
+          // Store in localStorage
+          const favorites = JSON.parse(localStorage.getItem('favoriteServices') || '{}');
+          favorites[serviceTitle] = isFavorite;
+          localStorage.setItem('favoriteServices', JSON.stringify(favorites));
+        });
+      });
+      
+      // Load saved favorite states
+      const favorites = JSON.parse(localStorage.getItem('favoriteServices') || '{}');
+      favoriteBtns.forEach(btn => {
+        const serviceCard = btn.closest('.service-card');
+        const serviceTitle = serviceCard.querySelector('.service-title').textContent;
+        if (favorites[serviceTitle]) {
+          btn.classList.add('active');
+        }
       });
     });
+
+    // Update button styles to work with anchor tag
+    const style = document.createElement('style');
+    style.textContent = `
+      .btn-book {
+        display: inline-block;
+        text-decoration: none;
+        text-align: center;
+        width: 100%;
+        padding: 12px 20px;
+        background: #000000;
+        color: #ffffff;
+        border: 1px solid #000000;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 16px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+      }
+      
+      .btn-book:hover {
+        background: #333333;
+        border-color: #333333;
+        transform: translateY(-2px);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+      }
+      
+      .btn-book:active {
+        transform: translateY(0);
+        box-shadow: none;
+      }
+    `;
+    document.head.appendChild(style);
   </script>
 </body>
 </html>
