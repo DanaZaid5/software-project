@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Book Service – Glammd</title>
+<link rel="stylesheet" href="style.css" /> <!-- your combined CSS file -->
+<style>
+*{
+    font-family: 'Tartuffo', serif;
+	}
+:root {
+  --hero-image: url("img/download.jpeg");
+  --accent: #c07eff;
+  --muted: #777;
+  --text: #333;
+}
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  background-image: linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)), var(--hero-image);
+  background-size: cover;
+  background-position: center 20%;
+  background-repeat: no-repeat;
+}
+.hero::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0) 60%,
+    rgba(255,255,255,0.4) 85%,
+    rgba(255,255,255,1) 100%
+  );
+  pointer-events: none;
+}
+.booking-container {
+  background: #fff;
+  border-radius: 20px;
+  padding: 50px 35px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+  text-align: left;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.8s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.booking-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.booking-header img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.booking-header .info h2 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+}
+.booking-header .info p {
+  margin: 2px 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+.service-details {
+  margin-top: 15px;
+  color: var(--text);
+}
+.service-details h3 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 5px;
+}
+.service-details p {
+  color: var(--muted);
+  margin-bottom: 15px;
+}
+.form-group {
+  margin-bottom: 20px;
+}
+label {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 8px;
+}
+select, input[type="color"] {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+select:hover, input[type="color"]:hover {
+  border-color: var(--accent);
+}
+.color-options {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+.color-choice {
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.3s, border-color 0.3s;
+}
+.color-choice:hover {
+  transform: scale(1.1);
+  border-color: var(--accent);
+}
+/* Active selection */
+.color-choice.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(192,126,255,0.6);
+  transform: scale(1.15);
+}
+select:focus {
+  border: 2px solid var(--accent);
+}
+/* Button glow animation */
+.submit-btn {
+  display: inline-block;
+  margin-top: 10px;
+  padding: 12px 25px;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(178,122,255,0.5);
+}
+/* Popup */
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.4);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+}
+.popup.active {
+  display: flex;
+  animation: fadeIn 0.4s ease;
+}
+.popup-content {
+  background: #fff;
+  border-radius: 20px;
+  padding: 40px 30px;
+  text-align: center;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+  max-width: 400px;
+  width: 100%;
+}
+.popup-content h2 {
+  margin-bottom: 10px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.popup-content p {
+  color: var(--muted);
+  font-size: 15px;
+  margin-bottom: 20px;
+}
+.btn-home {
+  display: inline-block;
+  padding: 12px 25px;
+  background: linear-gradient(90deg, #b27aff, #e29aff);
+  color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+.btn-home:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 18px rgba(178,122,255,0.5);
+}
+</style>
+</head>
+
+<body class="has-solid-header">
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand">Glammd</a>
+    <nav class="nav">
+      <a href="index.html" class="nav-link">Log in</a>
+      <a href="signup.html" class="cta">Sign up</a>
+    </nav>
+  </div>
+</header>
+
+<main class="hero">
+  <div class="booking-container">
+    <div class="booking-header">
+      <img src="img/pro1.jpg" alt="Sarah M.">
+      <div class="info">
+        <h2>Sarah M.</h2>
+        <p>Professional Makeup Artist & Beauty Specialist</p>
+        <p>★ 4.9 | 127 Reviews | 5+ years experience</p>
+      </div>
+    </div>
+
+    <div class="service-details">
+      <h3>Signature Glow Makeup</h3>
+      <p>Flawless, radiant makeup perfect for special occasions. Includes skin prep and long-lasting finish.</p>
+      <p><strong>Duration:</strong> 90 min</p>
+      <p><strong>Price:</strong> SAR 1,200</p>
+    </div>
+
+    <form id="bookingForm">
+      <div class="form-group">
+        <label for="tone">Makeup Tone</label>
+        <select id="tone" required>
+          <option value="">Select tone</option>
+          <option value="natural">Natural</option>
+          <option value="soft-glam">Soft Glam</option>
+          <option value="bold">Bold</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Color Palette</label>
+        <div class="color-options">
+          <div class="color-choice" style="background:#d4a373;"></div>
+          <div class="color-choice" style="background:#e07a5f;"></div>
+          <div class="color-choice" style="background:#9b5de5;"></div>
+          <div class="color-choice" style="background:#f2cc8f;"></div>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="skin-type">Skin Type</label>
+        <select id="skin-type" required>
+          <option value="">Select skin type</option>
+          <option value="normal">Normal</option>
+          <option value="oily">Oily</option>
+          <option value="dry">Dry</option>
+          <option value="combination">Combination</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="time">Preferred Time</label>
+        <select id="time" required>
+          <option value="">Select time</option>
+          <option>10:00 AM</option>
+          <option>10:30 AM</option>
+          <option>11:00 AM</option>
+          <option>11:30 AM</option>
+          <option>12:00 PM</option>
+          <option>12:30 PM</option>
+          <option>1:00 PM</option>
+          <option>1:30 PM</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label>Payment Method</label>
+        <p style="color:var(--muted);">Pay in person at appointment.</p>
+      </div>
+
+      <button type="submit" class="submit-btn">Confirm Booking</button>
+    </form>
+  </div>
+</main>
+
+<div class="popup" id="popup">
+  <div class="popup-content">
+    <div style="font-size:60px; color:#4CAF50; margin-bottom:15px;">✔️</div>
+    <h2>Thank you for your booking!</h2>
+    <p>Your appointment with Sarah M. for Signature Glow Makeup has been confirmed.</p>
+  </div>
+</div>
+
+<script>
+const form = document.getElementById('bookingForm');
+const popup = document.getElementById('popup');
+
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  popup.classList.add('active');
+
+  // Redirect after 2 seconds (2000ms)
+  setTimeout(() => {
+    window.location.href = 'clientdashboard.html'; 
+  }, 2000);
+});
+
+// highlight active color
+const colors = document.querySelectorAll('.color-choice');
+colors.forEach(c => {
+  c.addEventListener('click', () => {
+    colors.forEach(col => col.classList.remove('active'));
+    c.classList.add('active');
+  });
+});
+</script>
+
+</body>
+</html>
