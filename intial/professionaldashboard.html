@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" class="has-solid-header">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>My Dashboard</title>
+
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+ 
+  *,*::before,*::after{ box-sizing:border-box }
+  :root{
+    --bg:#f8f8f8; --panel:#ffffff; --ink:#111; --muted:#6f6f6f; --line:#eaeaea;
+    --accent:#111; --success:#0f7b47; --danger:#a11616;
+    --r-sm:8px; --r-md:14px; --sh-1:0 1px 2px rgba(0,0,0,.04); --sh-2:0 8px 24px rgba(0,0,0,.06);
+
+
+    --text:#0f0f12; --accent-text:#fff; --container:1200px;
+  }
+  html,body{height:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--ink);
+    font:14px/1.5 Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    letter-spacing:.2px;
+  }
+  .container{max-width:var(--container); margin-inline:auto; padding-inline:20px; width:100%}
+
+  .site-header{
+    position:fixed; top:0; left:0; right:0; z-index:50; height:64px; display:block;
+    transition: background .25s ease, border-color .25s ease, backdrop-filter .25s ease, -webkit-backdrop-filter .25s ease, box-shadow .25s ease;
+    /* solid header look like board */
+    backdrop-filter:saturate(150%) blur(8px); -webkit-backdrop-filter:saturate(150%) blur(8px);
+    background:color-mix(in srgb, white 75%, transparent);
+    border-bottom:1px solid rgba(0,0,0,.06);
+    box-shadow:0 1px 10px rgba(0,0,0,.04);
+  }
+  .header-inner{ height:64px; display:flex; align-items:center; justify-content:space-between; }
+  .brand{ text-decoration:none; color:var(--text); font-weight:700; font-size:22px; letter-spacing:.2px }
+  .nav{ display:flex; gap:10px }
+  .nav-link{
+    text-decoration:none; color:var(--text);
+    padding:10px 14px; border-radius:999px;
+  }
+
+  /* Page offset for fixed header */
+  main.page{ padding-top:64px }
+
+  /* ---- CONTAINER ---- */
+  .wrap{ max-width:1120px; margin:28px auto 80px; padding:0 16px; }
+
+  /* ---- TABS ---- */
+  .tabs{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .tabs a{ text-decoration:none; color:var(--muted); padding:10px 14px; border:1px solid var(--line); border-radius:999px; background:#fff; transition:all .2s ease; }
+  .tabs a:hover{ color:var(--ink); transform:translateY(-1px) }
+  .tabs a[href="#services"]{ color:#fff; background:var(--accent); border-color:var(--accent); }
+  :target ~ .tabs a[href="#services"], :target ~ .tabs a[href="#offers"], :target ~ .tabs a[href="#reviews"]{ color:var(--muted); background:#fff; border-color:var(--line); }
+  #offers:target ~ .tabs a[href="#offers"], #reviews:target ~ .tabs a[href="#reviews"]{ color:#fff; background:var(--accent); border-color:var(--accent); }
+
+  /* ---- SECTIONS ---- */
+  .section{ display:none; }
+  .section.default-visible{ display:block; }
+  #offers:target ~ .content #services, #reviews:target ~ .content #services{ display:none; }
+  #offers:target ~ .content #offers{ display:block; }
+  #reviews:target ~ .content #reviews{ display:block; }
+
+  /* ---- CARDS / PANELS ---- */
+  .panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--r-md); box-shadow:var(--sh-2); padding:20px; }
+  .panel h2{ font-size:18px; margin:0 0 18px 0; letter-spacing:.3px; }
+  .muted{ color:var(--muted) }
+
+  .grid{ display:grid; gap:16px; }
+  @media (min-width:860px){ .grid-2{ grid-template-columns:1.2fr 1fr; } .grid-3{ grid-template-columns:repeat(3,1fr); } }
+
+  /* ---- FORMS ---- */
+  label{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--muted) }
+  .form-row{ display:grid; gap:12px; margin-bottom:14px; }
+  .form-row.inline{ grid-template-columns:minmax(0,1fr) minmax(0,1fr); }
+  input[type="text"], input[type="number"], textarea, select, input[type="datetime-local"]{
+    width:100%; padding:12px 14px; border:1px solid var(--line); border-radius:var(--r-sm); background:#fff; outline:none; min-width:0;
+  }
+  textarea{ min-height:100px; resize:vertical }
+  .btn{ appearance:none; border:1px solid var(--ink); background:var(--ink); color:#fff; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600; transition:transform .1s ease, opacity .2s ease; }
+  .btn:active{ transform:translateY(1px) }
+  .btn.ghost{ background:transparent; color:var(--ink); border-color:var(--line); }
+  .btn.success{ background:var(--success); border-color:var(--success) }
+  .btn.danger{ background:var(--danger); border-color:var(--danger) }
+
+  /* ---- SERVICE LIST ---- */
+  .list{ display:grid; gap:12px; margin-top:6px; }
+  .item{
+    display:grid; grid-template-columns:1fr auto; gap:16px; align-items:center;
+    padding:14px; border:1px solid var(--line); border-radius:var(--r-sm); background:#fff;
+  }
+  .meta{ display:grid; gap:4px; }
+  .title{ font-weight:600; }
+  .price{ font-weight:600; letter-spacing:.3px }
+  .actions{ display:flex; align-items:center; gap:8px; }
+
+  /* ---- TABLE (OFFERS) ---- */
+  .table{ width:100%; border-collapse:collapse; font-size:14px; }
+  .table th, .table td{ text-align:left; padding:12px 10px; border-bottom:1px solid var(--line); vertical-align:middle; }
+  .table th{ font-size:12px; text-transform:uppercase; letter-spacing:1px; color:var(--muted) }
+  .chip{ display:inline-flex; align-items:center; gap:8px; border:1px solid var(--line); padding:6px 10px; border-radius:999px; font-size:12px; color:var(--muted); background:#fff; }
+
+  .reviews{ display:grid; gap:16px; }
+  @media (min-width:860px){ .reviews{ grid-template-columns:repeat(3,1fr); } }
+  .review{ border:1px solid var(--line); border-radius:var(--r-sm); padding:14px; background:#fff; display:grid; gap:8px; }
+  .review-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .reviewer{ display:grid; gap:2px; }
+  .reviewer strong{ font-weight:600 }
+  .service-for{ font-size:12px; color:var(--muted) }
+  .stars{ font-size:13px; letter-spacing:2px; color:#111; }
+  .review p{ margin:0; color:var(--muted); }
+
+  .tags{ display:flex; flex-wrap:wrap; gap:8px; }
+  .tag{
+    position:relative; display:inline-flex; align-items:center;
+    border:1px solid var(--line); border-radius:999px; background:#fff;
+    padding:8px 12px; font-size:13px; color:var(--ink); cursor:pointer;
+    transition:transform .1s ease;
+  }
+  .tag input{ position:absolute; opacity:0; pointer-events:none; }
+  .tag:has(input:checked){ border-color:var(--ink); background:var(--ink); color:#fff; }
+  .tag:active{ transform:translateY(1px) }
+
+  .foot-hint{ display:flex; justify-content:center; margin-top:20px; color:var(--muted); font-size:12px; }
+</style>
+</head>
+<body class="has-solid-header">
+
+
+  <header id="siteHeader" class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Glammd</a>
+      <nav class="nav">
+        <a href="index.html" class="nav-link">Log out</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="wrap">
+
+      <div id="services"></div><div id="offers"></div><div id="reviews"></div>
+
+      <nav class="tabs">
+        <a href="#services">Services</a>
+        <a href="#offers">Offers</a>
+        <a href="#reviews">Reviews</a>
+      </nav>
+
+      <div class="content">
+        <section id="services" class="section default-visible">
+          <div class="grid grid-2">
+            <div class="panel">
+              <h2>Add a service</h2>
+
+              <div class="form-row inline">
+                <div>
+                  <label>Service</label>
+                  <select>
+                    <option>Hair</option>
+                    <option>Makeup</option>
+                    <option>Skincare</option>
+                    <option>Bodycare</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Display Title</label>
+                  <input type="text" placeholder="e.g., ‘Signature Glow’" />
+                </div>
+              </div>
+
+              <div class="form-row inline">
+                <div>
+                  <label>Price (SAR)</label>
+                  <input type="number" min="0" step="1" placeholder="1200" />
+                </div>
+                <div>
+                  <label>Duration (min)</label>
+                  <input type="number" min="15" step="15" placeholder="90" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div>
+                  <label>Description</label>
+                  <textarea placeholder="Describe what’s included, prep notes, and aftercare."></textarea>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <label>Suitable for</label>
+                <div class="tags">
+                  <label class="tag"><input type="checkbox" /> Thick Hair</label>
+                  <label class="tag"><input type="checkbox" /> Thin Hair</label>
+                  <label class="tag"><input type="checkbox" /> Oily Hair</label>
+                  <label class="tag"><input type="checkbox" /> Dry Hair</label>
+                  <label class="tag"><input type="checkbox" /> Curly Hair</label>
+                  <label class="tag"><input type="checkbox" /> Wavy Hair</label>
+                  <label class="tag"><input type="checkbox" /> Straight Hair</label>
+                  <label class="tag"><input type="checkbox" /> Sensitive Skin</label>
+                  <label class="tag"><input type="checkbox" /> Dry Skin</label>
+                  <label class="tag"><input type="checkbox" /> Oily Skin</label>
+                </div>
+              </div>
+
+              <button class="btn">Add Service</button>
+            </div>
+
+            <div class="panel">
+              <h2>Your services</h2>
+              <div class="list">
+                <div class="item">
+                  <div class="meta">
+                    <div class="title">Signature Glow</div>
+                    <div class="muted">Category <strong>Makeup</strong> · Duration <strong>90 min</strong></div>
+                  </div>
+                  <div class="actions">
+                    <span class="price">SAR 1,200</span>
+                    <button class="btn danger">Delete</button>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="meta">
+                    <div class="title">Evening Glam</div>
+                    <div class="muted">Category <strong>Makeup</strong> · Duration <strong>60 min</strong></div>
+                  </div>
+                  <div class="actions">
+                    <span class="price">SAR 650</span>
+                    <button class="btn danger">Delete</button>
+                  </div>
+                </div>
+                <div class="item">
+                  <div class="meta">
+                    <div class="title">Soft Waves</div>
+                    <div class="muted">Category <strong>Hair</strong> · Duration <strong>45 min</strong></div>
+                  </div>
+                  <div class="actions">
+                    <span class="price">SAR 300</span>
+                    <button class="btn danger">Delete</button>
+                  </div>
+                </div>
+              </div>
+              <div class="foot-hint">Add or remove offerings (static for now).</div>
+            </div>
+          </div>
+        </section>
+        <section id="offers" class="section">
+            <div class="panel">
+              <h2>Incoming offers</h2>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Client</th>
+                    <th>Service</th>
+                    <th>Requested Time</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Aisha K.</td>
+                    <td><span class="chip">Makeup</span></td>
+                    <td>2025-11-14 17:00</td>
+                    <td class="actions">
+                      <button class="btn success">Accept</button>
+                      <button class="btn ghost">Decline</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Lama S.</td>
+                    <td><span class="chip">Makeup</span></td>
+                    <td>2025-11-09 19:30</td>
+                    <td class="actions">
+                      <button class="btn success">Accept</button>
+                      <button class="btn ghost">Decline</button>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Noor A.</td>
+                    <td><span class="chip">Hair</span></td>
+                    <td>2025-11-03 16:00</td>
+                    <td class="actions">
+                      <button class="btn success">Accept</button>
+                      <button class="btn ghost">Decline</button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </section>
+          
+       
+
+        <section id="reviews" class="section">
+          <div class="panel">
+            <h2>Reviews</h2>
+            <div class="reviews">
+              <article class="review">
+                <div class="review-head">
+                  <div class="reviewer">
+                    <strong>Sarah M.</strong>
+                    <span class="service-for">for Makeup — Signature Glow</span>
+                  </div>
+                  <div class="stars">★★★★★</div>
+                </div>
+                <p>Flawless finish and super professional. Makeup lasted all night.</p>
+              </article>
+
+              <article class="review">
+                <div class="review-head">
+                  <div class="reviewer">
+                    <strong>Dana R.</strong>
+                    <span class="service-for">for Makeup — Evening Glam</span>
+                  </div>
+                  <div class="stars">★★★★☆</div>
+                </div>
+                <p>Loved the look! Arrived on time and very friendly.</p>
+              </article>
+
+              <article class="review">
+                <div class="review-head">
+                  <div class="reviewer">
+                    <strong>Hessa L.</strong>
+                    <span class="service-for">for Hair — Soft Waves</span>
+                  </div>
+                  <div class="stars">★★★★★</div>
+                </div>
+                <p>Exactly what I wanted. Soft & elegant waves, perfect for photos.</p>
+              </article>
+
+              <article class="review">
+                <div class="review-head">
+                  <div class="reviewer">
+                    <strong>Layan T.</strong>
+                    <span class="service-for">for Skin — Skin Prep</span>
+                  </div>
+                  <div class="stars">★★★★★</div>
+                </div>
+                <p>Great prep — Skin looked smooth and hydrated under makeup.</p>
+              </article>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </main>
+</body>
+</html>
