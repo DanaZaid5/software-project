@@ -622,60 +622,59 @@ using premium products and techniques tailored to each client.</textarea>
     </div>
   </footer>
 
-  <script>
-    // Smooth scroll to profile settings
-    const editBtn = document.getElementById('editProfileBtn');
-    const profileSettings = document.getElementById('profile-settings');
+<script>
+  // Smooth scroll to profile settings
+  const editBtn = document.getElementById('editProfileBtn');
+  const profileSettings = document.getElementById('profile-settings');
 
-    if (editBtn && profileSettings) {
-      editBtn.addEventListener('click', () => {
-        profileSettings.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    }
+  if (editBtn && profileSettings) {
+    editBtn.addEventListener('click', () => {
+      profileSettings.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
 
-    // Simple front-end profile update
-    const profileForm = document.getElementById('profileForm');
-    const proName = document.getElementById('proName');
-    const proTitle = document.getElementById('proTitle');
-    const proBio = document.getElementById('proBio');
-    const inputName = document.getElementById('profileName');
-    const inputTitle = document.getElementById('profileTitle');
-    const textareaBio = document.getElementById('profileBio');
+  // Simple front-end profile update
+  const profileForm = document.getElementById('profileForm');
+  const proName = document.getElementById('proName');
+  const proTitle = document.getElementById('proTitle');
+  const proBio = document.getElementById('proBio');
+  const inputName = document.getElementById('profileName');
+  const inputTitle = document.getElementById('profileTitle');
+  const textareaBio = document.getElementById('profileBio');
 
-    const defaultName = proName.textContent.trim();
-    const defaultTitle = proTitle.textContent.trim();
-    const defaultBio = proBio.textContent.trim();
+  const defaultName = proName.textContent.trim();
+  const defaultTitle = proTitle.textContent.trim();
+  const defaultBio = proBio.textContent.trim();
 
-    if (profileForm) {
-      profileForm.addEventListener('submit', (e) => {
-        e.preventDefault();
+  if (profileForm) {
+    profileForm.addEventListener('submit', (e) => {
+      e.preventDefault();
 
-        const newName = (inputName.value || '').trim();
-        const newTitle = (inputTitle.value || '').trim();
-        const newBio = (textareaBio.value || '').trim();
+      const newName = (inputName.value || '').trim();
+      const newTitle = (inputTitle.value || '').trim();
+      const newBio = (textareaBio.value || '').trim();
 
-        proName.textContent = newName || defaultName;
-        proTitle.textContent = newTitle || defaultTitle;
-        proBio.textContent = newBio || defaultBio;
+      proName.textContent = newName || defaultName;
+      proTitle.textContent = newTitle || defaultTitle;
+      proBio.textContent = newBio || defaultBio;
 
-        // Tiny visual feedback
-        profileForm.querySelector('button[type="submit"]').textContent = 'Saved ✔';
-        setTimeout(() => {
-          profileForm.querySelector('button[type="submit"]').textContent = 'Save profile';
-        }, 1500);
-      });
-    }
-	
-	<script>
+      // Tiny visual feedback
+      const btn = profileForm.querySelector('button[type="submit"]');
+      btn.textContent = 'Saved ✔';
+      setTimeout(() => {
+        btn.textContent = 'Save profile';
+      }, 1500);
+    });
+  }
+
+  // Photo upload preview
   const photoInput = document.getElementById('profilePhoto');
-  const proPhoto = document.getElementById('proPhoto'); // must exist in your .professional-photo <img>
+  const proPhoto = document.getElementById('proPhoto');
   const photoTrigger = document.querySelector('.professional-photo');
 
   if (photoTrigger && photoInput && proPhoto) {
-    // Click on photo opens file picker
     photoTrigger.addEventListener('click', () => photoInput.click());
 
-    // Preview chosen photo
     photoInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (!file) return;
@@ -688,6 +687,5 @@ using premium products and techniques tailored to each client.</textarea>
   }
 </script>
 
-  </script>
 </body>
 </html>

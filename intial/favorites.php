@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" class="has-solid-header">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Glammd — Favorites</title>
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <!-- Shared Styles -->
+  <link rel="stylesheet" href="common.css">
+
+  <!-- Page-specific styles (mirrors Services page look/feel) -->
+  <style>
+    body{ background:#f8f8f8; }
+
+    .section{ padding: 40px 0; }
+    .page-title{
+      margin:0;
+      font-family:'Playfair Display', serif;
+      font-weight:900;
+      font-size:clamp(32px,4vw,56px);
+    }
+
+    .boards-toolbar{
+      display:flex; gap:12px; flex-wrap:wrap;
+      margin: 16px 0 24px;
+    }
+    .btn{
+      display:inline-block; padding:10px 14px; border-radius:8px;
+      text-decoration:none; font-weight:600; font-size:14px;
+      background:#fff; color:var(--text);
+      border:1px solid #eaeaea; box-shadow:0 2px 8px rgba(0,0,0,.04);
+    }
+    .btn.primary{ background:var(--accent); color:#fff; border-color:transparent; }
+
+    .boards-grid{
+      display:grid; gap:24px;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    }
+
+    .board-card{
+      background:#fff; border:1px solid #eaeaea; border-radius:12px;
+      overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,.04);
+      transition: transform .2s ease, box-shadow .2s ease;
+      display:flex; flex-direction:column;
+    }
+    .board-card:hover{ transform: translateY(-3px); box-shadow:0 8px 24px rgba(0,0,0,.1); }
+
+    .board-thumb{
+      height:140px; background: linear-gradient(135deg,#f5f5f5 0%, #e8e8e8 100%);
+      display:grid; grid-template-columns:1fr 1fr; gap:2px; padding:2px;
+    }
+    .board-thumb div{ background:#fff; }
+
+    .board-content{ padding:16px; }
+    .board-title{ margin:0 0 6px; font-weight:700; font-size:18px; }
+    .board-sub{ margin:0; color:var(--muted); font-size:13px; }
+
+    .empty{
+      background:#fff; border:1px dashed #e2e2e2; border-radius:12px;
+      padding:24px; color:var(--muted); text-align:center;
+      box-shadow:0 2px 8px rgba(0,0,0,.04); margin-top:16px;
+    }
+	
+	.nav-link {
+  text-decoration: none;
+  color: var(--text);
+  padding: 10px 14px;
+  border-radius: 999px;
+}
+
+/* Make the whole card-link look like a card, not a hyperlink */
+.board-card{
+  text-decoration: none;       /* remove underline */
+  color: var(--text);          /* normal text color */
+}
+.board-card:visited{
+  color: var(--text);          /* prevent purple after visiting */
+}
+/* Ensure inner text inherits and never underlines */
+.board-card .board-title,
+.board-card .board-sub{
+  color: inherit;
+  text-decoration: none;
+}
+  </style>
+</head>
+
+<body class="has-solid-header">
+  <!-- Header -->
+  <header id="siteHeader" class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="index.html">Glammd</a>
+      <nav class="nav">
+      <a href="index.html" class="nav-link">Log out</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="page">
+    <div class="container section">
+	 <div class="container breadcrumbs-wrap">
+  <nav aria-label="Breadcrumb">
+    <ol class="breadcrumbs">
+      <li><a href="clientdashboard.html">Client Dashboard</a></li>
+      <li><span class="current">Favorites</span></li>
+    </ol>
+  </nav>
+</div>
+	  
+
+      <div class="boards-toolbar">
+        <a href="#" class="btn primary" aria-disabled="true">+ New Board</a>
+        <a href="#" class="btn" aria-disabled="true">Manage Boards</a>
+      </div>
+
+      <!-- Boards -->
+      <div class="boards-grid">
+        <!-- Example static boards; replace with real later -->
+        <a class="board-card" href="board.html?id=hair-ideas&name=Hair%20Ideas">
+          <div class="board-thumb">
+            <div></div><div></div><div></div><div></div>
+          </div>
+          <div class="board-content">
+            <h3 class="board-title">Hair Ideas</h3>
+            <p class="board-sub">12 saved services</p>
+          </div>
+        </a>
+
+        <a class="board-card" href="board.html?id=spa-weekend&name=Spa%20Weekend">
+          <div class="board-thumb">
+            <div></div><div></div><div></div><div></div>
+          </div>
+          <div class="board-content">
+            <h3 class="board-title">Spa Weekend</h3>
+            <p class="board-sub">5 saved services</p>
+          </div>
+        </a>
+
+        <a class="board-card" href="board.html?id=wedding-look&name=Wedding%20Look">
+          <div class="board-thumb">
+            <div></div><div></div><div></div><div></div>
+          </div>
+          <div class="board-content">
+            <h3 class="board-title">Wedding Look</h3>
+            <p class="board-sub">8 saved services</p>
+          </div>
+        </a>
+      </div>
+
+      <!-- Empty state (show this instead if no boards) -->
+      <!-- <p class="empty">You don’t have any boards yet. Create one to save services you love.</p> -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <p>© 2025 Glammd. All rights reserved.</p>
+      <div class="footer-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Contact</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
+
