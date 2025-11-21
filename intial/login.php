@@ -282,10 +282,10 @@
 
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="login.html" class="nav-link">Log in</a>
-        <a href="signup.html" class="cta">Sign up</a>
+        <a href="login.php" class="nav-link">Log in</a>
+        <a href="signup.php" class="cta">Sign up</a>
       </nav>
     </div>
   </header>
@@ -338,7 +338,7 @@
         <div class="divider">or</div>
 
         <div class="signup-link">
-          New to Glammd? <a href="signup.html">Create an account</a>
+          New to Glammd? <a href="signup.php">Create an account</a>
         </div>
       </div>
 
@@ -396,9 +396,9 @@
 
       const role = roleSelect.value;
       if (role === 'client') {
-        window.location.href = 'clientdashboard.html';
+        window.location.href = 'clientdashboard.php';
       } else {
-        window.location.href = 'professionaldashboard.html';
+        window.location.href = 'professionaldashboard.php';
       }
     });
   </script>

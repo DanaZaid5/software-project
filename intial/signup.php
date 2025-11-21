@@ -500,10 +500,10 @@
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="login.html" class="nav-link">Log in</a>
-        <a href="signup.html" class="cta">Sign up</a>
+        <a href="login.php" class="nav-link">Log in</a>
+        <a href="signup.php" class="cta">Sign up</a>
       </nav>
     </div>
   </header>
@@ -646,7 +646,7 @@
         <div class="divider">or</div>
 
         <div class="signin-link">
-          Already have an account? <a href="login.html">Log in</a>
+          Already have an account? <a href="login.php">Log in</a>
         </div>
       </div>
 
@@ -790,9 +790,9 @@
         
         // Redirect based on user type
         if (userType === 'client') {
-          window.location.href = 'clientdashboard.html';
+          window.location.href = 'clientdashboard.php';
         } else if (userType === 'professional') {
-          window.location.href = 'professionaldashboard.html';
+          window.location.href = 'professionaldashboard.php';
         }
       }
     });

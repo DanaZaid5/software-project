@@ -92,9 +92,9 @@
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-      <a href="index.html" class="nav-link">Log out</a>
+      <a href="index.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>
@@ -105,7 +105,7 @@
 	 <div class="container breadcrumbs-wrap">
   <nav aria-label="Breadcrumb">
     <ol class="breadcrumbs">
-      <li><a href="clientdashboard.html">Client Dashboard</a></li>
+      <li><a href="clientdashboard.php">Client Dashboard</a></li>
       <li><span class="current">Favorites</span></li>
     </ol>
   </nav>
@@ -120,7 +120,7 @@
       <!-- Boards -->
       <div class="boards-grid">
         <!-- Example static boards; replace with real later -->
-        <a class="board-card" href="board.html?id=hair-ideas&name=Hair%20Ideas">
+        <a class="board-card" href="board.php?id=hair-ideas&name=Hair%20Ideas">
           <div class="board-thumb">
             <div></div><div></div><div></div><div></div>
           </div>
@@ -130,7 +130,7 @@
           </div>
         </a>
 
-        <a class="board-card" href="board.html?id=spa-weekend&name=Spa%20Weekend">
+        <a class="board-card" href="board.php?id=spa-weekend&name=Spa%20Weekend">
           <div class="board-thumb">
             <div></div><div></div><div></div><div></div>
           </div>
@@ -140,7 +140,7 @@
           </div>
         </a>
 
-        <a class="board-card" href="board.html?id=wedding-look&name=Wedding%20Look">
+        <a class="board-card" href="board.php?id=wedding-look&name=Wedding%20Look">
           <div class="board-thumb">
             <div></div><div></div><div></div><div></div>
           </div>

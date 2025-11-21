@@ -94,11 +94,11 @@ body {
   <!-- Header (same as board.html) -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="MarketPlace.html" class="nav-link">Market</a>
-        <a href="favorites.html" class="nav-link">Favorites</a>
-        <a href="index.html" class="nav-link">Log out</a>
+        <a href="MarketPlace.php" class="nav-link">Market</a>
+        <a href="favorites.php" class="nav-link">Favorites</a>
+        <a href="index.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>

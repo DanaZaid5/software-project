@@ -136,9 +136,9 @@ body{ background:#f8f8f8; }
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="index.html" class="nav-link">Log out</a>
+        <a href="index.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>
@@ -149,15 +149,15 @@ body{ background:#f8f8f8; }
       <div class="container breadcrumbs-wrap">
         <nav aria-label="Breadcrumb">
           <ol class="breadcrumbs">
-            <li><a href="clientdashboard.html">Client Dashboard</a></li>
-            <li><a href="favorites.html">Favorites</a></li>
+            <li><a href="clientdashboard.php">Client Dashboard</a></li>
+            <li><a href="favorites.php">Favorites</a></li>
             <li><span class="current" id="crumb-current">Board</span></li>
           </ol>
         </nav>
       </div>
 
       <div class="actions">
-        <a class="btn" href="favorites.html">← Back</a>
+        <a class="btn" href="favorites.php">← Back</a>
         <a class="btn primary" href="#" aria-disabled="true">Edit Board</a>
       </div>
 
@@ -187,7 +187,7 @@ body{ background:#f8f8f8; }
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -214,7 +214,7 @@ body{ background:#f8f8f8; }
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
       </div>

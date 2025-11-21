@@ -183,10 +183,10 @@
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="index.html" class="nav-link">Log in</a>
-        <a href="signup.html" class="cta">Sign up</a>
+        <a href="index.php" class="nav-link">Log in</a>
+        <a href="signup.php" class="cta">Sign up</a>
       </nav>
     </div>
   </header>
@@ -203,7 +203,7 @@
         Please arrive 10 minutes early<br>
         Bring a valid ID
       </div>
-      <a href="index.html" class="btn-home">Back to Home</a>
+      <a href="index.php" class="btn-home">Back to Home</a>
     </div>
   </main>
 

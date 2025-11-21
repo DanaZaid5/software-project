@@ -188,8 +188,8 @@
     <div class="container header-inner">
       <a class="brand" href="#">Glammd</a>
       <nav class="nav">
-        <a href="login.html" class="nav-link">Log in</a>
-        <a href="signup.html" class="cta">Sign up</a>
+        <a href="login.php" class="nav-link">Log in</a>
+        <a href="signup.php" class="cta">Sign up</a>
       </nav>
     </div>
   </header>
@@ -226,7 +226,7 @@
     </section>
 
     <section class="salon-list">
-      <div class="salon-card" onclick="window.location.href='services.html'">
+      <div class="salon-card" onclick="window.location.href='services.php'">
         <img src="img/pro1.jpg" alt="Salon Image">
         <div class="salon-info">
           <h3>Sarah M.</h3>

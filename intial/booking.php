@@ -299,11 +299,11 @@
   <!-- Header identical to board.html -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="MarketPlace.html" class="nav-link">Market</a>
-        <a href="favorites.html" class="nav-link">Favorites</a>
-        <a href="index.html" class="nav-link">Log out</a>
+        <a href="MarketPlace.php" class="nav-link">Market</a>
+        <a href="favorites.php" class="nav-link">Favorites</a>
+        <a href="index.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>
@@ -311,11 +311,11 @@
   <main class="page">
     <div class="container">
       <div class="breadcrumbs">
-        <a href="clientdashboard.html">Client Dashboard</a>
+        <a href="clientdashboard.php">Client Dashboard</a>
         <span>›</span>
-        <a href="MarketPlace.html">Market</a>
+        <a href="MarketPlace.php">Market</a>
         <span>›</span>
-        <a href="services.html">Sarah M.</a>
+        <a href="services.php">Sarah M.</a>
         <span>›</span>
         <strong>Book Service</strong>
       </div>
@@ -397,7 +397,7 @@
       <div style="font-size:3rem; margin-bottom:0.75rem; color: #4CAF50;">✓</div>
       <h2>Thank you for your booking!</h2>
       <p>Your appointment with Sarah M. for Signature Glow Makeup has been confirmed.</p>
-      <a href="clientdashboard.html" class="submit-btn" style="width:auto; text-decoration:none; display:inline-block; padding:0.625rem 1.5rem;">Back to Dashboard</a>
+      <a href="clientdashboard.php" class="submit-btn" style="width:auto; text-decoration:none; display:inline-block; padding:0.625rem 1.5rem;">Back to Dashboard</a>
     </div>
   </div>
 
@@ -429,7 +429,7 @@
       form.addEventListener('submit', e => {
         e.preventDefault();
         popup.classList.add('active');
-        setTimeout(() => window.location.href = 'clientdashboard.html', 3000);
+        setTimeout(() => window.location.href = 'clientdashboard.php', 3000);
       });
     }
 

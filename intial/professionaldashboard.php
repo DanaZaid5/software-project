@@ -240,9 +240,9 @@
 
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="index.html" class="nav-link">Log out</a>
+        <a href="index.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>

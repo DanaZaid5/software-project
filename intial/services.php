@@ -507,9 +507,9 @@
   <!-- Header (from index.html) -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="index.html">Glammd</a>
+      <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="index.html" class="nav-link">Log out</a>
+        <a href="index.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>
@@ -519,9 +519,9 @@
     <div class="container">
       <!-- Breadcrumbs -->
       <div class="breadcrumbs">
-        <a href="clientdashboard.html">Client Dashboard</a>
+        <a href="clientdashboard.php">Client Dashboard</a>
         <span>›</span>
-        <a href="MarketPlace.html">Market</a>
+        <a href="MarketPlace.php">Market</a>
         <span>›</span>
         <strong>Sarah M.</strong>
       </div>
@@ -621,7 +621,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -651,7 +651,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -681,7 +681,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -711,7 +711,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -741,7 +741,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
 
@@ -771,7 +771,7 @@
             </div>
           </div>
           <div class="service-footer">
-            <a href="booking.html" class="btn-book">Book Now</a>
+            <a href="booking.php" class="btn-book">Book Now</a>
           </div>
         </article>
       </div>

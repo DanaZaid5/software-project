@@ -144,8 +144,8 @@
     <div class="container header-inner">
       <a class="brand" href="#">Glammd</a>
       <nav class="nav">
-        <a href="login.html" class="nav-link">Log in</a>
-        <a href="signup.html" class="cta">Sign up</a>
+        <a href="login.php" class="nav-link">Log in</a>
+        <a href="signup.php" class="cta">Sign up</a>
       </nav>
     </div>
   </header>
@@ -165,7 +165,7 @@
 	
 	      <div class="explore-wrapper">
         <span class="explore-text">Discover local beauty experiences</span>
-        <a href="MarketPlace.html" class="explore-btn">Start Exploring</a>
+        <a href="MarketPlace.php" class="explore-btn">Start Exploring</a>
       </div>
 	  
       <h2>Our Vision</h2>
