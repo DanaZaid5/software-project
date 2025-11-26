@@ -1,3 +1,27 @@
+
+<?php
+// الاتصال بقاعدة البيانات
+$conn = mysqli_connect("localhost", "root", "8889", "glammd");
+
+if (!$conn) {
+    die("Connection failed: " . mysqli_connect_error());
+}
+
+// جلب البروفشنلز
+$sql = "
+SELECT 
+    user.id,
+    user.name,
+    professional.img
+FROM user
+INNER JOIN professional
+ON user.id = professional.user_id
+WHERE user.role = 'professional'
+";
+
+$result = mysqli_query($conn, $sql);
+
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -225,43 +249,22 @@
       </div>
     </section>
 
+    <!-- Dynamic Cards -->
     <section class="salon-list">
-      <div class="salon-card" onclick="window.location.href='services.php'">
-        <img src="img/pro1.jpg" alt="Salon Image">
-        <div class="salon-info">
-          <h3>Sarah M.</h3>
-          <p>Makeup artist</p>
-          <p>Riyadh, Saudi Arabia</p>
-        </div>
-      </div>
 
-      <div class="salon-card">
-        <img src="img/Aljohara.png" alt="Salon Image">
-        <div class="salon-info">
-          <h3>Aljohara alsultan</h3>
-          <p>Hairstylist</p>
-          <p>Jeddah, Saudi Arabia</p>
-        </div>
-      </div>
+      <?php while ($row = mysqli_fetch_assoc($result)) { ?>
 
-      <div class="salon-card">
-        <img src="img/layan.png" alt="Salon Image">
-        <div class="salon-info">
-          <h3>Layan Abdulaziz</h3>
-          <p>Nails artist</p>
-          <p>Riyadh, Saudi Arabia</p>
+        <div class="salon-card" onclick="window.location.href='services.php?id=<?= $row['id'] ?>'">
+          <img src="img/<?= $row['img'] ?>" alt="Salon Image">
+          <div class="salon-info">
+            <h3><?= $row['name'] ?></h3>
+          </div>
         </div>
-      </div>
 
-      <div class="salon-card">
-        <img src="img/Noura.png" alt="Salon Image">
-        <div class="salon-info">
-          <h3>Noura</h3>
-          <p>Makeup artist</p>
-          <p>Riyadh, Saudi Arabia</p>
-        </div>
-      </div>
+      <?php } ?>
+
     </section>
+
   </main>
 
   <!-- Footer -->
