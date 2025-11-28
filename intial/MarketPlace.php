@@ -7,16 +7,15 @@ if (!$conn) {
 }
 
 // جلب البروفشنلز
-$sql = "
-SELECT 
-    user.id,
-    user.name,
-    professional.img
-FROM user
-INNER JOIN professional
-ON user.id = professional.user_id
-WHERE user.role = 'professional'
-";
+$sql =" SELECT 
+    User.user_id,
+    User.name,
+    Professional.img
+FROM User
+INNER JOIN Professional
+ON User.user_id = Professional.professional_id
+WHERE User.role = 'professional'";
+
 
 $result = mysqli_query($conn, $sql);
 
@@ -238,14 +237,14 @@ $result = mysqli_query($conn, $sql);
         </select>
       </div>
 
-      <div class="filter-group">
+     <!-- <div class="filter-group">
         <label class="filter-label">city</label>
         <select class="filter-select">
           <option>All</option>
           <option>Riyadh</option>
           <option>Jeddah</option>
         </select>
-      </div>
+      </div> !> -->
     </section>
 
     <!-- Dynamic Cards -->
@@ -253,7 +252,8 @@ $result = mysqli_query($conn, $sql);
 
       <?php while ($row = mysqli_fetch_assoc($result)) { ?>
 
-        <div class="salon-card" onclick="window.location.href='services.php?id=<?= $row['id'] ?>'">
+        <div class="salon-card" onclick="onclick="window.location.href='services.php?id=<?= $row['user_id'] ?>'"
+">
           <img src="img/<?= $row['img'] ?>" alt="Salon Image">
           <div class="salon-info">
             <h3><?= $row['name'] ?></h3>
