@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 26, 2025 at 10:26 AM
+-- Generation Time: Nov 28, 2025 at 05:32 PM
 -- Server version: 8.0.40
 -- PHP Version: 8.3.14
 
@@ -104,7 +104,7 @@ CREATE TABLE `Professional` (
 
 INSERT INTO `Professional` (`professional_id`, `bio`, `img`) VALUES
 (1, 'I’m a certified makeup artist specializing in soft glam, bridal looks, and enhancing natural beauty. With a passion for detail and a love for creativity, I focus on creating flawless, long-lasting looks that make every client feel confident and radiant. Whether it’s for a special event, photoshoot, or everyday glam, my goal is to bring your vision to life with precision and artistry.', 'pro1.jpg'),
-(2, 'Hairstylist focused on natural texture, soft colors, and lived-in styles.\r\nHealthy hair first, beautiful results always. ✨', 'Aljohara.png'),
+(2, 'Hairstylist focused on natural texture curly hair, soft colors, and lived-in styles.\r\nHealthy hair first, beautiful results always. ✨', 'Aljohara.png'),
 (3, 'Nail artist obsessed with soft colors, tiny details, and everything cute.\r\nCreating pretty, fresh, and unique nail designs that make you smile.', 'layan.png'),
 (4, 'makeup artist creating simple, clean, and glowing looks. Beauty that feels natural and effortless.', 'Noura.png');
 
@@ -130,13 +130,23 @@ CREATE TABLE `Review` (
 CREATE TABLE `Service` (
   `service_id` int UNSIGNED NOT NULL,
   `professional_id` int UNSIGNED NOT NULL,
-  `category` enum('Hair','Makeup','Skincare','Bodycare') NOT NULL,
+  `category` enum('Hair','Makeup','Skincare','Bodycare','Nails') CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `title` varchar(160) NOT NULL,
   `description` text,
   `duration` smallint UNSIGNED NOT NULL,
   `price` decimal(10,2) NOT NULL,
   `tags` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `Service`
+--
+
+INSERT INTO `Service` (`service_id`, `professional_id`, `category`, `title`, `description`, `duration`, `price`, `tags`) VALUES
+(1, 1, 'Makeup', 'SoftGlam', 'A natural, elegant makeup look featuring soft tones, seamless blending, and a radiant finish that enhances your beauty without looking heavy. Perfect for everyday wear or special occasions.', 60, 300.00, 'oily skin'),
+(2, 2, 'Hair', 'Curly Hair Styling ', 'Expert curly hair styling that enhances your natural texture, adds volume, and defines your curls for a flawless, bouncy look', 90, 200.00, 'Curly Hair'),
+(3, 3, 'Nails', 'Simple nails', 'Minimalist and chic nail designs with clean lines and subtle accents for a stylish everyday look', 60, 200.00, 'Simple'),
+(4, 4, 'Makeup', 'Evening Glam', 'Dramatic and sophisticated makeup perfect for evenings, highlighting your features with bold eyes and radiant skin', 120, 1200.00, 'Dry skin');
 
 -- --------------------------------------------------------
 
@@ -273,7 +283,7 @@ ALTER TABLE `Review`
 -- AUTO_INCREMENT for table `Service`
 --
 ALTER TABLE `Service`
-  MODIFY `service_id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `service_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `User`
