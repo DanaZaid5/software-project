@@ -1,3 +1,82 @@
+<?php
+session_start();
+require_once 'db.php';
+
+$error = "";
+
+// BACKEND LOGIN LOGIC
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $role = $_POST['role'] ?? '';
+
+    if (empty($email) || empty($password) || empty($role)) {
+        $error = "Please fill in all fields.";
+    } else {
+
+        // Check User table
+        $stmt = $conn->prepare("SELECT * FROM User WHERE email = ? LIMIT 1");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $res = $stmt->get_result();
+
+        if ($res->num_rows === 1) {
+
+            $user = $res->fetch_assoc();
+
+            if (password_verify($password, $user['password'])) {
+
+                if ($user['role'] !== $role) {
+                    $error = "This account is not registered as a {$role}.";
+                } else {
+
+                    // Store base session data
+                    $_SESSION['user_id'] = $user['user_id'];
+                    $_SESSION['user_role'] = $user['role'];
+                    $_SESSION['name'] = $user['name'];
+
+                    // If logging in as CLIENT
+                    if ($role === "client") {
+                        $stmt2 = $conn->prepare("SELECT client_id FROM Client WHERE client_id = ?");
+                        $stmt2->bind_param("i", $user['user_id']);
+                        $stmt2->execute();
+                        $c = $stmt2->get_result();
+
+                        if ($c->num_rows === 1) {
+                            $_SESSION['client_id'] = $user['user_id'];
+                            header("Location: clientdashboard.php");
+                            exit;
+                        } else {
+                            $error = "Client profile not found.";
+                        }
+                    }
+
+                    // If logging in as PROFESSIONAL
+                    if ($role === "professional") {
+                        $stmt3 = $conn->prepare("SELECT professional_id FROM Professional WHERE professional_id = ?");
+                        $stmt3->bind_param("i", $user['user_id']);
+                        $stmt3->execute();
+                        $p = $stmt3->get_result();
+
+                        if ($p->num_rows === 1) {
+                            $_SESSION['professional_id'] = $user['user_id'];
+                            header("Location: professionaldashboard.php");
+                            exit;
+                        } else {
+                            $error = "Professional profile not found.";
+                        }
+                    }
+                }
+            } else {
+                $error = "Incorrect password.";
+            }
+        } else {
+            $error = "Account not found.";
+        }
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -11,7 +90,7 @@
 <style>
   :root{
     --bg:#fff; --text:#0f0f12; --muted:#6b6b76;
-    --accent:#111; --accent-text:#fff; --container:75rem; /* 1200px */
+    --accent:#111; --accent-text:#fff; --container:75rem;
     --hero-image: url("img/download.jpeg");
     --hero-min-h: min(78svh, 51.25rem);
   }
@@ -28,28 +107,28 @@
   .container{
     max-width:var(--container);
     margin-inline:auto;
-    padding-inline:1.25rem; /* 20px */
+    padding-inline:1.25rem;
     width:100%;
   }
 
   /* Header */
   .site-header{
     position:fixed; top:0; left:0; right:0; z-index:50;
-    height:4rem; /* 64px */
+    height:4rem;
     display:block;
     transition:background .25s ease, border-color .25s ease,
       backdrop-filter .25s ease, -webkit-backdrop-filter .25s ease, box-shadow .25s ease;
     background:transparent; border-bottom:none; backdrop-filter:none; -webkit-backdrop-filter:none; box-shadow:none;
   }
   .site-header.show{
-    backdrop-filter:saturate(150%) blur(0.5rem); /* 8px */
+    backdrop-filter:saturate(150%) blur(0.5rem);
     -webkit-backdrop-filter:saturate(150%) blur(0.5rem);
     background:color-mix(in srgb, white 75%, transparent);
-    border-bottom:0.0625rem solid rgba(0,0,0,.06); /* 1px */
-    box-shadow:0 0.0625rem 0.625rem rgba(0,0,0,.04); /* 1px 10px */
+    border-bottom:0.0625rem solid rgba(0,0,0,.06);
+    box-shadow:0 0.0625rem 0.625rem rgba(0,0,0,.04);
   }
   .header-inner{
-    height:4rem; /* 64px */
+    height:4rem;
     display:flex;
     align-items:center;
     justify-content:space-between;
@@ -58,17 +137,17 @@
     text-decoration:none;
     color:var(--text);
     font-weight:700;
-    font-size:1.375rem; /* 22px */
-    letter-spacing:0.0125rem; /* 0.2px */
+    font-size:1.375rem;
+    letter-spacing:0.0125rem;
   }
   .nav{
     display:flex;
-    gap:0.625rem; /* 10px */
+    gap:0.625rem;
   }
   .nav-link{
     text-decoration:none;
     color:var(--text);
-    padding:0.625rem 0.875rem; /* 10px 14px */
+    padding:0.625rem 0.875rem;
     border-radius:999px;
     transition:background .2s ease;
   }
@@ -77,7 +156,7 @@
     text-decoration:none;
     color:var(--accent-text);
     background:var(--accent);
-    padding:0.625rem 1rem; /* 10px 16px */
+    padding:0.625rem 1rem;
     border-radius:999px;
     font-weight:600;
     transition:opacity .2s ease;
@@ -88,7 +167,7 @@
   .hero{
     position:relative;
     min-height:var(--hero-min-h);
-    padding:7.5rem 0 10rem; /* 120px 0 160px */
+    padding:7.5rem 0 10rem;
     background-image:
       linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
       var(--hero-image);
@@ -111,7 +190,7 @@
   }
   .hero-content{
     position:relative; z-index:10;
-    display:grid; grid-template-columns:1fr 1fr; gap:3.75rem; /* 60px */
+    display:grid; grid-template-columns:1fr 1fr; gap:3.75rem;
     align-items:center;
   }
 
@@ -119,10 +198,10 @@
   .login-card{
     position:relative; z-index:10;
     background:rgba(255,255,255,0.95);
-    backdrop-filter:blur(0.625rem); /* 10px */
+    backdrop-filter:blur(0.625rem);
     -webkit-backdrop-filter:blur(0.625rem);
-    border-radius:1rem; /* 16px */
-    padding:2.5rem; /* 40px */
+    border-radius:1rem;
+    padding:2.5rem;
     width:100%;
     box-shadow:0 0.625rem 2.5rem rgba(0,0,0,.1), 0 0.125rem 0.5rem rgba(0,0,0,.06);
     border:0.0625rem solid rgba(0,0,0,.08);
@@ -130,8 +209,8 @@
   .login-title{
     margin:0 0 0.5rem;
     font-family:"Playfair Display", Georgia, "Times New Roman", serif;
-    font-weight:800; font-size:2rem; /* 32px */
-    line-height:1.1; letter-spacing:-0.03125rem; /* -0.5px */
+    font-weight:800; font-size:2rem;
+    line-height:1.1; letter-spacing:-0.03125rem;
   }
   .login-subtitle{ margin:0 0 1.5rem; color:var(--muted); font-size:0.9375rem; }
 
@@ -145,7 +224,7 @@
   .form-input:focus{
     outline:none;
     border-color:var(--accent);
-    box-shadow:0 0 0 0.1875rem rgba(0,0,0,.05); /* 3px */
+    box-shadow:0 0 0 0.1875rem rgba(0,0,0,.05);
   }
 
   .password-toggle{ position:relative; }
@@ -261,7 +340,7 @@
   .footer-links a:hover{ color:var(--text); }
 
   /* Responsive */
-  @media (max-width: 60.5rem){ /* 968px */
+  @media (max-width: 60.5rem){
     .hero-content{
       grid-template-columns:1fr;
       gap:2.5rem;
@@ -271,7 +350,7 @@
     .login-card{ order:1; }
     .welcome-points{ display:inline-block; text-align:left; }
   }
-  @media (max-width: 40rem){ /* 640px */
+  @media (max-width: 40rem){
     .login-card{ padding:2rem 1.5rem; }
     .login-title{ font-size:1.75rem; }
   }
@@ -298,7 +377,14 @@
         <h1 class="login-title">Welcome back</h1>
         <p class="login-subtitle">Log in to manage bookings and services</p>
 
-        <form id="loginForm">
+        <!-- ERROR MESSAGE INSERTED HERE -->
+        <?php if (!empty($error)): ?>
+          <div style="color:#b00020; margin-bottom:1rem; font-size:0.9rem;">
+            <?= htmlspecialchars($error) ?>
+          </div>
+        <?php endif; ?>
+
+        <form id="loginForm" method="POST" action="">
           <!-- Email -->
           <div class="form-group">
             <label for="email" class="form-label">Email</label>
@@ -382,24 +468,6 @@
       const type = passwordInput.type === 'password' ? 'text' : 'password';
       passwordInput.type = type;
       togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
-    });
-
-    // Simple role-based redirect (frontend only)
-    const loginForm = document.getElementById('loginForm');
-    const roleSelect = document.getElementById('role');
-
-    loginForm.addEventListener('submit', (e) => {
-      if (!loginForm.checkValidity()) {
-        return;
-      }
-      e.preventDefault();
-
-      const role = roleSelect.value;
-      if (role === 'client') {
-        window.location.href = 'clientdashboard.php';
-      } else {
-        window.location.href = 'professionaldashboard.php';
-      }
     });
   </script>
 </body>
