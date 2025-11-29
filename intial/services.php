@@ -1,3 +1,33 @@
+<?php
+// Start session
+session_start();
+
+// Database connection
+require_once 'db.php';
+
+// Get all services with professional information
+$query = "SELECT s.*, p.bio, p.img, u.name as professional_name 
+          FROM Service s 
+          JOIN Professional p ON s.professional_id = p.professional_id 
+          JOIN User u ON p.professional_id = u.user_id";
+$result = mysqli_query($conn, $query);
+
+// Store services in an array
+$services = [];
+$professionals = [];
+
+while ($row = mysqli_fetch_assoc($result)) {
+    $services[] = $row;
+    // Store professional info if not already stored
+    if (!isset($professionals[$row['professional_id']])) {
+        $professionals[$row['professional_id']] = [
+            'name' => $row['professional_name'],
+            'bio' => $row['bio'],
+            'img' => $row['img']
+        ];
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -595,186 +625,66 @@
 
       <!-- Services Grid -->
       <div class="services-grid" id="services-grid">
-        <!-- Service Card 1 -->
-        <article class="service-card">
-          <button class="favorite-btn" aria-label="Add to favorites">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </button>
-          <div class="service-image">💄</div>
-          <div class="service-content">
-            <span class="service-category">Makeup</span>
-            <h3 class="service-title">Signature Glow Makeup</h3>
-            <p class="service-description">
-              Flawless, radiant makeup perfect for special occasions. Includes skin prep and long-lasting finish.
-            </p>
-            <div class="service-meta">
-              <div>
-                <div class="service-price">SAR 1,200</div>
-                <div class="service-duration">90 min</div>
+        <?php
+        // Get all services with professional information
+        $query = "SELECT s.*, u.name as professional_name, p.img as professional_img 
+                 FROM Service s 
+                 JOIN User u ON s.professional_id = u.user_id
+                 JOIN Professional p ON s.professional_id = p.professional_id";
+        $result = mysqli_query($conn, $query);
+        
+        if ($result && mysqli_num_rows($result) > 0) {
+          while($service = mysqli_fetch_assoc($result)) {
+            $formattedPrice = number_format($service['price'], 2);
+            $professionalImg = !empty($service['professional_img']) ? 'images/' . $service['professional_img'] : 'images/default-professional.jpg';
+            ?>
+            <article class="service-card">
+              <button class="favorite-btn" aria-label="Add to favorites">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                </svg>
+              </button>
+              <div class="service-image">
+                <?php 
+                // Simple emoji based on category
+                $emoji = '✨'; // default
+                switch($service['category']) {
+                    case 'Hair': $emoji = '💇‍♀️'; break;
+                    case 'Makeup': $emoji = '💄'; break;
+                    case 'Nails': $emoji = '💅'; break;
+                    case 'Skincare': $emoji = '🌸'; break;
+                    case 'Bodycare': $emoji = '🧖‍♀️'; break;
+                }
+                echo $emoji;
+                ?>
               </div>
-              <div class="service-rating">
-                <span class="stars">★★★★★</span>
-                <span>(48)</span>
+              <div class="service-content">
+                <span class="service-category"><?php echo htmlspecialchars($service['category']); ?></span>
+                <h3 class="service-title"><?php echo htmlspecialchars($service['title']); ?></h3>
+                <p class="service-description">
+                  <?php echo htmlspecialchars($service['description']); ?>
+                </p>
+                <div class="service-meta">
+                  <div>
+                    <div class="service-price">SAR <?php echo $formattedPrice; ?></div>
+                    <div class="service-duration"><?php echo $service['duration']; ?> min</div>
+                  </div>
+                  <div class="service-rating">
+                    <span class="stars">★★★★★</span>
+                    <span>(<?php echo rand(10, 100); ?>)</span>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div class="service-footer">
-            <a href="booking.php" class="btn-book">Book Now</a>
-          </div>
-        </article>
-
-        <!-- Service Card 2 -->
-        <article class="service-card">
-          <button class="favorite-btn" aria-label="Add to favorites">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </button>
-          <div class="service-image">💇</div>
-          <div class="service-content">
-            <span class="service-category">Hair</span>
-            <h3 class="service-title">Soft Waves Styling</h3>
-            <p class="service-description">
-              Elegant soft waves perfect for photos and events. Heat protection included.
-            </p>
-            <div class="service-meta">
-              <div>
-                <div class="service-price">SAR 300</div>
-                <div class="service-duration">45 min</div>
+              <div class="service-footer">
+                <a href="booking.php?service=<?php echo $service['service_id']; ?>" class="btn-book">Book Now</a>
               </div>
-              <div class="service-rating">
-                <span class="stars">★★★★★</span>
-                <span>(32)</span>
-              </div>
-            </div>
-          </div>
-          <div class="service-footer">
-            <a href="booking.php" class="btn-book">Book Now</a>
-          </div>
-        </article>
-
-        <!-- Service Card 3 -->
-        <article class="service-card">
-          <button class="favorite-btn" aria-label="Add to favorites">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </button>
-          <div class="service-image">✨</div>
-          <div class="service-content">
-            <span class="service-category">Makeup</span>
-            <h3 class="service-title">Evening Glam</h3>
-            <p class="service-description">
-              Bold, glamorous makeup for evening events. Includes false lashes and contouring.
-            </p>
-            <div class="service-meta">
-              <div>
-                <div class="service-price">SAR 650</div>
-                <div class="service-duration">60 min</div>
-              </div>
-              <div class="service-rating">
-                <span class="stars">★★★★☆</span>
-                <span>(27)</span>
-              </div>
-            </div>
-          </div>
-          <div class="service-footer">
-            <a href="booking.php" class="btn-book">Book Now</a>
-          </div>
-        </article>
-
-        <!-- Service Card 4 -->
-        <article class="service-card">
-          <button class="favorite-btn" aria-label="Add to favorites">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </button>
-          <div class="service-image">🧴</div>
-          <div class="service-content">
-            <span class="service-category">Skin Care</span>
-            <h3 class="service-title">Hydrating Facial</h3>
-            <p class="service-description">
-              Deep hydration treatment for smooth, glowing skin. Perfect makeup prep.
-            </p>
-            <div class="service-meta">
-              <div>
-                <div class="service-price">SAR 450</div>
-                <div class="service-duration">75 min</div>
-              </div>
-              <div class="service-rating">
-                <span class="stars">★★★★★</span>
-                <span>(41)</span>
-              </div>
-            </div>
-          </div>
-          <div class="service-footer">
-            <a href="booking.php" class="btn-book">Book Now</a>
-          </div>
-        </article>
-
-        <!-- Service Card 5 -->
-        <article class="service-card">
-          <button class="favorite-btn" aria-label="Add to favorites">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </button>
-          <div class="service-image">💅</div>
-          <div class="service-content">
-            <span class="service-category">Nails</span>
-            <h3 class="service-title">Gel Manicure</h3>
-            <p class="service-description">
-              Long-lasting gel manicure with nail shaping and cuticle care.
-            </p>
-            <div class="service-meta">
-              <div>
-                <div class="service-price">SAR 180</div>
-                <div class="service-duration">50 min</div>
-              </div>
-              <div class="service-rating">
-                <span class="stars">★★★★★</span>
-                <span>(56)</span>
-              </div>
-            </div>
-          </div>
-          <div class="service-footer">
-            <a href="booking.php" class="btn-book">Book Now</a>
-          </div>
-        </article>
-
-        <!-- Service Card 6 -->
-        <article class="service-card">
-          <button class="favorite-btn" aria-label="Add to favorites">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-            </svg>
-          </button>
-          <div class="service-image">👰</div>
-          <div class="service-content">
-            <span class="service-category">Makeup</span>
-            <h3 class="service-title">Bridal Makeup Package</h3>
-            <p class="service-description">
-              Complete bridal makeup with trial session. Includes hair styling and touch-up kit.
-            </p>
-            <div class="service-meta">
-              <div>
-                <div class="service-price">SAR 2,500</div>
-                <div class="service-duration">3 hours</div>
-              </div>
-              <div class="service-rating">
-                <span class="stars">★★★★★</span>
-                <span>(19)</span>
-              </div>
-            </div>
-          </div>
-          <div class="service-footer">
-            <a href="booking.php" class="btn-book">Book Now</a>
-          </div>
-        </article>
-      </div>
+            </article>
+            <?php
+          }
+        } else {
+          echo '<p class="no-results">No services available at the moment.</p>';
+        }
+        ?>
       </div>
       <!-- End Services Tab -->
 

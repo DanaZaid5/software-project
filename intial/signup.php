@@ -1,3 +1,121 @@
+<?php
+// Enable error reporting at the very top
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+// Start session
+session_start();
+
+// Include database connection
+require_once 'db.php';
+
+// Initialize variables
+$error = '';
+$success = '';
+
+// Check if form is submitted
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    try {
+        // Get form data with null coalescing operator
+        $name = trim($_POST['name'] ?? '');
+        $email = trim($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+        $confirm_password = $_POST['confirm_password'] ?? '';
+        $user_type = $_POST['user_type'] ?? 'client';
+        $phone = trim($_POST['phone'] ?? '');
+        $bio = trim($_POST['bio'] ?? '');
+
+        // Basic validation
+        if (empty($name) || empty($email) || empty($password) || empty($confirm_password)) {
+            throw new Exception('Please fill in all required fields');
+        }
+
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new Exception('Please enter a valid email address');
+        }
+
+        if (strlen($password) < 8) {
+            throw new Exception('Password must be at least 8 characters long');
+        }
+
+        if ($password !== $confirm_password) {
+            throw new Exception('Passwords do not match');
+        }
+
+        // Check if email already exists
+        $stmt = $conn->prepare("SELECT user_id FROM User WHERE email = ?");
+        if (!$stmt) {
+            throw new Exception('Database error: ' . $conn->error);
+        }
+        
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($result->num_rows > 0) {
+            throw new Exception('Email already registered');
+        }
+
+        // Hash the password
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Start transaction
+        $conn->begin_transaction();
+
+        try {
+            // Insert into User table
+            $role = ($user_type === 'professional') ? 'professional' : 'client';
+            $stmt = $conn->prepare("INSERT INTO User (name, email, password, role) VALUES (?, ?, ?, ?)");
+            if (!$stmt) {
+                throw new Exception('Database error: ' . $conn->error);
+            }
+            
+            $stmt->bind_param("ssss", $name, $email, $hashed_password, $role);
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to create user: ' . $stmt->error);
+            }
+            
+            $user_id = $conn->insert_id;
+            
+            // Insert into Professional or Client table based on user type
+            if ($user_type === 'professional') {
+                $img = 'default.jpg';
+                $stmt = $conn->prepare("INSERT INTO Professional (professional_id, bio, img) VALUES (?, ?, ?)");
+                if (!$stmt) {
+                    throw new Exception('Database error: ' . $conn->error);
+                }
+                $stmt->bind_param("iss", $user_id, $bio, $img);
+            } else {
+                $stmt = $conn->prepare("INSERT INTO Client (client_id) VALUES (?)");
+                if (!$stmt) {
+                    throw new Exception('Database error: ' . $conn->error);
+                }
+                $stmt->bind_param("i", $user_id);
+            }
+            
+            if (!$stmt->execute()) {
+                throw new Exception('Failed to create user profile: ' . $stmt->error);
+            }
+            
+            // If we get here, commit the transaction
+            $conn->commit();
+            
+            // Set success message and clear form
+            $success = 'Registration successful! You can now log in.';
+            $_POST = array();
+            
+        } catch (Exception $e) {
+            // Rollback transaction on error
+            $conn->rollback();
+            throw $e;
+        }
+
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+        error_log("Signup Error: " . $error);
+    }
+}
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -516,7 +634,13 @@
         <h1 class="signup-title">Create your account</h1>
         <p class="signup-subtitle">Join our community of clients and beauty professionals</p>
         
-        <form id="signupForm" novalidate>
+        <form id="signupForm" method="POST" action="" novalidate>
+                <?php if ($error): ?>
+                    <div class="alert alert-danger"><?php echo htmlspecialchars($error); ?></div>
+                <?php endif; ?>
+                <?php if ($success): ?>
+                    <div class="alert alert-success"><?php echo htmlspecialchars($success); ?></div>
+                <?php endif; ?>
           <div class="form-group">
             <label class="form-label">I am a</label>
             <div class="user-type-group">
@@ -524,10 +648,10 @@
                 <input 
                   type="radio" 
                   id="userTypeClient" 
-                  name="userType" 
+                  name="user_type" 
                   value="client" 
                   class="user-type-radio"
-                  checked
+                  <?php echo (!isset($_POST['user_type']) || $_POST['user_type'] === 'client') ? 'checked' : ''; ?>
                   required
                 />
                 <label for="userTypeClient" class="user-type-label">
@@ -545,9 +669,10 @@
                 <input 
                   type="radio" 
                   id="userTypeProfessional" 
-                  name="userType" 
+                  name="user_type" 
                   value="professional" 
                   class="user-type-radio"
+                  <?php echo (isset($_POST['user_type']) && $_POST['user_type'] === 'professional') ? 'checked' : ''; ?>
                   required
                 />
                 <label for="userTypeProfessional" class="user-type-label">
@@ -566,13 +691,14 @@
           </div>
 
           <div class="form-group">
-            <label for="fullName" class="form-label">Full Name</label>
+            <label for="name" class="form-label">Full Name</label>
             <input 
               type="text" 
-              id="fullName" 
-              name="fullName" 
+              id="name" 
+              name="name" 
               class="form-input" 
               placeholder="Enter your full name"
+              value="<?php echo htmlspecialchars($_POST['name'] ?? ''); ?>"
               required
             />
             <div class="error-message" id="fullNameError">Please enter your full name</div>
@@ -586,9 +712,23 @@
               name="email" 
               class="form-input" 
               placeholder="Enter your email"
+              value="<?php echo htmlspecialchars($_POST['email'] ?? ''); ?>"
               required
             />
             <div class="error-message" id="emailError">Please enter a valid email address</div>
+          </div>
+
+          <div class="form-group">
+            <label for="phone" class="form-label">Phone Number</label>
+            <input 
+              type="tel" 
+              id="phone" 
+              name="phone" 
+              class="form-input" 
+              placeholder="Enter your phone number"
+              value="<?php echo htmlspecialchars($_POST['phone'] ?? ''); ?>"
+              required
+            />
           </div>
 
           <div class="form-group">
@@ -615,7 +755,7 @@
               <input 
                 type="password" 
                 id="confirmPassword" 
-                name="confirmPassword" 
+                name="confirm_password" 
                 class="form-input" 
                 placeholder="Confirm your password"
                 required
@@ -625,6 +765,19 @@
               </button>
             </div>
             <div class="error-message" id="confirmPasswordError">Passwords do not match</div>
+          </div>
+
+          <div id="professional-fields" style="display: none;">
+            <div class="form-group">
+              <label for="bio" class="form-label">Bio</label>
+              <textarea 
+                id="bio" 
+                name="bio" 
+                rows="3" 
+                placeholder="Tell us about yourself and your experience"
+                required
+              ><?php echo htmlspecialchars($_POST['bio'] ?? ''); ?></textarea>
+            </div>
           </div>
 
           <div class="form-checkbox-group">
@@ -668,7 +821,7 @@
   <!-- Footer -->
   <footer class="site-footer">
     <div class="container footer-inner">
-      <p>© 2025 Glammd. All rights reserved.</p>
+      <p> 2025 Glammd. All rights reserved.</p>
       <div class="footer-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Terms of Service</a>

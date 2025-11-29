@@ -138,6 +138,27 @@ CREATE TABLE `Service` (
   `tags` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Additional services
+INSERT INTO `Service` (`service_id`, `professional_id`, `category`, `title`, `description`, `duration`, `price`, `tags`) VALUES
+-- Makeup Services
+(5, 1, 'Makeup', 'Bridal Makeup', 'Complete bridal makeup package including trial session, with long-lasting, photo-friendly products for your special day', 120, 1500.00, 'bridal, wedding, special occasion'),
+(6, 4, 'Makeup', 'Natural Day Makeup', 'Light, fresh makeup perfect for daytime events or work, enhancing your natural features', 45, 200.00, 'natural, day makeup, office'),
+
+-- Hair Services
+(7, 2, 'Hair', 'Blowout & Styling', 'Professional blowout and styling for smooth, voluminous hair that lasts all day', 60, 250.00, 'blowout, styling, volume'),
+(8, 2, 'Hair', 'Haircut & Styling', 'Custom haircut tailored to your face shape and lifestyle, finished with a professional style', 90, 300.00, 'haircut, styling, trim'),
+
+-- Nail Services
+(9, 3, 'Nails', 'Gel Manicure', 'Long-lasting gel polish manicure with nail shaping and cuticle care', 60, 180.00, 'gel, manicure, polish'),
+(10, 3, 'Nails', 'Spa Pedicure', 'Relaxing pedicure with exfoliation, massage, and your choice of polish', 75, 220.00, 'pedicure, spa, feet'),
+
+-- Skincare Services
+(11, 4, 'Skincare', 'Facial Treatment', 'Custom facial treatment to cleanse, exfoliate, and nourish your skin', 60, 350.00, 'facial, skincare, glow'),
+(12, 1, 'Skincare', 'Anti-Aging Treatment', 'Specialized treatment targeting fine lines and wrinkles for a youthful appearance', 90, 450.00, 'anti-aging, facial, rejuvenation'),
+
+-- Bodycare Services
+(13, 4, 'Bodycare', 'Full Body Massage', '60-minute relaxing full body massage to relieve stress and tension', 60, 400.00, 'massage, relaxation, full body'),
+(14, 1, 'Bodycare', 'Body Scrub & Wrap', 'Exfoliating body scrub followed by a nourishing wrap for silky smooth skin', 90, 500.00, 'body scrub, wrap, exfoliation');
 --
 -- Dumping data for table `Service`
 --
