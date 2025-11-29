@@ -5,27 +5,102 @@ session_start();
 // Database connection
 require_once 'db.php';
 
-// Get all services with professional information
-$query = "SELECT s.*, p.bio, p.img, u.name as professional_name 
-          FROM Service s 
-          JOIN Professional p ON s.professional_id = p.professional_id 
-          JOIN User u ON p.professional_id = u.user_id";
-$result = mysqli_query($conn, $query);
+// Initialize variables
+$is_logged_in = isset($_SESSION['user_id']);
+$is_professional = false;
+$professional_id = null;
+$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
+
+// Check if user is a professional (only if logged in)
+if ($is_logged_in) {
+    $check_professional = mysqli_prepare($conn, "SELECT professional_id FROM Professional WHERE professional_id = ?");
+    mysqli_stmt_bind_param($check_professional, "i", $user_id);
+    mysqli_stmt_execute($check_professional);
+    $result = mysqli_stmt_get_result($check_professional);
+
+    if (mysqli_num_rows($result) > 0) {
+        $is_professional = true;
+        $professional = mysqli_fetch_assoc($result);
+        $professional_id = $professional['professional_id'];
+    }
+}
+
+// Check if viewing a specific professional's services
+$viewing_professional_id = isset($_GET['professional_id']) ? intval($_GET['professional_id']) : null;
+
+// Build the query based on the viewing context
+if ($viewing_professional_id) {
+    // Viewing a specific professional's services
+    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
+              FROM Service s 
+              JOIN Professional p ON s.professional_id = p.professional_id 
+              JOIN User u ON p.professional_id = u.user_id
+              WHERE s.professional_id = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+} elseif ($is_professional && !$viewing_professional_id) {
+    // Professional viewing their own services
+    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
+              FROM Service s 
+              JOIN Professional p ON s.professional_id = p.professional_id 
+              JOIN User u ON p.professional_id = u.user_id
+              WHERE s.professional_id = ?";
+    $stmt = mysqli_prepare($conn, $query);
+    mysqli_stmt_bind_param($stmt, "i", $professional_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+} else {
+    // Default view - show all services
+    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
+              FROM Service s 
+              JOIN Professional p ON s.professional_id = p.professional_id 
+              JOIN User u ON p.professional_id = u.user_id
+              ORDER BY s.title";
+    $result = mysqli_query($conn, $query);
+}
 
 // Store services in an array
 $services = [];
-$professionals = [];
+$current_professional = null;
 
+// Get professional info if viewing a specific professional
+if ($viewing_professional_id) {
+    $prof_query = "SELECT u.name, p.bio, p.img as professional_img 
+                  FROM User u 
+                  JOIN Professional p ON u.user_id = p.professional_id 
+                  WHERE p.professional_id = ?";
+    $stmt = mysqli_prepare($conn, $prof_query);
+    mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
+    mysqli_stmt_execute($stmt);
+    $current_professional = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+}
+
+// Process services
 while ($row = mysqli_fetch_assoc($result)) {
     $services[] = $row;
-    // Store professional info if not already stored
-    if (!isset($professionals[$row['professional_id']])) {
-        $professionals[$row['professional_id']] = [
+    
+    // If we don't have current professional info yet, get it from the first result
+    if (!$current_professional && !$viewing_professional_id) {
+        $current_professional = [
             'name' => $row['professional_name'],
             'bio' => $row['bio'],
-            'img' => $row['img']
+            'img' => $row['professional_img']
         ];
     }
+}
+
+// If no services found for a specific professional, try to get their info anyway
+if (empty($services) && $viewing_professional_id) {
+    $prof_query = "SELECT u.name, p.bio, p.img as professional_img 
+                  FROM User u 
+                  JOIN Professional p ON u.user_id = p.professional_id 
+                  WHERE p.professional_id = ?";
+    $stmt = mysqli_prepare($conn, $prof_query);
+    mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
+    mysqli_stmt_execute($stmt);
+    $current_professional = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
 }
 ?>
 <!doctype html>

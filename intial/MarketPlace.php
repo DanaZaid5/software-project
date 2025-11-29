@@ -252,8 +252,7 @@ $result = mysqli_query($conn, $sql);
 
       <?php while ($row = mysqli_fetch_assoc($result)) { ?>
 
-        <div class="salon-card" onclick="onclick="window.location.href='services.php?id=<?= $row['user_id'] ?>'"
-">
+        <div class="salon-card" onclick="window.location.href='services.php?professional_id=<?= $row['user_id'] ?>'" style="cursor: pointer;">
           <img src="img/<?= $row['img'] ?>" alt="Salon Image">
           <div class="salon-info">
             <h3><?= $row['name'] ?></h3>
