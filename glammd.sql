@@ -3,14 +3,13 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:8889
--- Generation Time: Nov 28, 2025 at 05:32 PM
+-- Generation Time: Nov 29, 2025 at 05:00 PM
 -- Server version: 8.0.40
 -- PHP Version: 8.3.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
 SET time_zone = "+00:00";
-
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -46,10 +45,12 @@ CREATE TABLE `Booking` (
 CREATE TABLE `BookingRequest` (
   `request_id` int UNSIGNED NOT NULL,
   `client_id` int UNSIGNED NOT NULL,
+  `professional_id` int UNSIGNED NOT NULL,
   `service_id` int UNSIGNED NOT NULL,
-  `requested_time` datetime NOT NULL,
-  `status` enum('pending','declined','expired') NOT NULL DEFAULT 'pending',
-  `client_notes` text
+  `preferred_date` date NOT NULL,
+  `preferred_time` time NOT NULL,
+  `status` enum('pending','accepted','rejected') NOT NULL DEFAULT 'pending',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -71,7 +72,8 @@ CREATE TABLE `Client` (
 CREATE TABLE `List` (
   `list_id` int UNSIGNED NOT NULL,
   `client_id` int UNSIGNED NOT NULL,
-  `name` varchar(120) NOT NULL
+  `name` varchar(100) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -81,9 +83,10 @@ CREATE TABLE `List` (
 --
 
 CREATE TABLE `ListItem` (
-  `list_item_id` int UNSIGNED NOT NULL,
+  `item_id` int UNSIGNED NOT NULL,
   `list_id` int UNSIGNED NOT NULL,
-  `service_id` int UNSIGNED NOT NULL
+  `service_id` int UNSIGNED NOT NULL,
+  `added_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -106,7 +109,7 @@ INSERT INTO `Professional` (`professional_id`, `bio`, `img`) VALUES
 (1, 'I’m a certified makeup artist specializing in soft glam, bridal looks, and enhancing natural beauty. With a passion for detail and a love for creativity, I focus on creating flawless, long-lasting looks that make every client feel confident and radiant. Whether it’s for a special event, photoshoot, or everyday glam, my goal is to bring your vision to life with precision and artistry.', 'pro1.jpg'),
 (2, 'Hairstylist focused on natural texture curly hair, soft colors, and lived-in styles.\r\nHealthy hair first, beautiful results always. ✨', 'Aljohara.png'),
 (3, 'Nail artist obsessed with soft colors, tiny details, and everything cute.\r\nCreating pretty, fresh, and unique nail designs that make you smile.', 'layan.png'),
-(4, 'makeup artist creating simple, clean, and glowing looks. Beauty that feels natural and effortless.', 'Noura.png');
+(4, 'Makeup artist creating simple, clean, and glowing looks. Beauty that feels natural and effortless.', 'Noura.png');
 
 -- --------------------------------------------------------
 
@@ -138,9 +141,7 @@ CREATE TABLE `Service` (
   `tags` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Dumping data for table `Service`
 --
-
 -- Dumping data for table `Service`
 --
 
@@ -204,19 +205,18 @@ INSERT INTO `User` (`user_id`, `name`, `email`, `password`, `role`) VALUES
 --
 ALTER TABLE `Booking`
   ADD PRIMARY KEY (`booking_id`),
-  ADD KEY `ix_book_client` (`client_id`),
-  ADD KEY `ix_book_professional` (`professional_id`),
-  ADD KEY `ix_book_service` (`service_id`),
-  ADD KEY `ix_book_time` (`time`);
+  ADD KEY `client_id` (`client_id`),
+  ADD KEY `professional_id` (`professional_id`),
+  ADD KEY `service_id` (`service_id`);
 
 --
 -- Indexes for table `BookingRequest`
 --
 ALTER TABLE `BookingRequest`
   ADD PRIMARY KEY (`request_id`),
-  ADD KEY `ix_br_client` (`client_id`),
-  ADD KEY `ix_br_service` (`service_id`),
-  ADD KEY `ix_br_requested_time` (`requested_time`);
+  ADD KEY `client_id` (`client_id`),
+  ADD KEY `professional_id` (`professional_id`),
+  ADD KEY `service_id` (`service_id`);
 
 --
 -- Indexes for table `Client`
@@ -229,16 +229,15 @@ ALTER TABLE `Client`
 --
 ALTER TABLE `List`
   ADD PRIMARY KEY (`list_id`),
-  ADD KEY `ix_list_client` (`client_id`);
+  ADD KEY `client_id` (`client_id`);
 
 --
 -- Indexes for table `ListItem`
 --
 ALTER TABLE `ListItem`
-  ADD PRIMARY KEY (`list_item_id`),
-  ADD UNIQUE KEY `ux_listitem_unique` (`list_id`,`service_id`),
-  ADD KEY `ix_item_list` (`list_id`),
-  ADD KEY `ix_item_service` (`service_id`);
+  ADD PRIMARY KEY (`item_id`),
+  ADD KEY `list_id` (`list_id`),
+  ADD KEY `service_id` (`service_id`);
 
 --
 -- Indexes for table `Professional`
@@ -251,22 +250,21 @@ ALTER TABLE `Professional`
 --
 ALTER TABLE `Review`
   ADD PRIMARY KEY (`review_id`),
-  ADD UNIQUE KEY `ux_review_booking` (`booking_id`);
+  ADD KEY `booking_id` (`booking_id`);
 
 --
 -- Indexes for table `Service`
 --
 ALTER TABLE `Service`
   ADD PRIMARY KEY (`service_id`),
-  ADD KEY `ix_service_professional` (`professional_id`),
-  ADD KEY `ix_service_category` (`category`);
+  ADD KEY `professional_id` (`professional_id`);
 
 --
 -- Indexes for table `User`
 --
 ALTER TABLE `User`
   ADD PRIMARY KEY (`user_id`),
-  ADD UNIQUE KEY `ux_user_email` (`email`);
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -294,7 +292,7 @@ ALTER TABLE `List`
 -- AUTO_INCREMENT for table `ListItem`
 --
 ALTER TABLE `ListItem`
-  MODIFY `list_item_id` int UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `item_id` int UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `Review`
@@ -306,7 +304,7 @@ ALTER TABLE `Review`
 -- AUTO_INCREMENT for table `Service`
 --
 ALTER TABLE `Service`
-  MODIFY `service_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `service_id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `User`
@@ -322,16 +320,17 @@ ALTER TABLE `User`
 -- Constraints for table `Booking`
 --
 ALTER TABLE `Booking`
-  ADD CONSTRAINT `fk_book_client` FOREIGN KEY (`client_id`) REFERENCES `Client` (`client_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_book_professional` FOREIGN KEY (`professional_id`) REFERENCES `Professional` (`professional_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_book_service` FOREIGN KEY (`service_id`) REFERENCES `Service` (`service_id`) ON DELETE RESTRICT;
+  ADD CONSTRAINT `fk_booking_client` FOREIGN KEY (`client_id`) REFERENCES `Client` (`client_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_booking_professional` FOREIGN KEY (`professional_id`) REFERENCES `Professional` (`professional_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_booking_service` FOREIGN KEY (`service_id`) REFERENCES `Service` (`service_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `BookingRequest`
 --
 ALTER TABLE `BookingRequest`
-  ADD CONSTRAINT `fk_br_client` FOREIGN KEY (`client_id`) REFERENCES `Client` (`client_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_br_service` FOREIGN KEY (`service_id`) REFERENCES `Service` (`service_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_booking_request_client` FOREIGN KEY (`client_id`) REFERENCES `Client` (`client_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_booking_request_professional` FOREIGN KEY (`professional_id`) REFERENCES `Professional` (`professional_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_booking_request_service` FOREIGN KEY (`service_id`) REFERENCES `Service` (`service_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Client`
@@ -349,14 +348,14 @@ ALTER TABLE `List`
 -- Constraints for table `ListItem`
 --
 ALTER TABLE `ListItem`
-  ADD CONSTRAINT `fk_listitem_list` FOREIGN KEY (`list_id`) REFERENCES `List` (`list_id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `fk_listitem_service` FOREIGN KEY (`service_id`) REFERENCES `Service` (`service_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_list_item_list` FOREIGN KEY (`list_id`) REFERENCES `List` (`list_id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_list_item_service` FOREIGN KEY (`service_id`) REFERENCES `Service` (`service_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Professional`
 --
 ALTER TABLE `Professional`
-  ADD CONSTRAINT `fk_prof_user` FOREIGN KEY (`professional_id`) REFERENCES `User` (`user_id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `fk_professional_user` FOREIGN KEY (`professional_id`) REFERENCES `User` (`user_id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `Review`
