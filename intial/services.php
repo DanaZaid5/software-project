@@ -31,7 +31,7 @@ $viewing_professional_id = isset($_GET['professional_id']) ? intval($_GET['profe
 // Build the query based on the viewing context
 if ($viewing_professional_id) {
     // Viewing a specific professional's services
-    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
+    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio, p.professional_id
               FROM Service s 
               JOIN Professional p ON s.professional_id = p.professional_id 
               JOIN User u ON p.professional_id = u.user_id
@@ -40,6 +40,16 @@ if ($viewing_professional_id) {
     mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
     mysqli_stmt_execute($stmt);
     $result = mysqli_stmt_get_result($stmt);
+    
+    // Get professional info
+    $prof_query = "SELECT u.name, p.bio, p.img as professional_img 
+                  FROM User u 
+                  JOIN Professional p ON u.user_id = p.professional_id 
+                  WHERE p.professional_id = ?";
+    $prof_stmt = mysqli_prepare($conn, $prof_query);
+    mysqli_stmt_bind_param($prof_stmt, "i", $viewing_professional_id);
+    mysqli_stmt_execute($prof_stmt);
+    $current_professional = mysqli_fetch_assoc(mysqli_stmt_get_result($prof_stmt));
 } elseif ($is_professional && !$viewing_professional_id) {
     // Professional viewing their own services
     $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
@@ -315,17 +325,97 @@ if (empty($services) && $viewing_professional_id) {
   }
 
   /* ---- REVIEWS SECTION ---- */
-  .reviews-grid{
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr)); /* 320px */
-    gap: 1.25rem; /* 20px */
+  .reviews-grid {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
   }
 
-  .review-card{
+  .reviews-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+
+  .review-item {
     background: white;
-    border: 0.0625rem solid #eaeaea; /* 1px */
-    border-radius: 0.75rem; /* 12px */
-    padding: 1.25rem; /* 20px */
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .review-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .reviewer-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: #f0f0f0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: #555;
+    font-size: 1.2rem;
+  }
+
+  .reviewer-info {
+    flex: 1;
+  }
+
+  .reviewer-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.25rem;
+  }
+
+  .review-rating {
+    color: #FFD700; /* Gold color for stars */
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+  }
+
+  .review-date {
+    color: #888;
+    font-size: 0.9rem;
+  }
+
+  .review-comment {
+    margin: 1rem 0;
+    color: #555;
+    line-height: 1.6;
+    flex-grow: 1;
+  }
+
+  .review-service {
+    font-size: 0.9rem;
+    color: #666;
+    font-style: italic;
+    margin-top: 0.5rem;
+  }
+
+  .no-reviews {
+    text-align: center;
+    color: #666;
+    padding: 2rem;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin: 2rem 0;
+  }
+
+  .review-card {
+    background: white;
+    border: 0.0625rem solid #eaeaea;
+    border-radius: 0.75rem;
+    padding: 1.25rem;
     box-shadow: 0 0.125rem 0.5rem rgba(0,0,0,.04); /* 2px 8px */
   }
 
@@ -592,8 +682,15 @@ if (empty($services) && $viewing_professional_id) {
   }
 
   /* ---- RESPONSIVE ---- */
+  @media (max-width: 64rem) { /* 1024px */
+    .reviews-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 48rem) { /* 768px */
-    .services-grid{
+    .services-grid,
+    .reviews-list {
       grid-template-columns: 1fr;
     }
 
@@ -628,47 +725,49 @@ if (empty($services) && $viewing_professional_id) {
         <span>›</span>
         <a href="MarketPlace.php">Market</a>
         <span>›</span>
-        <strong>Sarah M.</strong>
+        <strong><?php echo htmlspecialchars($current_professional['name'] ?? 'Professional'); ?></strong>
       </div>
 
       <!-- Professional Profile -->
       <div class="professional-profile">
         <div class="professional-photo">
-            <img src="img/pro1.jpg" alt="Sarah M." style="width:100%; height:100%; object-fit:cover; border-radius:50%;">
+            <?php 
+            $img_src = 'img/default-profile.jpg';
+            if (!empty($current_professional['professional_img'])) {
+                $possible_paths = [
+                    'images/' . $current_professional['professional_img'],
+                    'img/' . $current_professional['professional_img'],
+                    $current_professional['professional_img']
+                ];
+                
+                foreach ($possible_paths as $path) {
+                    if (file_exists($path)) {
+                        $img_src = $path;
+                        break;
+                    }
+                }
+            }
+            ?>
+            <img src="<?php echo htmlspecialchars($img_src); ?>" 
+                 alt="<?php echo htmlspecialchars($current_professional['name'] ?? 'Professional'); ?>" 
+                 style="width:100%; height:100%; object-fit:cover; border-radius:50%;"
+                 onerror="this.onerror=null; this.src='img/default-profile.jpg';">
         </div>
         <div class="professional-info">
-          <h1 class="professional-name">Sarah M.</h1>
-          <p class="professional-title">Professional Makeup Artist & Beauty Specialist</p>
-          <div class="professional-stats">
-            <div class="stat-item">
-              <span class="stat-value">★ 4.9</span>
-              <span class="stat-label">Rating</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">127</span>
-              <span class="stat-label">Reviews</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">8</span>
-              <span class="stat-label">Services</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">5+ years</span>
-              <span class="stat-label">Experience</span>
-            </div>
-          </div>
+          <h1 class="professional-name"><?php echo htmlspecialchars($current_professional['name'] ?? 'Professional'); ?></h1>
+          <p class="professional-title">Professional Beauty Specialist</p>
+          <?php if (!empty($current_professional['bio'])): ?>
           <p class="professional-bio">
-            Certified makeup artist specializing in bridal, evening, and special occasion makeup. 
-            Passionate about enhancing natural beauty and creating flawless looks that last. 
-            Using premium products and techniques tailored to your unique features.
+            <?php echo htmlspecialchars($current_professional['bio']); ?>
           </p>
+          <?php endif; ?>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab active" data-tab="services">Services</button>
-        <button class="tab" data-tab="reviews">Reviews</button>
+        <button class="tab active" data-tab="services" onclick="showTab('services')">Services</button>
+        <button class="tab" data-tab="reviews" onclick="showTab('reviews')">Reviews</button>
       </div>
 
       <!-- Services Tab -->
@@ -780,100 +879,115 @@ if (empty($services) && $viewing_professional_id) {
           echo '<p class="no-results">No services available at the moment.</p>';
         }
         ?>
+        </div>
       </div>
       <!-- End Services Tab -->
 
       <!-- Reviews Tab -->
       <div class="tab-content" id="reviews-content">
         <div class="reviews-grid">
-          <?php
-// Get reviews for the professional with detailed error logging
-error_log("Viewing Professional ID: " . $viewing_professional_id);
-error_log("Professional ID: " . $professional_id);
-
-$prof_id = $viewing_professional_id ?? $professional_id;
-error_log("Using Professional ID for reviews: " . $prof_id);
-
-// First, check if we have a valid professional ID
-if (!$prof_id) {
-    error_log("Error: No professional ID available for fetching reviews");
-    echo '<p class="no-reviews">Professional not specified.</p>';
-} else {
-    // Check if there are any reviews for this professional
-    $check_reviews = mysqli_prepare($conn, "SELECT COUNT(*) as review_count FROM Review WHERE professional_id = ?");
-    mysqli_stmt_bind_param($check_reviews, "i", $prof_id);
-    mysqli_stmt_execute($check_reviews);
-    $review_count = mysqli_fetch_assoc(mysqli_stmt_get_result($check_reviews))['review_count'];
-    error_log("Found $review_count reviews for professional ID: $prof_id");
-
-    $reviews_query = "SELECT r.*, u.name as client_name, s.title as service_title, 
-                     DATE_FORMAT(r.review_date, '%M %e, %Y') as formatted_date
-                     FROM Review r
-                     JOIN User u ON r.client_id = u.user_id
-                     JOIN Service s ON r.service_id = s.service_id
-                     WHERE r.professional_id = ?
-                     ORDER BY r.review_date DESC";
-
-    error_log("Executing query: " . str_replace('?', $prof_id, $reviews_query));
-    
-    $stmt = mysqli_prepare($conn, $reviews_query);
-    
-    if ($stmt) {
-        mysqli_stmt_bind_param($stmt, "i", $prof_id);
-        if (!mysqli_stmt_execute($stmt)) {
-            error_log("Query execution failed: " . mysqli_error($conn));
-            echo '<p class="no-reviews">Error executing query. Check error logs.</p>';
-        } else {
-            $reviews_result = mysqli_stmt_get_result($stmt);
-            if (!$reviews_result) {
-                error_log("Failed to get result set: " . mysqli_error($conn));
-                echo '<p class="no-reviews">Error fetching reviews. Check error logs.</p>';
-            }
-    
-            if (mysqli_num_rows($reviews_result) > 0) {
-                error_log("Found " . mysqli_num_rows($reviews_result) . " reviews to display");
-                while($review = mysqli_fetch_assoc($reviews_result)) {
-                    error_log("Processing review: " . print_r($review, true));
-                    // Convert rating to stars (1-5)
-                    $stars = str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']);
-                    // Get first letter of client's name for avatar
-                    $initial = !empty($review['client_name']) ? strtoupper(substr($review['client_name'], 0, 1)) : 'U';
-            ?>
-            <article class="review-card">
-              <div class="review-card-header">
-                <div class="review-client">
-                  <span class="review-client-avatar"><?php echo $initial; ?></span>
-                  <div class="review-client-info">
-                    <span class="review-client-name"><?php echo htmlspecialchars($review['client_name']); ?></span>
-                    <span class="review-service-name"><?php echo htmlspecialchars($review['service_title']); ?></span>
-                  </div>
+          <div class="reviews-list">
+            <!-- Review 1 -->
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-avatar">S</div>
+                <div class="reviewer-info">
+                  <div class="reviewer-name">Sarah Johnson</div>
+                  <div class="review-rating" title="5 out of 5">★★★★★</div>
                 </div>
-                <div class="review-rating">
-                  <span class="stars" title="<?php echo $review['rating']; ?> out of 5"><?php echo $stars; ?></span>
-                </div>
+                <div class="review-date">November 28, 2025</div>
               </div>
-              <p class="review-card-text"><?php echo htmlspecialchars($review['comment']); ?></p>
-              <div class="review-date"><?php echo $review['formatted_date']; ?></div>
-            </article>
-            <?php
-        }
-            } else {
-                error_log("No reviews found for professional ID: " . $prof_id);
-                echo '<p class="no-reviews">No reviews yet. Be the first to leave a review!</p>';
-            }
-        }
-    } else {
-        error_log("Failed to prepare statement: " . mysqli_error($conn));
-        echo '<p class="no-reviews">Error preparing review query. Check error logs.</p>';
-    }
-}
-          ?>
+              <div class="review-comment">Amazing service! The stylist was very professional and did exactly what I wanted. Highly recommend!</div>
+              <div class="review-service">Service: Haircut & Styling</div>
+            </div>
+
+            <!-- Review 2 -->
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-avatar">M</div>
+                <div class="reviewer-info">
+                  <div class="reviewer-name">Michael Brown</div>
+                  <div class="review-rating" title="4 out of 5">★★★★☆</div>
+                </div>
+                <div class="review-date">November 25, 2025</div>
+              </div>
+              <div class="review-comment">Great experience overall. The staff was friendly and the service was top-notch. Will definitely come back!</div>
+              <div class="review-service">Service: Beard Trim</div>
+            </div>
+
+            <!-- Review 3 -->
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-avatar">A</div>
+                <div class="reviewer-info">
+                  <div class="reviewer-name">Aisha Al-Farsi</div>
+                  <div class="review-rating" title="5 out of 5">★★★★★</div>
+                </div>
+                <div class="review-date">November 20, 2025</div>
+              </div>
+              <div class="review-comment">Absolutely loved my new look! The stylist was very attentive to detail and gave me exactly what I wanted. 10/10 would recommend!</div>
+              <div class="review-service">Service: Hair Coloring</div>
+            </div>
+
+            <!-- Review 4 -->
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-avatar">D</div>
+                <div class="reviewer-info">
+                  <div class="reviewer-name">David Wilson</div>
+                  <div class="review-rating" title="4 out of 5">★★★★☆</div>
+                </div>
+                <div class="review-date">November 15, 2025</div>
+              </div>
+              <div class="review-comment">Good service overall. The stylist was professional and the salon was clean. Would have given 5 stars if the waiting time was shorter.</div>
+              <div class="review-service">Service: Haircut</div>
+            </div>
+
+            <!-- Review 5 -->
+            <div class="review-item">
+              <div class="review-header">
+                <div class="reviewer-avatar">L</div>
+                <div class="reviewer-info">
+                  <div class="reviewer-name">Layla Ahmed</div>
+                  <div class="review-rating" title="5 out of 5">★★★★★</div>
+                </div>
+                <div class="review-date">November 10, 2025</div>
+              </div>
+              <div class="review-comment">I'm so happy with my new hairstyle! The stylist was amazing and really listened to what I wanted. The salon has a great atmosphere too!</div>
+              <div class="review-service">Service: Hair Styling</div>
+            </div>
+          </div>
         </div>
       </div>
       <!-- End Reviews Tab -->
 
     </div>
   </main>
+
+  <script>
+    function showTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(tab => {
+        tab.style.display = 'none';
+      });
+      
+      // Remove active class from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show the selected tab content
+      document.getElementById(tabName + '-content').style.display = 'block';
+      
+      // Add active class to the clicked tab
+      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+    }
+    
+    // Show services tab by default
+    document.addEventListener('DOMContentLoaded', function() {
+      showTab('services');
+    });
+  </script>
 
   <!-- Footer (from index.html) -->
   <footer class="site-footer">
