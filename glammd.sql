@@ -138,9 +138,20 @@ CREATE TABLE `Service` (
   `tags` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Additional services
+-- Dumping data for table `Service`
+--
+
+-- Dumping data for table `Service`
+--
+
 INSERT INTO `Service` (`service_id`, `professional_id`, `category`, `title`, `description`, `duration`, `price`, `tags`) VALUES
--- Makeup Services
+-- Original services
+(1, 1, 'Makeup', 'SoftGlam', 'A natural, elegant makeup look featuring soft tones, seamless blending, and a radiant finish that enhances your beauty without looking heavy. Perfect for everyday wear or special occasions.', 60, 300.00, 'oily skin'),
+(2, 2, 'Hair', 'Curly Hair Styling', 'Expert curly hair styling that enhances your natural texture, adds volume, and defines your curls for a flawless, bouncy look', 90, 200.00, 'Curly Hair'),
+(3, 3, 'Nails', 'Simple nails', 'Minimalist and chic nail designs with clean lines and subtle accents for a stylish everyday look', 60, 200.00, 'Simple'),
+(4, 4, 'Makeup', 'Evening Glam', 'Dramatic and sophisticated makeup perfect for evenings, highlighting your features with bold eyes and radiant skin', 120, 1200.00, 'Dry skin'),
+
+-- Additional Makeup Services
 (5, 1, 'Makeup', 'Bridal Makeup', 'Complete bridal makeup package including trial session, with long-lasting, photo-friendly products for your special day', 120, 1500.00, 'bridal, wedding, special occasion'),
 (6, 4, 'Makeup', 'Natural Day Makeup', 'Light, fresh makeup perfect for daytime events or work, enhancing your natural features', 45, 200.00, 'natural, day makeup, office'),
 
@@ -159,15 +170,6 @@ INSERT INTO `Service` (`service_id`, `professional_id`, `category`, `title`, `de
 -- Bodycare Services
 (13, 4, 'Bodycare', 'Full Body Massage', '60-minute relaxing full body massage to relieve stress and tension', 60, 400.00, 'massage, relaxation, full body'),
 (14, 1, 'Bodycare', 'Body Scrub & Wrap', 'Exfoliating body scrub followed by a nourishing wrap for silky smooth skin', 90, 500.00, 'body scrub, wrap, exfoliation');
---
--- Dumping data for table `Service`
---
-
-INSERT INTO `Service` (`service_id`, `professional_id`, `category`, `title`, `description`, `duration`, `price`, `tags`) VALUES
-(1, 1, 'Makeup', 'SoftGlam', 'A natural, elegant makeup look featuring soft tones, seamless blending, and a radiant finish that enhances your beauty without looking heavy. Perfect for everyday wear or special occasions.', 60, 300.00, 'oily skin'),
-(2, 2, 'Hair', 'Curly Hair Styling ', 'Expert curly hair styling that enhances your natural texture, adds volume, and defines your curls for a flawless, bouncy look', 90, 200.00, 'Curly Hair'),
-(3, 3, 'Nails', 'Simple nails', 'Minimalist and chic nail designs with clean lines and subtle accents for a stylish everyday look', 60, 200.00, 'Simple'),
-(4, 4, 'Makeup', 'Evening Glam', 'Dramatic and sophisticated makeup perfect for evenings, highlighting your features with bold eyes and radiant skin', 120, 1200.00, 'Dry skin');
 
 -- --------------------------------------------------------
 
