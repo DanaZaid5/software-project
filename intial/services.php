@@ -701,17 +701,35 @@ if (empty($services) && $viewing_professional_id) {
       <!-- Services Grid -->
       <div class="services-grid" id="services-grid">
         <?php
-        // Get all services with professional information
+        // Get services for the specific professional or all services if no professional selected
         $query = "SELECT s.*, u.name as professional_name, p.img as professional_img 
                  FROM Service s 
                  JOIN User u ON s.professional_id = u.user_id
                  JOIN Professional p ON s.professional_id = p.professional_id";
+        
+        // Add WHERE clause if viewing a specific professional
+        if ($viewing_professional_id) {
+            $query .= " WHERE s.professional_id = " . intval($viewing_professional_id);
+        }
+        
         $result = mysqli_query($conn, $query);
         
         if ($result && mysqli_num_rows($result) > 0) {
           while($service = mysqli_fetch_assoc($result)) {
             $formattedPrice = number_format($service['price'], 2);
             $professionalImg = !empty($service['professional_img']) ? 'images/' . $service['professional_img'] : 'images/default-professional.jpg';
+            
+            // Get average rating for this service
+            $rating_query = "SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
+                           FROM Review 
+                           WHERE service_id = " . $service['service_id'];
+            $rating_result = mysqli_query($conn, $rating_query);
+            $rating_data = mysqli_fetch_assoc($rating_result);
+            $avg_rating = round($rating_data['avg_rating'] ?? 0, 1);
+            $review_count = $rating_data['review_count'] ?? 0;
+            
+            // Convert rating to stars (1-5)
+            $stars = str_repeat('★', floor($avg_rating)) . str_repeat('☆', 5 - floor($avg_rating));
             ?>
             <article class="service-card">
               <button class="favorite-btn" aria-label="Add to favorites">
@@ -744,10 +762,12 @@ if (empty($services) && $viewing_professional_id) {
                     <div class="service-price">SAR <?php echo $formattedPrice; ?></div>
                     <div class="service-duration"><?php echo $service['duration']; ?> min</div>
                   </div>
+                  <?php if ($review_count > 0): ?>
                   <div class="service-rating">
-                    <span class="stars">★★★★★</span>
-                    <span>(<?php echo rand(10, 100); ?>)</span>
+                    <span class="stars" title="<?php echo $avg_rating; ?> out of 5"><?php echo $stars; ?></span>
+                    <span>(<?php echo $review_count; ?>)</span>
                   </div>
+                  <?php endif; ?>
                 </div>
               </div>
               <div class="service-footer">
@@ -766,141 +786,88 @@ if (empty($services) && $viewing_professional_id) {
       <!-- Reviews Tab -->
       <div class="tab-content" id="reviews-content">
         <div class="reviews-grid">
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Aisha K.</span>
-                  <span class="review-service-name">Signature Glow Makeup</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Flawless finish and super professional. Makeup lasted all night! Sarah is incredibly talented and made me feel so confident.</p>
-            <div class="review-date">2 weeks ago</div>
-          </article>
+          <?php
+// Get reviews for the professional with detailed error logging
+error_log("Viewing Professional ID: " . $viewing_professional_id);
+error_log("Professional ID: " . $professional_id);
 
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Dana R.</span>
-                  <span class="review-service-name">Soft Waves Styling</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Exactly what I wanted. Soft & elegant waves, perfect for photos. Very professional and friendly service!</p>
-            <div class="review-date">3 weeks ago</div>
-          </article>
+$prof_id = $viewing_professional_id ?? $professional_id;
+error_log("Using Professional ID for reviews: " . $prof_id);
 
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Lama S.</span>
-                  <span class="review-service-name">Evening Glam</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★☆</span>
-              </div>
-            </div>
-            <p class="review-card-text">Loved the look! Arrived on time and very friendly. The makeup was bold and beautiful, exactly what I asked for.</p>
-            <div class="review-date">1 month ago</div>
-          </article>
+// First, check if we have a valid professional ID
+if (!$prof_id) {
+    error_log("Error: No professional ID available for fetching reviews");
+    echo '<p class="no-reviews">Professional not specified.</p>';
+} else {
+    // Check if there are any reviews for this professional
+    $check_reviews = mysqli_prepare($conn, "SELECT COUNT(*) as review_count FROM Review WHERE professional_id = ?");
+    mysqli_stmt_bind_param($check_reviews, "i", $prof_id);
+    mysqli_stmt_execute($check_reviews);
+    $review_count = mysqli_fetch_assoc(mysqli_stmt_get_result($check_reviews))['review_count'];
+    error_log("Found $review_count reviews for professional ID: $prof_id");
 
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Noor A.</span>
-                  <span class="review-service-name">Hydrating Facial</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Great prep — skin looked smooth and hydrated under makeup. Sarah really knows her skincare!</p>
-            <div class="review-date">1 month ago</div>
-          </article>
+    $reviews_query = "SELECT r.*, u.name as client_name, s.title as service_title, 
+                     DATE_FORMAT(r.review_date, '%M %e, %Y') as formatted_date
+                     FROM Review r
+                     JOIN User u ON r.client_id = u.user_id
+                     JOIN Service s ON r.service_id = s.service_id
+                     WHERE r.professional_id = ?
+                     ORDER BY r.review_date DESC";
 
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Reem K.</span>
-                  <span class="review-service-name">Gel Manicure</span>
+    error_log("Executing query: " . str_replace('?', $prof_id, $reviews_query));
+    
+    $stmt = mysqli_prepare($conn, $reviews_query);
+    
+    if ($stmt) {
+        mysqli_stmt_bind_param($stmt, "i", $prof_id);
+        if (!mysqli_stmt_execute($stmt)) {
+            error_log("Query execution failed: " . mysqli_error($conn));
+            echo '<p class="no-reviews">Error executing query. Check error logs.</p>';
+        } else {
+            $reviews_result = mysqli_stmt_get_result($stmt);
+            if (!$reviews_result) {
+                error_log("Failed to get result set: " . mysqli_error($conn));
+                echo '<p class="no-reviews">Error fetching reviews. Check error logs.</p>';
+            }
+    
+            if (mysqli_num_rows($reviews_result) > 0) {
+                error_log("Found " . mysqli_num_rows($reviews_result) . " reviews to display");
+                while($review = mysqli_fetch_assoc($reviews_result)) {
+                    error_log("Processing review: " . print_r($review, true));
+                    // Convert rating to stars (1-5)
+                    $stars = str_repeat('★', $review['rating']) . str_repeat('☆', 5 - $review['rating']);
+                    // Get first letter of client's name for avatar
+                    $initial = !empty($review['client_name']) ? strtoupper(substr($review['client_name'], 0, 1)) : 'U';
+            ?>
+            <article class="review-card">
+              <div class="review-card-header">
+                <div class="review-client">
+                  <span class="review-client-avatar"><?php echo $initial; ?></span>
+                  <div class="review-client-info">
+                    <span class="review-client-name"><?php echo htmlspecialchars($review['client_name']); ?></span>
+                    <span class="review-service-name"><?php echo htmlspecialchars($review['service_title']); ?></span>
+                  </div>
+                </div>
+                <div class="review-rating">
+                  <span class="stars" title="<?php echo $review['rating']; ?> out of 5"><?php echo $stars; ?></span>
                 </div>
               </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Perfect nails! Very professional and clean work. The gel lasted for weeks without chipping.</p>
-            <div class="review-date">2 months ago</div>
-          </article>
-
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Hessa M.</span>
-                  <span class="review-service-name">Bridal Makeup Package</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Made my wedding day perfect! Absolutely stunning results. Sarah is a true artist and made me feel like a princess.</p>
-            <div class="review-date">2 months ago</div>
-          </article>
-
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Layla T.</span>
-                  <span class="review-service-name">Signature Glow Makeup</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Amazing experience! Sarah listened to what I wanted and delivered perfectly. Will definitely book again.</p>
-            <div class="review-date">3 months ago</div>
-          </article>
-
-          <article class="review-card">
-            <div class="review-card-header">
-              <div class="review-client">
-                <span class="review-client-avatar"></span>
-                <div class="review-client-info">
-                  <span class="review-client-name">Maha K.</span>
-                  <span class="review-service-name">Evening Glam</span>
-                </div>
-              </div>
-              <div class="review-rating">
-                <span class="stars">★★★★★</span>
-              </div>
-            </div>
-            <p class="review-card-text">Stunning work! The contouring was flawless and the lashes looked so natural. Highly recommend!</p>
-            <div class="review-date">3 months ago</div>
-          </article>
+              <p class="review-card-text"><?php echo htmlspecialchars($review['comment']); ?></p>
+              <div class="review-date"><?php echo $review['formatted_date']; ?></div>
+            </article>
+            <?php
+        }
+            } else {
+                error_log("No reviews found for professional ID: " . $prof_id);
+                echo '<p class="no-reviews">No reviews yet. Be the first to leave a review!</p>';
+            }
+        }
+    } else {
+        error_log("Failed to prepare statement: " . mysqli_error($conn));
+        echo '<p class="no-reviews">Error preparing review query. Check error logs.</p>';
+    }
+}
+          ?>
         </div>
       </div>
       <!-- End Reviews Tab -->
