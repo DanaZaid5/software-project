@@ -1,29 +1,34 @@
-
 <?php
-// الاتصال بقاعدة البيانات
-$conn = mysqli_connect("localhost", "root", "root","glammd");
+session_start();
+
+// Better: reuse your shared DB connection if you have db.php
+// require 'db.php';
+// Assuming you are using MAMP (root/root). Adjust if needed:
+$conn = mysqli_connect("localhost", "root", "root", "glammd");
 if (!$conn) {
     die("Connection failed: " . mysqli_connect_error());
 }
 
-// جلب البروفشنلز
-$sql = "SELECT 
-    User.user_id,
-    User.name,
-    Professional.img,
-    GROUP_CONCAT(DISTINCT Service.category SEPARATOR ', ') AS services
-FROM User
-INNER JOIN Professional
-    ON User.user_id = Professional.professional_id
-LEFT JOIN Service
-    ON Professional.professional_id = Service.professional_id
-WHERE User.role = 'professional'
-GROUP BY User.user_id, User.name, Professional.img";;
-
-
+/*
+  Get professionals + the categories of services they offer.
+  We group services per professional, e.g. "Makeup, Hair, Nails"
+*/
+$sql = "
+    SELECT 
+        u.user_id,
+        u.name,
+        p.img,
+        GROUP_CONCAT(DISTINCT s.category ORDER BY s.category SEPARATOR ', ') AS categories
+    FROM User u
+    INNER JOIN Professional p
+        ON u.user_id = p.professional_id
+    LEFT JOIN Service s
+        ON s.professional_id = p.professional_id
+    WHERE u.role = 'professional'
+    GROUP BY u.user_id, u.name, p.img
+";
 
 $result = mysqli_query($conn, $sql);
-
 ?>
 <!doctype html>
 <html lang="en">
@@ -37,138 +42,127 @@ $result = mysqli_query($conn, $sql);
   <link rel="stylesheet" href="common.css">
 
   <style>
-:root {
-  --hero-image: url("img/download.jpeg");
-  --hero-min-h: min(78svh, 51.25rem); /* 820px */
-}
+    :root {
+      --hero-image: url("img/download.jpeg");
+      --hero-min-h: min(78svh, 51.25rem); /* 820px */
+    }
 
-.home .site-header {
-  background: transparent;
-  border-bottom: none;
-  backdrop-filter: none;
-  box-shadow: none;
-}
+    .home .site-header {
+      background: transparent;
+      border-bottom: none;
+      backdrop-filter: none;
+      box-shadow: none;
+    }
 
-.home .site-header.show {
-  backdrop-filter: saturate(150%) blur(0.5rem);
-  background: color-mix(in srgb, white 75%, transparent);
-  border-bottom: 0.0625rem solid rgba(0,0,0,.06);
-  box-shadow: 0 0.0625rem 0.625rem rgba(0,0,0,.04);
-}
+    .home .site-header.show {
+      backdrop-filter: saturate(150%) blur(0.5rem);
+      background: color-mix(in srgb, white 75%, transparent);
+      border-bottom: 0.0625rem solid rgba(0,0,0,.06);
+      box-shadow: 0 0.0625rem 0.625rem rgba(0,0,0,.04);
+    }
 
-.hero {
-  position: relative;
-  min-height: var(--hero-min-h);
-  display: grid;
-  place-items: center;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
-    var(--hero-image);
-  background-size: cover;
-  background-position: center 20%;
-  background-repeat: no-repeat;
-}
+    .hero {
+      position: relative;
+      min-height: var(--hero-min-h);
+      display: grid;
+      place-items: center;
+      background-image:
+        linear-gradient(rgba(255,255,255,0.25), rgba(255,255,255,0.25)),
+        var(--hero-image);
+      background-size: cover;
+      background-position: center 20%;
+      background-repeat: no-repeat;
+    }
 
-.hero::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0) 60%,
-    rgba(255,255,255,0.4) 85%,
-    rgba(255,255,255,1) 100%
-  );
-  pointer-events: none;
-}
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to bottom,
+        rgba(255,255,255,0) 0%,
+        rgba(255,255,255,0) 60%,
+        rgba(255,255,255,0.4) 85%,
+        rgba(255,255,255,1) 100%
+      );
+      pointer-events: none;
+    }
 
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,.0) 0%,
-    rgba(255,255,255,.06) 40%,
-    rgba(255,255,255,.08) 100%
-  );
-}
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        180deg,
+        rgba(255,255,255,.0) 0%,
+        rgba(255,255,255,.06) 40%,
+        rgba(255,255,255,.08) 100%
+      );
+    }
 
-.hero-content {
-  position: relative;
-  text-align: center;
-  padding: 4.5rem 0 2.5rem; /* 72px 0 40px */
-}
+    .hero-content {
+      position: relative;
+      text-align: center;
+      padding: 4.5rem 0 2.5rem; /* 72px 0 40px */
+    }
 
-.hero-title {
-  margin: 0;
-  font-family: "Playfair Display", Georgia, serif;
-  font-weight: 900;
-  font-size: clamp(2.5rem, 6vw, 5.25rem); /* 40px–84px */
-  line-height: 0.95;
-  letter-spacing: -0.03125rem; /* -0.5px */
-}
+    .hero-title {
+      margin: 0;
+      font-family: "Playfair Display", Georgia, serif;
+      font-weight: 900;
+      font-size: clamp(2.5rem, 6vw, 5.25rem); /* 40px–84px */
+      line-height: 0.95;
+      letter-spacing: -0.03125rem; /* -0.5px */
+    }
 
-   .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin: 2rem 1.5rem;
-    justify-content: flex-start;
-  }
+    /* ===== Filters & cards (your marketplace UI) ===== */
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin: 2rem 1.5rem;
+      justify-content: flex-start;
+    }
 
-  .filter-group {
-    display: flex;
-    flex-direction: column;
-    background: #fff;
-    border-radius: 1rem;
-    padding: 0.9375rem 1.25rem;
-    box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.05);
-    transition: transform 0.2s, box-shadow 0.2s;
-    cursor: pointer;
-    min-width: 11.25rem;
-  }
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      background: #fff;
+      border-radius: 1rem;
+      padding: 0.9375rem 1.25rem;
+      box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.05);
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      min-width: 11.25rem;
+    }
 
-  .filter-group:hover {
-    transform: translateY(-0.25rem);
-    box-shadow: 0 0.375rem 1.5625rem rgba(255,117,140,0.2);
-  }
+    .filter-group:hover {
+      transform: translateY(-0.25rem);
+      box-shadow: 0 0.375rem 1.5625rem rgba(255,117,140,0.2);
+    }
 
-  .filter-label {
-    font-size: 0.75rem;
-    color: #888;
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    text-transform: uppercase;
-    letter-spacing: 0.0625rem; /* 1px */
-  }
+    .filter-label {
+      font-size: 0.75rem;
+      color: #888;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+      letter-spacing: 0.0625rem;
+    }
 
-  .filter-select {
-    border: none;
-    font-size: 0.875rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 0.75rem;
-    box-shadow: inset 0 0.0625rem 0.1875rem rgba(0,0,0,0.1);
-    background: #fdfdfd;
-    cursor: pointer;
-    transition: all 0.2s;
-    appearance: none;
-    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23888' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.5rem center;
-    background-size: 1.25em 1.25em;
-    padding-right: 2rem;
-  }
+    .filter-select {
+      border: none;
+      font-size: 0.875rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.75rem;
+      box-shadow: inset 0 0.0625rem 0.1875rem rgba(0,0,0,0.1);
+      background: #fdfdfd;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
 
-  .filter-select:hover {
-    box-shadow: inset 0 0.125rem 0.375rem rgba(0,0,0,0.15);
-  }
-
-  .filter-select:focus {
-    outline: none;
-    box-shadow: 0 0 0 0.125rem rgba(255, 117, 140, 0.3); /* 2px */
-  }
-
+    .filter-select:hover {
+      box-shadow: inset 0 0.125rem 0.375rem rgba(0,0,0,0.15);
+    }
 
     .salon-list {
       display: flex;
@@ -215,8 +209,6 @@ $result = mysqli_query($conn, $sql);
       font-size: 0.875rem;
       color: #777;
     }
-
-
   </style>
 </head>
 
@@ -224,11 +216,28 @@ $result = mysqli_query($conn, $sql);
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#">Glammd</a>
-      <nav class="nav">
-        <a href="login.php" class="nav-link">Log in</a>
-        <a href="signup.php" class="cta">Sign up</a>
-      </nav>
+      <a class="brand" href="index.php">Glammd</a>
+    <nav class="nav">
+  <?php if (isset($_SESSION['user_id'])): ?>
+    
+    <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'client'): ?>
+      <!-- Client: show dashboard -->
+      <a href="clientdashboard.php" class="nav-link">Dashboard</a>
+    <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'professional'): ?>
+      <!-- Professional (if you want): -->
+      <a href="professionaldashboard.php" class="nav-link">Dashboard</a>
+    <?php endif; ?>
+
+    <!-- Common for any logged-in user -->
+    <a href="logout.php" class="cta">Log out</a>
+
+  <?php else: ?>
+    <!-- Not logged in -->
+    <a href="login.php" class="nav-link">Log in</a>
+    <a href="signup.php" class="cta">Sign up</a>
+  <?php endif; ?>
+</nav>
+
     </div>
   </header>
 
@@ -240,48 +249,45 @@ $result = mysqli_query($conn, $sql);
     </div>
   </section>
   
- <!-- Marketplace content -->
+  <!-- Marketplace content -->
   <main class="page">
-  <div class="filters">
-        <div class="filter-group">
-          <label class="filter-label">Category</label>
-          <select class="filter-select" id="categoryFilter">
-            <option value="">All Categories</option>
-            <option value="makeup">Makeup</option>
-            <option value="hair">Hair</option>
-            <option value="skin">SkinCare</option>
-            <option value="nails">Nails</option>
-          </select>
-        </div>
-      </div>
-
-     <!-- <div class="filter-group">
-        <label class="filter-label">city</label>
-        <select class="filter-select">
-          <option>All</option>
-          <option>Riyadh</option>
-          <option>Jeddah</option>
+    <section class="filters">
+      <div class="filter-group">
+        <label class="filter-label">Service</label>
+        <select class="filter-select" id="serviceFilter">
+          <option value="">All</option>
+          <option value="Hair">Haircut</option>
+          <option value="Makeup">Makeup</option>
+          <option value="Nails">Nails</option>
+          <option value="Skincare">Skin Care</option>
+          <option value="Bodycare">Bodycare</option>
         </select>
-      </div> !> -->
+      </div>
     </section>
 
     <!-- Dynamic Cards -->
     <section class="salon-list">
-
-      <?php while ($row = mysqli_fetch_assoc($result)) { ?>
-
-        <div class="salon-card" onclick="window.location.href='services.php?professional_id=<?= $row['user_id'] ?>'" style="cursor: pointer;">
-          <img src="img/<?= $row['img'] ?>" alt="Salon Image" loading="lazy">
-          <div class="salon-info">
-            <h3><?= $row['name'] ?></h3>
-              <p><?= $row['services'] ? $row['services'] : 'No services listed' ?></p>
+      <?php while ($row = mysqli_fetch_assoc($result)) :
+          $categories = $row['categories'] ?? '';
+      ?>
+        <div
+          class="salon-card"
+          data-categories="<?= htmlspecialchars(strtolower($categories ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+          onclick="window.location.href='services.php?professional_id=<?= (int)$row['user_id'] ?>'">
+          
+          <img src="img/<?= htmlspecialchars($row['img'], ENT_QUOTES, 'UTF-8') ?>" alt="Professional Image">
+          
+         <div class="salon-info">
+            <h3><?= htmlspecialchars($row['name'], ENT_QUOTES, 'UTF-8') ?></h3>
+            <?php if (!empty($categories)): ?>
+              <p>Services: <?= htmlspecialchars($categories, ENT_QUOTES, 'UTF-8') ?></p>
+            <?php else: ?>
+              <p>Services: Not specified</p>
+            <?php endif; ?>
           </div>
         </div>
-
-      <?php } ?>
-
+      <?php endwhile; ?>
     </section>
-
   </main>
 
   <!-- Footer -->
@@ -296,29 +302,26 @@ $result = mysqli_query($conn, $sql);
     </div>
   </footer>
 
-  <script src="homeScript.js">
-  </script>
+  <script src="homeScript.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-  const serviceSelect = document.querySelector(".filter-select"); // اختيار فلتر الخدمة فقط
-  const salonCards = document.querySelectorAll(".salon-card");
+      const serviceSelect = document.getElementById("serviceFilter");
+      const salonCards = document.querySelectorAll(".salon-card");
 
-  serviceSelect.addEventListener("change", filterSalons);
+      function filterSalons() {
+        const selectedService = (serviceSelect.value || "").toLowerCase();
 
-  function filterSalons() {
-    const selectedService = serviceSelect.value.toLowerCase();
+        salonCards.forEach(card => {
+          const categories = (card.dataset.categories || "").toLowerCase();
+          const matchesService =
+            !selectedService || categories.includes(selectedService.toLowerCase());
 
-    salonCards.forEach(card => {
-      const servicesText = card.querySelector(".salon-info p").textContent.toLowerCase();
-      
-      const matchesService =
-        selectedService === "all" || servicesText.includes(selectedService);
+          card.style.display = matchesService ? "flex" : "none";
+        });
+      }
 
-      card.style.display = matchesService ? "flex" : "none"; // عرض أو إخفاء الكارد
+      serviceSelect.addEventListener("change", filterSalons);
     });
-  }
-});
-
   </script>
 </body>
 </html>
