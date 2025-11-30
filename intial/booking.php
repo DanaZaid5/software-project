@@ -340,7 +340,7 @@ body {
 
         <!-- HEADER -->
         <div class="booking-header">
-          <img src="img/<?= htmlspecialchars($service['pro_img']) ?>" alt="">
+          <img src="img/<?= htmlspecialchars($service['pro_img']) ?>" alt="" loading="lazy">
           <div class="info">
             <h2><?= htmlspecialchars($service['professional_name']) ?></h2>
             <p><?= htmlspecialchars($service['bio']) ?></p>

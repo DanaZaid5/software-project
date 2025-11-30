@@ -253,7 +253,7 @@
       <!-- Professional profile card + Edit button -->
       <section class="professional-profile">
         <div class="professional-photo">
-          <img src="img/pro1.jpg" alt="Sarah M.">
+          <img src="img/pro1.jpg" alt="Sarah M." loading="lazy">
         </div>
         <div class="professional-info">
           <div class="profile-header-row">
