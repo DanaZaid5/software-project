@@ -1,4 +1,7 @@
-<!doctype html>
+<?php
+session_start();
+?>
+<!Doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -133,8 +136,6 @@
   letter-spacing: 0.01875rem; /* 0.3px */
   margin-bottom: 1rem; /* 16px */
 }
-
-
   </style>
 </head>
 
@@ -142,10 +143,19 @@
   <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#">Glammd</a>
+      <a class="brand" href="home.php">Glammd</a>
       <nav class="nav">
-        <a href="login.php" class="nav-link">Log in</a>
-        <a href="signup.php" class="cta">Sign up</a>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <?php if (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'client'): ?>
+            <a href="clientdashboard.php" class="nav-link">Dashboard</a>
+          <?php elseif (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'professional'): ?>
+            <a href="professionaldashboard.php" class="nav-link">Dashboard</a>
+          <?php endif; ?>
+          <a href="logout.php" class="cta">Log out</a>
+        <?php else: ?>
+          <a href="login.php" class="nav-link">Log in</a>
+          <a href="signup.php" class="cta">Sign up</a>
+        <?php endif; ?>
       </nav>
     </div>
   </header>
@@ -157,22 +167,19 @@
       <h1 class="hero-title">Book local beauty and wellness services</h1>
     </div>
   </section>
-  
 
   <!-- Vision & Mission -->
   <main class="container page">
     <section class="vision-section">
-	
-	      <div class="explore-wrapper">
+      <div class="explore-wrapper">
         <span class="explore-text">Discover local beauty experiences</span>
         <a href="MarketPlace.php" class="explore-btn">Start Exploring</a>
       </div>
-	  
+
       <h2>Our Vision</h2>
       <p>To empower local professionals and clients through seamless, trusted, and beautiful connections that redefine self-care and creativity.</p>
       <h2>Our Mission</h2>
       <p>To make beauty and wellness services accessible, personal, and inspiring — by bringing local expertise right to your fingertips.</p>
-
     </section>
   </main>
 
