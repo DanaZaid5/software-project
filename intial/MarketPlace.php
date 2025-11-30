@@ -7,14 +7,19 @@ if (!$conn) {
 }
 
 // جلب البروفشنلز
-$sql =" SELECT 
+$sql = "SELECT 
     User.user_id,
     User.name,
-    Professional.img
+    Professional.img,
+    GROUP_CONCAT(DISTINCT Service.category SEPARATOR ', ') AS services
 FROM User
 INNER JOIN Professional
-ON User.user_id = Professional.professional_id
-WHERE User.role = 'professional'";
+    ON User.user_id = Professional.professional_id
+LEFT JOIN Service
+    ON Professional.professional_id = Service.professional_id
+WHERE User.role = 'professional'
+GROUP BY User.user_id, User.name, Professional.img";;
+
 
 
 $result = mysqli_query($conn, $sql);
@@ -104,55 +109,66 @@ $result = mysqli_query($conn, $sql);
   letter-spacing: -0.03125rem; /* -0.5px */
 }
 
-    /* ===== Filters & cards (your marketplace UI) ===== */
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin: 2rem 1.5rem;
-      justify-content: flex-start;
-    }
+   .filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin: 2rem 1.5rem;
+    justify-content: flex-start;
+  }
 
-    .filter-group {
-      display: flex;
-      flex-direction: column;
-      background: #fff;
-      border-radius: 1rem;
-      padding: 0.9375rem 1.25rem;
-      box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.05);
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-      min-width: 11.25rem;
-    }
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border-radius: 1rem;
+    padding: 0.9375rem 1.25rem;
+    box-shadow: 0 0.25rem 1.25rem rgba(0,0,0,0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    min-width: 11.25rem;
+  }
 
-    .filter-group:hover {
-      transform: translateY(-0.25rem);
-      box-shadow: 0 0.375rem 1.5625rem rgba(255,117,140,0.2);
-    }
+  .filter-group:hover {
+    transform: translateY(-0.25rem);
+    box-shadow: 0 0.375rem 1.5625rem rgba(255,117,140,0.2);
+  }
 
-    .filter-label {
-      font-size: 0.75rem;
-      color: #888;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      text-transform: uppercase;
-      letter-spacing: 0.0625rem;
-    }
+  .filter-label {
+    font-size: 0.75rem;
+    color: #888;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.0625rem; /* 1px */
+  }
 
-    .filter-select {
-      border: none;
-      font-size: 0.875rem;
-      padding: 0.5rem 0.75rem;
-      border-radius: 0.75rem;
-      box-shadow: inset 0 0.0625rem 0.1875rem rgba(0,0,0,0.1);
-      background: #fdfdfd;
-      cursor: pointer;
-      transition: all 0.2s;
-    }
+  .filter-select {
+    border: none;
+    font-size: 0.875rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.75rem;
+    box-shadow: inset 0 0.0625rem 0.1875rem rgba(0,0,0,0.1);
+    background: #fdfdfd;
+    cursor: pointer;
+    transition: all 0.2s;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23888' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 0.5rem center;
+    background-size: 1.25em 1.25em;
+    padding-right: 2rem;
+  }
 
-    .filter-select:hover {
-      box-shadow: inset 0 0.125rem 0.375rem rgba(0,0,0,0.15);
-    }
+  .filter-select:hover {
+    box-shadow: inset 0 0.125rem 0.375rem rgba(0,0,0,0.15);
+  }
+
+  .filter-select:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.125rem rgba(255, 117, 140, 0.3); /* 2px */
+  }
+
 
     .salon-list {
       display: flex;
@@ -226,15 +242,17 @@ $result = mysqli_query($conn, $sql);
   
  <!-- Marketplace content -->
   <main class="page">
- <section class="filters">
-      <div class="filter-group">
-        <label class="filter-label">Service</label>
-        <select class="filter-select">
-          <option>All</option>
-          <option>Haircut</option>
-          <option>Makeup</option>
-          <option>Nails</option>
-        </select>
+  <div class="filters">
+        <div class="filter-group">
+          <label class="filter-label">Category</label>
+          <select class="filter-select" id="categoryFilter">
+            <option value="">All Categories</option>
+            <option value="makeup">Makeup</option>
+            <option value="hair">Hair</option>
+            <option value="skin">SkinCare</option>
+            <option value="nails">Nails</option>
+          </select>
+        </div>
       </div>
 
      <!-- <div class="filter-group">
@@ -256,6 +274,7 @@ $result = mysqli_query($conn, $sql);
           <img src="img/<?= $row['img'] ?>" alt="Salon Image">
           <div class="salon-info">
             <h3><?= $row['name'] ?></h3>
+              <p><?= $row['services'] ? $row['services'] : 'No services listed' ?></p>
           </div>
         </div>
 
@@ -281,37 +300,25 @@ $result = mysqli_query($conn, $sql);
   </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-  const serviceSelect = document.querySelectorAll(".filter-select")[0];
-  const citySelect = document.querySelectorAll(".filter-select")[1];
+  const serviceSelect = document.querySelector(".filter-select"); // اختيار فلتر الخدمة فقط
   const salonCards = document.querySelectorAll(".salon-card");
 
- 
   serviceSelect.addEventListener("change", filterSalons);
-  citySelect.addEventListener("change", filterSalons);
 
   function filterSalons() {
     const selectedService = serviceSelect.value.toLowerCase();
-    const selectedCity = citySelect.value.toLowerCase();
 
     salonCards.forEach(card => {
-      const infoParagraphs = card.querySelectorAll(".salon-info p");
-      const serviceText = infoParagraphs[0].textContent.toLowerCase(); 
-      const cityText = infoParagraphs[1].textContent.toLowerCase();    
-
+      const servicesText = card.querySelector(".salon-info p").textContent.toLowerCase();
+      
       const matchesService =
-        selectedService === "all" || serviceText.includes(selectedService);
-      const matchesCity =
-        selectedCity === "all" || cityText.includes(selectedCity);
+        selectedService === "all" || servicesText.includes(selectedService);
 
-      // Show or hide card
-      if (matchesService && matchesCity) {
-        card.style.display = "block";
-      } else {
-        card.style.display = "none";
-      }
+      card.style.display = matchesService ? "flex" : "none"; // عرض أو إخفاء الكارد
     });
   }
 });
+
   </script>
 </body>
 </html>
