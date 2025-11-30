@@ -5,112 +5,151 @@ session_start();
 // Database connection
 require_once 'db.php';
 
-// Initialize variables
-$is_logged_in = isset($_SESSION['user_id']);
+// ---------- BASIC USER FLAGS ----------
+$is_logged_in    = isset($_SESSION['user_id']);
+$user_id         = $is_logged_in ? (int)$_SESSION['user_id'] : null;
+
 $is_professional = false;
 $professional_id = null;
-$user_id = $is_logged_in ? $_SESSION['user_id'] : null;
 
-// Check if user is a professional (only if logged in)
+$is_client       = false;
+$client_id       = null;
+$boards          = [];
+$savedServiceIds = [];
+
+// ---------- DETECT CLIENT + LOAD BOARDS & SAVED SERVICES ----------
 if ($is_logged_in) {
-    $check_professional = mysqli_prepare($conn, "SELECT professional_id FROM Professional WHERE professional_id = ?");
-    mysqli_stmt_bind_param($check_professional, "i", $user_id);
-    mysqli_stmt_execute($check_professional);
-    $result = mysqli_stmt_get_result($check_professional);
+    // Is this user a client?
+    if ($stmt = $conn->prepare("SELECT client_id FROM Client WHERE client_id = ?")) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        if ($row = $res->fetch_assoc()) {
+            $is_client  = true;
+            $client_id  = (int)$row['client_id'];
+            $_SESSION['client_id'] = $client_id;
+        }
+        $stmt->close();
+    }
 
-    if (mysqli_num_rows($result) > 0) {
-        $is_professional = true;
-        $professional = mysqli_fetch_assoc($result);
-        $professional_id = $professional['professional_id'];
+    if ($is_client && $client_id) {
+        // Which services are already saved in ANY board?
+        if ($stmtSaved = $conn->prepare("
+            SELECT DISTINCT li.service_id
+            FROM ListItem li
+            JOIN List l ON li.list_id = l.list_id
+            WHERE l.client_id = ?
+        ")) {
+            $stmtSaved->bind_param("i", $client_id);
+            $stmtSaved->execute();
+            $resSaved = $stmtSaved->get_result();
+            while ($row = $resSaved->fetch_assoc()) {
+                $savedServiceIds[] = (int)$row['service_id'];
+            }
+            $stmtSaved->close();
+        }
+
+        // Load their boards
+        if ($stmt2 = $conn->prepare("SELECT list_id, name FROM List WHERE client_id = ? ORDER BY list_id DESC")) {
+            $stmt2->bind_param("i", $client_id);
+            $stmt2->execute();
+            $boardsRes = $stmt2->get_result();
+            while ($b = $boardsRes->fetch_assoc()) {
+                $boards[] = $b;
+            }
+            $stmt2->close();
+        }
+    }
+
+    // ---------- DETECT PROFESSIONAL ----------
+    if ($stmt = $conn->prepare("SELECT professional_id FROM Professional WHERE professional_id = ?")) {
+        $stmt->bind_param("i", $user_id);
+        $stmt->execute();
+        $res = $stmt->get_result();
+        if ($row = $res->fetch_assoc()) {
+            $is_professional = true;
+            $professional_id = (int)$row['professional_id'];
+        }
+        $stmt->close();
     }
 }
 
-// Check if viewing a specific professional's services
-$viewing_professional_id = isset($_GET['professional_id']) ? intval($_GET['professional_id']) : null;
+// ---------- WHICH PROFESSIONAL ARE WE VIEWING? ----------
+$viewing_professional_id = isset($_GET['professional_id']) ? (int)$_GET['professional_id'] : null;
 
-// Build the query based on the viewing context
+$current_professional = null;
+$services             = [];
+
+// ---------- LOAD SERVICES ----------
 if ($viewing_professional_id) {
     // Viewing a specific professional's services
-    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio, p.professional_id
-              FROM Service s 
-              JOIN Professional p ON s.professional_id = p.professional_id 
-              JOIN User u ON p.professional_id = u.user_id
-              WHERE s.professional_id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
-    
-    // Get professional info
-    $prof_query = "SELECT u.name, p.bio, p.img as professional_img 
-                  FROM User u 
-                  JOIN Professional p ON u.user_id = p.professional_id 
-                  WHERE p.professional_id = ?";
-    $prof_stmt = mysqli_prepare($conn, $prof_query);
-    mysqli_stmt_bind_param($prof_stmt, "i", $viewing_professional_id);
-    mysqli_stmt_execute($prof_stmt);
-    $current_professional = mysqli_fetch_assoc(mysqli_stmt_get_result($prof_stmt));
+    $sql = "SELECT s.*, u.name AS professional_name, p.img AS professional_img, p.bio
+            FROM Service s
+            JOIN Professional p ON s.professional_id = p.professional_id
+            JOIN User u ON p.professional_id = u.user_id
+            WHERE s.professional_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $viewing_professional_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 } elseif ($is_professional && !$viewing_professional_id) {
     // Professional viewing their own services
-    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
-              FROM Service s 
-              JOIN Professional p ON s.professional_id = p.professional_id 
-              JOIN User u ON p.professional_id = u.user_id
-              WHERE s.professional_id = ?";
-    $stmt = mysqli_prepare($conn, $query);
-    mysqli_stmt_bind_param($stmt, "i", $professional_id);
-    mysqli_stmt_execute($stmt);
-    $result = mysqli_stmt_get_result($stmt);
+    $sql = "SELECT s.*, u.name AS professional_name, p.img AS professional_img, p.bio
+            FROM Service s
+            JOIN Professional p ON s.professional_id = p.professional_id
+            JOIN User u ON p.professional_id = u.user_id
+            WHERE s.professional_id = ?";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("i", $professional_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
 } else {
-    // Default view - show all services
-    $query = "SELECT s.*, u.name as professional_name, p.img as professional_img, p.bio
-              FROM Service s 
-              JOIN Professional p ON s.professional_id = p.professional_id 
-              JOIN User u ON p.professional_id = u.user_id
-              ORDER BY s.title";
-    $result = mysqli_query($conn, $query);
+    // Default view: show all services
+    $sql = "SELECT s.*, u.name AS professional_name, p.img AS professional_img, p.bio
+            FROM Service s
+            JOIN Professional p ON s.professional_id = p.professional_id
+            JOIN User u ON p.professional_id = u.user_id
+            ORDER BY s.title";
+    $result = $conn->query($sql);
 }
 
-// Store services in an array
-$services = [];
-$current_professional = null;
-
-// Get professional info if viewing a specific professional
-if ($viewing_professional_id) {
-    $prof_query = "SELECT u.name, p.bio, p.img as professional_img 
-                  FROM User u 
-                  JOIN Professional p ON u.user_id = p.professional_id 
-                  WHERE p.professional_id = ?";
-    $stmt = mysqli_prepare($conn, $prof_query);
-    mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
-    mysqli_stmt_execute($stmt);
-    $current_professional = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
-}
-
-// Process services
-while ($row = mysqli_fetch_assoc($result)) {
-    $services[] = $row;
-    
-    // If we don't have current professional info yet, get it from the first result
-    if (!$current_professional && !$viewing_professional_id) {
-        $current_professional = [
-            'name' => $row['professional_name'],
-            'bio' => $row['bio'],
-            'img' => $row['professional_img']
-        ];
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $services[] = $row;
     }
 }
 
-// If no services found for a specific professional, try to get their info anyway
-if (empty($services) && $viewing_professional_id) {
-    $prof_query = "SELECT u.name, p.bio, p.img as professional_img 
-                  FROM User u 
-                  JOIN Professional p ON u.user_id = p.professional_id 
-                  WHERE p.professional_id = ?";
-    $stmt = mysqli_prepare($conn, $prof_query);
-    mysqli_stmt_bind_param($stmt, "i", $viewing_professional_id);
-    mysqli_stmt_execute($stmt);
-    $current_professional = mysqli_fetch_assoc(mysqli_stmt_get_result($stmt));
+// ---------- PROFESSIONAL INFO FOR HEADER ----------
+if ($viewing_professional_id) {
+    if (!empty($services)) {
+        $first = $services[0];
+        $current_professional = [
+            'name'            => $first['professional_name'],
+            'bio'             => $first['bio'],
+            'professional_img'=> $first['professional_img'],
+        ];
+    } else {
+        // No services but still show profile if possible
+        $sqlProf = "SELECT u.name, p.bio, p.img AS professional_img
+                    FROM User u
+                    JOIN Professional p ON u.user_id = p.professional_id
+                    WHERE p.professional_id = ?";
+        $stmt = $conn->prepare($sqlProf);
+        $stmt->bind_param("i", $viewing_professional_id);
+        $stmt->execute();
+        $current_professional = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+    }
+} else {
+    // Fallback: use first service to show some professional info
+    if (!empty($services)) {
+        $first = $services[0];
+        $current_professional = [
+            'name'            => $first['professional_name'],
+            'bio'             => $first['bio'],
+            'professional_img'=> $first['professional_img'],
+        ];
+    }
 }
 ?>
 <!doctype html>
@@ -120,11 +159,11 @@ if (empty($services) && $viewing_professional_id) {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Services - Glammd</title>
 
-  <!-- Fonts: display + ui -->
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="common.css">
-  
-  <!-- Page Styles -->
+
+ <!-- Page Styles -->
  <style>
   /* Page background */
   body{ background:#fafafa; }
@@ -702,16 +741,146 @@ if (empty($services) && $viewing_professional_id) {
       width: 100%;
     }
   }
+  
+  .board-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.board-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+}
+
+.board-modal-dialog {
+  position: relative;
+  z-index: 1001;
+  background: #fff;
+  border-radius: 1rem;
+  padding: 1.75rem;
+  width: min(90vw, 26rem);
+  box-shadow: 0 0.75rem 2.5rem rgba(0,0,0,0.18);
+}
+
+.board-modal-title {
+  margin: 0 0 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.board-modal-subtitle {
+  margin: 0 0 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.board-modal-list {
+  max-height: 10rem;
+  overflow-y: auto;
+  margin-bottom: 1rem;
+}
+
+.board-option {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
+  cursor: pointer;
+}
+
+.board-option input {
+  cursor: pointer;
+}
+
+.board-modal-divider {
+  text-align: center;
+  color: #888;
+  font-size: 0.8rem;
+  margin: 0.75rem 0;
+}
+
+.board-modal-new input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ddd;
+  margin-top: 0.35rem;
+  margin-bottom: 0.35rem;
+}
+
+.board-modal-new small {
+  font-size: 0.75rem;
+  color: #777;
+}
+
+.board-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.board-btn-primary,
+.board-btn-secondary {
+  border-radius: 999px;
+  padding: 0.5rem 1.1rem;
+  border: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.board-btn-primary {
+  background: #000;
+  color: #fff;
+  font-weight: 600;
+}
+
+.board-btn-secondary {
+  background: #f3f3f3;
+  color: #444;
+}
+
+.plus-circle {
+  width: 1.35rem;
+  height: 1.35rem;
+  border-radius: 50%;
+  border: none;
+  background: #000;
+  color: #fff;
+  margin-right: 0.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  pointer-events: none;
+}
+
 </style>
 
 </head>
 <body class="has-solid-header">
-  <!-- Header (from index.html) -->
+
+  <!-- Header -->
   <header id="siteHeader" class="site-header">
     <div class="container header-inner">
       <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="index.php" class="nav-link">Log out</a>
+        <?php if (isset($_SESSION['user_id'])): ?>
+          <?php if (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'client'): ?>
+            <a href="clientdashboard.php" class="nav-link">Dashboard</a>
+          <?php elseif (!empty($_SESSION['user_role']) && $_SESSION['user_role'] === 'professional'): ?>
+            <a href="professionaldashboard.php" class="nav-link">Dashboard</a>
+          <?php endif; ?>
+          <a href="logout.php" class="cta">Log out</a>
+        <?php else: ?>
+          <a href="login.php" class="nav-link">Log in</a>
+          <a href="signup.php" class="cta">Sign up</a>
+        <?php endif; ?>
       </nav>
     </div>
   </header>
@@ -731,265 +900,287 @@ if (empty($services) && $viewing_professional_id) {
       <!-- Professional Profile -->
       <div class="professional-profile">
         <div class="professional-photo">
-            <?php 
-            $img_src = 'img/default-profile.jpg';
-            if (!empty($current_professional['professional_img'])) {
-                $possible_paths = [
-                    'images/' . $current_professional['professional_img'],
-                    'img/' . $current_professional['professional_img'],
-                    $current_professional['professional_img']
-                ];
-                
-                foreach ($possible_paths as $path) {
-                    if (file_exists($path)) {
-                        $img_src = $path;
-                        break;
-                    }
-                }
-            }
-            ?>
-            <img src="<?php echo htmlspecialchars($img_src); ?>" 
-                 alt="<?php echo htmlspecialchars($current_professional['name'] ?? 'Professional'); ?>" 
-                 style="width:100%; height:100%; object-fit:cover; border-radius:50%;"
-                 onerror="this.onerror=null; this.src='img/default-profile.jpg';">
+          <?php
+          $img_src = 'img/default-profile.jpg';
+          if (!empty($current_professional['professional_img'])) {
+              $possible_paths = [
+                  'images/' . $current_professional['professional_img'],
+                  'img/' . $current_professional['professional_img'],
+                  $current_professional['professional_img']
+              ];
+              foreach ($possible_paths as $path) {
+                  if (file_exists($path)) {
+                      $img_src = $path;
+                      break;
+                  }
+              }
+          }
+          ?>
+          <img src="<?php echo htmlspecialchars($img_src); ?>"
+               alt="<?php echo htmlspecialchars($current_professional['name'] ?? 'Professional'); ?>"
+               style="width:100%; height:100%; object-fit:cover; border-radius:50%;"
+               onerror="this.onerror=null; this.src='img/default-profile.jpg';">
         </div>
         <div class="professional-info">
           <h1 class="professional-name"><?php echo htmlspecialchars($current_professional['name'] ?? 'Professional'); ?></h1>
           <p class="professional-title">Professional Beauty Specialist</p>
           <?php if (!empty($current_professional['bio'])): ?>
-          <p class="professional-bio">
-            <?php echo htmlspecialchars($current_professional['bio']); ?>
-          </p>
+            <p class="professional-bio">
+              <?php echo htmlspecialchars($current_professional['bio']); ?>
+            </p>
           <?php endif; ?>
         </div>
       </div>
 
       <!-- Tabs -->
       <div class="tabs">
-        <button class="tab active" data-tab="services" onclick="showTab('services')">Services</button>
-        <button class="tab" data-tab="reviews" onclick="showTab('reviews')">Reviews</button>
+        <button class="tab active" data-tab="services">Services</button>
+        <button class="tab" data-tab="reviews">Reviews</button>
       </div>
 
       <!-- Services Tab -->
       <div class="tab-content active" id="services-content">
-      <!-- Filters -->
-      <div class="filters">
-        <div class="filter-group">
-          <label class="filter-label">Category</label>
-          <select class="filter-select" id="categoryFilter">
-            <option value="">All Categories</option>
-            <option value="makeup">Makeup</option>
-            <option value="hair">Hair</option>
-            <option value="skin">Skin Care</option>
-            <option value="nails">Nails</option>
-          </select>
+        <!-- Filters -->
+        <div class="filters">
+          <div class="filter-group">
+            <label class="filter-label">Category</label>
+            <select class="filter-select" id="categoryFilter">
+              <option value="">All Categories</option>
+              <option value="makeup">Makeup</option>
+              <option value="hair">Hair</option>
+              <option value="skin">Skin Care</option>
+              <option value="nails">Nails</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label class="filter-label">Price Range</label>
+            <select class="filter-select" id="priceFilter">
+              <option value="">All Prices</option>
+              <option value="0-500">Under SAR 500</option>
+              <option value="500-1000">SAR 500 - 1,000</option>
+              <option value="1000+">SAR 1,000+</option>
+            </select>
+          </div>
         </div>
 
-        <div class="filter-group">
-          <label class="filter-label">Price Range</label>
-          <select class="filter-select" id="priceFilter">
-            <option value="">All Prices</option>
-            <option value="0-500">Under SAR 500</option>
-            <option value="500-1000">SAR 500 - 1,000</option>
-            <option value="1000+">SAR 1,000+</option>
-          </select>
-        </div>
+        <!-- Services Grid -->
+        <div class="services-grid" id="services-grid">
+          <?php
+          if (!empty($services)) {
+            foreach ($services as $service) {
+              $serviceId      = (int)$service['service_id'];
+              $formattedPrice = number_format($service['price'], 2);
+              $isSaved        = $is_client && in_array($serviceId, $savedServiceIds, true);
 
-      </div>
+              // Optional: rating
+              $avg_rating   = 0;
+              $review_count = 0;
+              if ($stmtR = $conn->prepare("SELECT AVG(rating) AS avg_rating, COUNT(*) AS review_count FROM Review WHERE service_id = ?")) {
+                  $stmtR->bind_param("i", $serviceId);
+                  $stmtR->execute();
+                  $rRes = $stmtR->get_result()->fetch_assoc();
+                  if ($rRes) {
+                      $avg_rating   = (float)$rRes['avg_rating'];
+                      $review_count = (int)$rRes['review_count'];
+                  }
+                  $stmtR->close();
+              }
+              $full_stars = floor($avg_rating);
+              $stars      = str_repeat('★', $full_stars) . str_repeat('☆', max(0, 5 - $full_stars));
 
-      <!-- Services Grid -->
-      <div class="services-grid" id="services-grid">
-        <?php
-        // Get services for the specific professional or all services if no professional selected
-        $query = "SELECT s.*, u.name as professional_name, p.img as professional_img 
-                 FROM Service s 
-                 JOIN User u ON s.professional_id = u.user_id
-                 JOIN Professional p ON s.professional_id = p.professional_id";
-        
-        // Add WHERE clause if viewing a specific professional
-        if ($viewing_professional_id) {
-            $query .= " WHERE s.professional_id = " . intval($viewing_professional_id);
-        }
-        
-        $result = mysqli_query($conn, $query);
-        
-        if ($result && mysqli_num_rows($result) > 0) {
-          while($service = mysqli_fetch_assoc($result)) {
-            $formattedPrice = number_format($service['price'], 2);
-            $professionalImg = !empty($service['professional_img']) ? 'images/' . $service['professional_img'] : 'images/default-professional.jpg';
-            
-            // Get average rating for this service
-            $rating_query = "SELECT AVG(rating) as avg_rating, COUNT(*) as review_count 
-                           FROM Review 
-                           WHERE service_id = " . $service['service_id'];
-            $rating_result = mysqli_query($conn, $rating_query);
-            $rating_data = mysqli_fetch_assoc($rating_result);
-            $avg_rating = round($rating_data['avg_rating'] ?? 0, 1);
-            $review_count = $rating_data['review_count'] ?? 0;
-            
-            // Convert rating to stars (1-5)
-            $stars = str_repeat('★', floor($avg_rating)) . str_repeat('☆', 5 - floor($avg_rating));
-            ?>
+              // Category emoji
+              $emoji = '✨';
+              switch ($service['category']) {
+                  case 'Hair':     $emoji = '💇‍♀️'; break;
+                  case 'Makeup':   $emoji = '💄';   break;
+                  case 'Nails':    $emoji = '💅';   break;
+                  case 'Skincare': $emoji = '🌸';   break;
+                  case 'Bodycare': $emoji = '🧖‍♀️'; break;
+              }
+          ?>
             <article class="service-card">
-              <button class="favorite-btn" aria-label="Add to favorites">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+              <button
+                class="favorite-btn <?php echo $isSaved ? 'active' : ''; ?>"
+                aria-label="Save to board"
+                data-service-id="<?php echo $serviceId; ?>">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                   <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                 </svg>
               </button>
-              <div class="service-image">
-                <?php 
-                // Simple emoji based on category
-                $emoji = '✨'; // default
-                switch($service['category']) {
-                    case 'Hair': $emoji = '💇‍♀️'; break;
-                    case 'Makeup': $emoji = '💄'; break;
-                    case 'Nails': $emoji = '💅'; break;
-                    case 'Skincare': $emoji = '🌸'; break;
-                    case 'Bodycare': $emoji = '🧖‍♀️'; break;
-                }
-                echo $emoji;
-                ?>
-              </div>
+
+              <div class="service-image"><?php echo $emoji; ?></div>
+
               <div class="service-content">
                 <span class="service-category"><?php echo htmlspecialchars($service['category']); ?></span>
                 <h3 class="service-title"><?php echo htmlspecialchars($service['title']); ?></h3>
                 <p class="service-description">
                   <?php echo htmlspecialchars($service['description']); ?>
                 </p>
+
                 <div class="service-meta">
                   <div>
                     <div class="service-price">SAR <?php echo $formattedPrice; ?></div>
-                    <div class="service-duration"><?php echo $service['duration']; ?> min</div>
+                    <div class="service-duration"><?php echo (int)$service['duration']; ?> min</div>
                   </div>
                   <?php if ($review_count > 0): ?>
-                  <div class="service-rating">
-                    <span class="stars" title="<?php echo $avg_rating; ?> out of 5"><?php echo $stars; ?></span>
-                    <span>(<?php echo $review_count; ?>)</span>
-                  </div>
+                    <div class="service-rating">
+                      <span class="stars" title="<?php echo $avg_rating; ?> out of 5"><?php echo $stars; ?></span>
+                      <span>(<?php echo $review_count; ?>)</span>
+                    </div>
                   <?php endif; ?>
                 </div>
               </div>
+
               <div class="service-footer">
-                <a href="booking.php?service=<?php echo $service['service_id']; ?>" class="btn-book">Book Now</a>
+                <a href="booking.php?service=<?php echo $serviceId; ?>" class="btn-book">Book Now</a>
               </div>
             </article>
-            <?php
+          <?php
+            }
+          } else {
+            echo '<p class="no-results">No services available at the moment.</p>';
           }
-        } else {
-          echo '<p class="no-results">No services available at the moment.</p>';
-        }
-        ?>
+          ?>
         </div>
       </div>
-      <!-- End Services Tab -->
 
-      <!-- Reviews Tab -->
-      <div class="tab-content" id="reviews-content">
-        <div class="reviews-grid">
-          <div class="reviews-list">
-            <!-- Review 1 -->
-            <div class="review-item">
-              <div class="review-header">
-                <div class="reviewer-avatar">S</div>
-                <div class="reviewer-info">
-                  <div class="reviewer-name">Sarah Johnson</div>
-                  <div class="review-rating" title="5 out of 5">★★★★★</div>
-                </div>
-                <div class="review-date">November 28, 2025</div>
-              </div>
-              <div class="review-comment">Amazing service! The stylist was very professional and did exactly what I wanted. Highly recommend!</div>
-              <div class="review-service">Service: Haircut & Styling</div>
-            </div>
+   <!-- Reviews Tab -->
+<div class="tab-content" id="reviews-content">
+  <div class="reviews-grid">
+    <div class="reviews-list">
+      <!-- Review 1 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-avatar">S</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Sarah Johnson</div>
+            <div class="review-rating" title="5 out of 5">★★★★★</div>
+          </div>
+          <div class="review-date">November 28, 2025</div>
+        </div>
+        <div class="review-comment">
+          Amazing service! The stylist was very professional and did exactly what I wanted. Highly recommend!
+        </div>
+        <div class="review-service">Service: Haircut &amp; Styling</div>
+      </div>
 
-            <!-- Review 2 -->
-            <div class="review-item">
-              <div class="review-header">
-                <div class="reviewer-avatar">M</div>
-                <div class="reviewer-info">
-                  <div class="reviewer-name">Michael Brown</div>
-                  <div class="review-rating" title="4 out of 5">★★★★☆</div>
-                </div>
-                <div class="review-date">November 25, 2025</div>
-              </div>
-              <div class="review-comment">Great experience overall. The staff was friendly and the service was top-notch. Will definitely come back!</div>
-              <div class="review-service">Service: Beard Trim</div>
-            </div>
+      <!-- Review 2 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-avatar">M</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Michael Brown</div>
+            <div class="review-rating" title="4 out of 5">★★★★☆</div>
+          </div>
+          <div class="review-date">November 25, 2025</div>
+        </div>
+        <div class="review-comment">
+          Great experience overall. The staff was friendly and the service was top-notch. Will definitely come back!
+        </div>
+        <div class="review-service">Service: Beard Trim</div>
+      </div>
 
-            <!-- Review 3 -->
-            <div class="review-item">
-              <div class="review-header">
-                <div class="reviewer-avatar">A</div>
-                <div class="reviewer-info">
-                  <div class="reviewer-name">Aisha Al-Farsi</div>
-                  <div class="review-rating" title="5 out of 5">★★★★★</div>
-                </div>
-                <div class="review-date">November 20, 2025</div>
-              </div>
-              <div class="review-comment">Absolutely loved my new look! The stylist was very attentive to detail and gave me exactly what I wanted. 10/10 would recommend!</div>
-              <div class="review-service">Service: Hair Coloring</div>
-            </div>
+      <!-- Review 3 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-avatar">A</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Aisha Al-Farsi</div>
+            <div class="review-rating" title="5 out of 5">★★★★★</div>
+          </div>
+          <div class="review-date">November 20, 2025</div>
+        </div>
+        <div class="review-comment">
+          Absolutely loved my new look! The stylist was very attentive to detail and gave me exactly what I wanted. 10/10 would recommend!
+        </div>
+        <div class="review-service">Service: Hair Coloring</div>
+      </div>
 
-            <!-- Review 4 -->
-            <div class="review-item">
-              <div class="review-header">
-                <div class="reviewer-avatar">D</div>
-                <div class="reviewer-info">
-                  <div class="reviewer-name">David Wilson</div>
-                  <div class="review-rating" title="4 out of 5">★★★★☆</div>
-                </div>
-                <div class="review-date">November 15, 2025</div>
-              </div>
-              <div class="review-comment">Good service overall. The stylist was professional and the salon was clean. Would have given 5 stars if the waiting time was shorter.</div>
-              <div class="review-service">Service: Haircut</div>
-            </div>
+      <!-- Review 4 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-avatar">D</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">David Wilson</div>
+            <div class="review-rating" title="4 out of 5">★★★★☆</div>
+          </div>
+          <div class="review-date">November 15, 2025</div>
+        </div>
+        <div class="review-comment">
+          Good service overall. The stylist was professional and the salon was clean. Would have given 5 stars if the waiting time was shorter.
+        </div>
+        <div class="review-service">Service: Haircut</div>
+      </div>
 
-            <!-- Review 5 -->
-            <div class="review-item">
-              <div class="review-header">
-                <div class="reviewer-avatar">L</div>
-                <div class="reviewer-info">
-                  <div class="reviewer-name">Layla Ahmed</div>
-                  <div class="review-rating" title="5 out of 5">★★★★★</div>
-                </div>
-                <div class="review-date">November 10, 2025</div>
+      <!-- Review 5 -->
+      <div class="review-item">
+        <div class="review-header">
+          <div class="reviewer-avatar">L</div>
+          <div class="reviewer-info">
+            <div class="reviewer-name">Layla Ahmed</div>
+            <div class="review-rating" title="5 out of 5">★★★★★</div>
+          </div>
+          <div class="review-date">November 10, 2025</div>
+        </div>
+        <div class="review-comment">
+          I'm so happy with my new hairstyle! The stylist was amazing and really listened to what I wanted. The salon has a great atmosphere too!
+        </div>
+        <div class="review-service">Service: Hair Styling</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+      <!-- Board Modal (only if client + boards) -->
+      <?php if ($is_client && !empty($boards)): ?>
+        <div id="boardModal" class="board-modal" style="display:none;">
+          <div class="board-modal-backdrop"></div>
+          <div class="board-modal-dialog">
+            <h2 class="board-modal-title">Save to board</h2>
+
+            <form action="add_to_board.php" method="POST" class="board-modal-form">
+              <input type="hidden" name="service_id" id="selectedServiceId">
+
+              <p class="board-modal-subtitle">Choose a board:</p>
+              <div class="board-modal-list">
+                <?php foreach ($boards as $b): ?>
+                  <label class="board-option">
+                    <input type="radio" name="list_id" value="<?php echo (int)$b['list_id']; ?>">
+                    <span><?php echo htmlspecialchars($b['name']); ?></span>
+                  </label>
+                <?php endforeach; ?>
               </div>
-              <div class="review-comment">I'm so happy with my new hairstyle! The stylist was amazing and really listened to what I wanted. The salon has a great atmosphere too!</div>
-              <div class="review-service">Service: Hair Styling</div>
-            </div>
+
+              <div class="board-modal-divider">or</div>
+
+              <div class="board-modal-new">
+                <label class="board-modal-subtitle" for="newBoardName">
+                  <button type="button" class="plus-circle" aria-hidden="true">+</button>
+                  <span>Create a new board</span>
+                </label>
+                <input
+                  type="text"
+                  name="new_board_name"
+                  id="newBoardName"
+                  placeholder="e.g. Wedding glam, Eid looks"
+                >
+                <small>(If you type a name here, a new board will be created and this service added to it.)</small>
+              </div>
+
+              <div class="board-modal-actions">
+                <button type="button" id="closeBoardModal" class="board-btn-secondary">Cancel</button>
+                <button type="submit" class="board-btn-primary">Save</button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
-      <!-- End Reviews Tab -->
+      <?php endif; ?>
 
     </div>
   </main>
 
-  <script>
-    function showTab(tabName) {
-      // Hide all tab contents
-      document.querySelectorAll('.tab-content').forEach(tab => {
-        tab.style.display = 'none';
-      });
-      
-      // Remove active class from all tabs
-      document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-      });
-      
-      // Show the selected tab content
-      document.getElementById(tabName + '-content').style.display = 'block';
-      
-      // Add active class to the clicked tab
-      document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
-    }
-    
-    // Show services tab by default
-    document.addEventListener('DOMContentLoaded', function() {
-      showTab('services');
-    });
-  </script>
-
-  <!-- Footer (from index.html) -->
   <footer class="site-footer">
     <div class="container footer-inner">
       <p>© 2025 Glammd. All rights reserved.</p>
@@ -1001,127 +1192,119 @@ if (empty($services) && $viewing_professional_id) {
     </div>
   </footer>
 
-  <!-- JavaScript -->
+  <!-- JS -->
   <script>
-    // Tabs functionality
-    const tabs = document.querySelectorAll('.tab');
-    const tabContents = document.querySelectorAll('.tab-content');
+    const IS_LOGGED_IN = <?php echo $is_logged_in ? 'true' : 'false'; ?>;
+    const IS_CLIENT    = <?php echo $is_client ? 'true' : 'false'; ?>;
 
-    tabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        const targetTab = tab.dataset.tab;
-        
-        // Remove active class from all tabs and contents
+    document.addEventListener('DOMContentLoaded', function () {
+      /* Tabs */
+      const tabs        = document.querySelectorAll('.tab');
+      const tabContents = document.querySelectorAll('.tab-content');
+
+      function showTab(name) {
+        tabContents.forEach(c => c.classList.remove('active'));
         tabs.forEach(t => t.classList.remove('active'));
-        tabContents.forEach(content => content.classList.remove('active'));
-        
-        // Add active class to clicked tab and corresponding content
-        tab.classList.add('active');
-        document.getElementById(`${targetTab}-content`).classList.add('active');
+
+        const content = document.getElementById(name + '-content');
+        const tab     = document.querySelector(`.tab[data-tab="${name}"]`);
+        if (content) content.classList.add('active');
+        if (tab)     tab.classList.add('active');
+      }
+
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => showTab(tab.dataset.tab));
       });
-    });
+      showTab('services');
 
-    // Get all service cards
-    const serviceCards = document.querySelectorAll('.service-card');
-    const categoryFilter = document.getElementById('categoryFilter');
-    const priceFilter = document.getElementById('priceFilter');
+      /* Filters */
+      const serviceCards   = document.querySelectorAll('.service-card');
+      const categoryFilter = document.getElementById('categoryFilter');
+      const priceFilter    = document.getElementById('priceFilter');
 
-    // Filter function
-    function filterServices() {
-      const selectedCategory = categoryFilter.value.toLowerCase();
-      const selectedPrice = priceFilter.value;
+      function filterServices() {
+        const selectedCategory = (categoryFilter?.value || '').toLowerCase();
+        const selectedPrice    = (priceFilter?.value || '');
 
-      serviceCards.forEach(card => {
-        const category = card.querySelector('.service-category').textContent.toLowerCase();
-        const priceText = card.querySelector('.service-price').textContent;
-        const price = parseInt(priceText.replace(/[^0-9]/g, ''));
+        serviceCards.forEach(card => {
+          const categoryEl = card.querySelector('.service-category');
+          const priceEl    = card.querySelector('.service-price');
+          if (!categoryEl || !priceEl) return;
 
-        let showCard = true;
+          const category  = categoryEl.textContent.toLowerCase();
+          const priceText = priceEl.textContent;
+          const price     = parseInt(priceText.replace(/[^0-9]/g, ''), 10);
 
-        // Category filter
-        if (selectedCategory && !category.includes(selectedCategory)) {
-          showCard = false;
-        }
+          let show = true;
 
-        // Price filter
-        if (selectedPrice) {
-          if (selectedPrice === '0-500' && price > 500) showCard = false;
-          if (selectedPrice === '500-1000' && (price < 500 || price > 1000)) showCard = false;
-          if (selectedPrice === '1000+' && price < 1000) showCard = false;
-        }
+          if (selectedCategory && !category.includes(selectedCategory)) {
+            show = false;
+          }
 
-        card.style.display = showCard ? 'block' : 'none';
-      });
-    }
+          if (selectedPrice) {
+            if (selectedPrice === '0-500'   && price > 500)                    show = false;
+            if (selectedPrice === '500-1000' && (price < 500 || price > 1000)) show = false;
+            if (selectedPrice === '1000+'   && price < 1000)                   show = false;
+          }
 
-    // Add event listeners to filters
-    categoryFilter.addEventListener('change', filterServices);
-    priceFilter.addEventListener('change', filterServices);
-    
-    // Add click event listeners to all favorite buttons
-    document.addEventListener('DOMContentLoaded', function() {
-      const favoriteBtns = document.querySelectorAll('.favorite-btn');
-      
+          card.style.display = show ? 'block' : 'none';
+        });
+      }
+
+      if (categoryFilter) categoryFilter.addEventListener('change', filterServices);
+      if (priceFilter)    priceFilter.addEventListener('change', filterServices);
+
+      /* Favorites → Board modal */
+      const favoriteBtns   = document.querySelectorAll('.favorite-btn');
+      const boardModal     = document.getElementById('boardModal');
+      const closeBoardBtn  = document.getElementById('closeBoardModal');
+      const serviceIdInput = document.getElementById('selectedServiceId');
+      const hasModal       = boardModal && serviceIdInput;
+
       favoriteBtns.forEach(btn => {
-        btn.addEventListener('click', function(e) {
+        btn.addEventListener('click', function (e) {
           e.preventDefault();
-          this.classList.toggle('active');
-          
-          // Optional: Save to localStorage to persist the favorite state
-          const serviceCard = this.closest('.service-card');
-          const serviceTitle = serviceCard.querySelector('.service-title').textContent;
-          const isFavorite = this.classList.contains('active');
-          
-          // Store in localStorage
-          const favorites = JSON.parse(localStorage.getItem('favoriteServices') || '{}');
-          favorites[serviceTitle] = isFavorite;
-          localStorage.setItem('favoriteServices', JSON.stringify(favorites));
+          e.stopPropagation();
+
+          if (!IS_LOGGED_IN || !IS_CLIENT) {
+            alert("Only registered clients can save services to boards.\nPlease sign up or log in first.");
+            return;
+          }
+
+          if (!hasModal) {
+            alert("You don't have any boards yet. Please create one from your client dashboard.");
+            return;
+          }
+
+          this.classList.add('active'); // visually mark immediately
+
+          const serviceId = this.dataset.serviceId;
+          serviceIdInput.value = serviceId;
+          boardModal.style.display = 'flex';
         });
       });
-      
-      // Load saved favorite states
-      const favorites = JSON.parse(localStorage.getItem('favoriteServices') || '{}');
-      favoriteBtns.forEach(btn => {
-        const serviceCard = btn.closest('.service-card');
-        const serviceTitle = serviceCard.querySelector('.service-title').textContent;
-        if (favorites[serviceTitle]) {
-          btn.classList.add('active');
-        }
+
+      if (hasModal && closeBoardBtn) {
+        closeBoardBtn.addEventListener('click', () => {
+          boardModal.style.display = 'none';
+        });
+        boardModal.addEventListener('click', (e) => {
+          if (e.target.classList.contains('board-modal-backdrop')) {
+            boardModal.style.display = 'none';
+          }
+        });
+      }
+
+      /* Block booking for guests */
+      document.querySelectorAll('.btn-book').forEach(btn => {
+        btn.addEventListener('click', function (e) {
+          if (!IS_LOGGED_IN) {
+            e.preventDefault();
+            alert("Only registered users can book services.\nPlease sign up or log in first.");
+          }
+        });
       });
     });
-
-    // Update button styles to work with anchor tag
-    const style = document.createElement('style');
-    style.textContent = `
-      .btn-book {
-        display: inline-block;
-        text-decoration: none;
-        text-align: center;
-        width: 100%;
-        padding: 12px 20px;
-        background: #000000;
-        color: #ffffff;
-        border: 1px solid #000000;
-        border-radius: 8px;
-        font-weight: 600;
-        font-size: 16px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-      }
-      
-      .btn-book:hover {
-        background: #333333;
-        border-color: #333333;
-        transform: translateY(-2px);
-        box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-      }
-      
-      .btn-book:active {
-        transform: translateY(0);
-        box-shadow: none;
-      }
-    `;
-    document.head.appendChild(style);
   </script>
 </body>
 </html>
