@@ -78,6 +78,63 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 <!doctype html>
+<?php
+session_start();
+require_once 'db.php';
+
+// Enable error display (debug only)
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$error = '';
+
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $email = trim($_POST['email'] ?? '');
+    $password = $_POST['password'] ?? '';
+    $role = $_POST['role'] ?? '';
+
+    if (empty($email) || empty($password) || empty($role)) {
+        $error = "Please fill all fields.";
+    } else {
+        // Fetch user by email
+        $stmt = $conn->prepare("SELECT user_id, name, password, role FROM User WHERE email = ?");
+        $stmt->bind_param("s", $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
+
+            // Check role
+            if ($user['role'] !== $role) {
+                $error = "Incorrect role selected.";
+            }
+            // Verify password
+          else if (password_verify($password, $user['password'])) {
+
+
+                // LOGIN SUCCESS → Set session
+                $_SESSION['user_id'] = $user['user_id'];
+                $_SESSION['name'] = $user['name'];
+                $_SESSION['role'] = $user['role'];
+
+                // Redirect based on role
+                if ($role === 'client') {
+                    header("Location: clientdashboard.php");
+                } else {
+                    header("Location: professionaldashboard.php"); // professional dashboard
+                }
+                exit;
+            } else {
+                $error = "Incorrect password.";
+            }
+        } else {
+            $error = "No account found with that email.";
+        }
+    }
+}
+?>
+
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -377,6 +434,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 class="login-title">Welcome back</h1>
         <p class="login-subtitle">Log in to manage bookings and services</p>
 
+<<<<<<< Updated upstream
         <!-- ERROR MESSAGE INSERTED HERE -->
         <?php if (!empty($error)): ?>
           <div style="color:#b00020; margin-bottom:1rem; font-size:0.9rem;">
@@ -385,6 +443,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form id="loginForm" method="POST" action="">
+=======
+        <form action="" method="POST"id="loginForm">
+              <?php if (!empty($error)): ?>
+        <p style="color: red; text-align:center; margin-bottom:10px;">
+            <?php echo htmlspecialchars($error); ?>
+        </p>
+    <?php endif; ?>
+>>>>>>> Stashed changes
           <!-- Email -->
           <div class="form-group">
             <label for="email" class="form-label">Email</label>
@@ -469,6 +535,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       passwordInput.type = type;
       togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
     });
+<<<<<<< Updated upstream
+=======
+
+    // Simple role-based redirect (frontend only)
+ 
+>>>>>>> Stashed changes
   </script>
 </body>
 </html>
