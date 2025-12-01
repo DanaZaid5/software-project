@@ -1,82 +1,4 @@
-<?php
-session_start();
-require_once 'db.php';
 
-$error = "";
-
-// BACKEND LOGIN LOGIC
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-    $role = $_POST['role'] ?? '';
-
-    if (empty($email) || empty($password) || empty($role)) {
-        $error = "Please fill in all fields.";
-    } else {
-
-        // Check User table
-        $stmt = $conn->prepare("SELECT * FROM User WHERE email = ? LIMIT 1");
-        $stmt->bind_param("s", $email);
-        $stmt->execute();
-        $res = $stmt->get_result();
-
-        if ($res->num_rows === 1) {
-
-            $user = $res->fetch_assoc();
-
-            if (password_verify($password, $user['password'])) {
-
-                if ($user['role'] !== $role) {
-                    $error = "This account is not registered as a {$role}.";
-                } else {
-
-                    // Store base session data
-                    $_SESSION['user_id'] = $user['user_id'];
-                    $_SESSION['user_role'] = $user['role'];
-                    $_SESSION['name'] = $user['name'];
-
-                    // If logging in as CLIENT
-                    if ($role === "client") {
-                        $stmt2 = $conn->prepare("SELECT client_id FROM Client WHERE client_id = ?");
-                        $stmt2->bind_param("i", $user['user_id']);
-                        $stmt2->execute();
-                        $c = $stmt2->get_result();
-
-                        if ($c->num_rows === 1) {
-                            $_SESSION['client_id'] = $user['user_id'];
-                            header("Location: clientdashboard.php");
-                            exit;
-                        } else {
-                            $error = "Client profile not found.";
-                        }
-                    }
-
-                    // If logging in as PROFESSIONAL
-                    if ($role === "professional") {
-                        $stmt3 = $conn->prepare("SELECT professional_id FROM Professional WHERE professional_id = ?");
-                        $stmt3->bind_param("i", $user['user_id']);
-                        $stmt3->execute();
-                        $p = $stmt3->get_result();
-
-                        if ($p->num_rows === 1) {
-                            $_SESSION['professional_id'] = $user['user_id'];
-                            header("Location: professionaldashboard.php");
-                            exit;
-                        } else {
-                            $error = "Professional profile not found.";
-                        }
-                    }
-                }
-            } else {
-                $error = "Incorrect password.";
-            }
-        } else {
-            $error = "Account not found.";
-        }
-    }
-}
-?>
 <!doctype html>
 <?php
 session_start();
@@ -434,7 +356,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <h1 class="login-title">Welcome back</h1>
         <p class="login-subtitle">Log in to manage bookings and services</p>
 
-<<<<<<< Updated upstream
+
         <!-- ERROR MESSAGE INSERTED HERE -->
         <?php if (!empty($error)): ?>
           <div style="color:#b00020; margin-bottom:1rem; font-size:0.9rem;">
@@ -443,14 +365,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form id="loginForm" method="POST" action="">
-=======
+
         <form action="" method="POST"id="loginForm">
               <?php if (!empty($error)): ?>
         <p style="color: red; text-align:center; margin-bottom:10px;">
             <?php echo htmlspecialchars($error); ?>
         </p>
     <?php endif; ?>
->>>>>>> Stashed changes
+
           <!-- Email -->
           <div class="form-group">
             <label for="email" class="form-label">Email</label>
@@ -535,12 +457,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       passwordInput.type = type;
       togglePassword.textContent = type === 'password' ? 'Show' : 'Hide';
     });
-<<<<<<< Updated upstream
-=======
 
-    // Simple role-based redirect (frontend only)
- 
->>>>>>> Stashed changes
   </script>
 </body>
 </html>
