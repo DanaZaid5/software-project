@@ -79,7 +79,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             
             // Insert into Professional or Client table based on user type
             if ($user_type === 'professional') {
-                $img = 'default.jpg';
+                $img = 'default-pic.jpg';
                 $stmt = $conn->prepare("INSERT INTO Professional (professional_id, bio, img) VALUES (?, ?, ?)");
                 if (!$stmt) {
                     throw new Exception('Database error: ' . $conn->error);

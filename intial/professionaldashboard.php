@@ -34,7 +34,7 @@ $pro = $res->fetch_assoc();
 
 $proName = $pro['name'] ?? 'Professional';
 $proBio  = $pro['bio'] ?? 'No bio added yet.';
-$proImg  = !empty($pro['img']) ? 'img/' . $pro['img'] : 'img/pro1.jpg';
+$proImg  = !empty($pro['img']) ? 'img/' . $pro['img'] : 'img/default-pic.jpg';
 // Fetch average rating
 $ratingStmt = $conn->prepare("
     SELECT ROUND(AVG(rating), 1) AS avg_rating, COUNT(*) AS total_reviews
@@ -205,20 +205,12 @@ $reviewRes = $reviewStmt->get_result();
   <main class="page">
     <div class="wrap">
        <!-- PROFESSIONAL PROFILE HEADER -->
-<div class="panel" style="margin-bottom:20px; display:flex; gap:20px; align-items:center;">
-    
-    <!-- Profile photo -->
-    <div style="width:90px; height:90px; border-radius:50%; overflow:hidden; flex-shrink:0;">
-        <img src="<?= htmlspecialchars($proImg) ?>" 
-             alt="Profile Photo" 
-             style="width:100%; height:100%; object-fit:cover;">
-    </div>
-
-
+<div class="panel" style="margin-bottom:20px; padding: 20px;">
       <!-- Professional profile card + Edit button -->
       <section class="professional-profile">
-        <div class="professional-photo">
-          <img src="img/pro1.jpg" alt="Sarah M." loading="lazy">
+        <div class="professional-photo" style="text-align: center; margin-bottom: 15px;">
+          <img src="<?= htmlspecialchars($proImg) ?>" alt="<?= htmlspecialchars($proName) ?>" loading="lazy" style="width: 120px; height: 120px; border-radius: 50%; object-fit: cover;">
+        </div>
 
     <!-- Profile text -->
     <div style="flex:1;">
