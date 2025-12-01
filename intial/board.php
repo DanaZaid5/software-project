@@ -457,7 +457,7 @@ body{ background:#f8f8f8; }
                 </div>
 
                 <div class="service-footer">
-                  <a href="booking.php?service_id=<?php echo (int)$service['service_id']; ?>"
+                  <a href="booking.php?service=<?php echo (int)$service['service_id']; ?>"
                      class="btn-book">
                     Book Now
                   </a>
