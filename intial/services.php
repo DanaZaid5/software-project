@@ -702,19 +702,12 @@ if ($viewing_professional_id) {
     padding: 0 1.25rem 1.25rem; /* 0 20px 20px */
   }
 
-  .btn-book{
-    width: 100%;
-    padding: 0.75rem 1.25rem; /* 12px 20px */
-    background: var(--accent);
-    color: white;
-    border: none;
-    border-radius: 0.5rem; /* 8px */
-    font-weight: 600;
-    font-size: 0.9375rem; /* 15px */
-    cursor: pointer;
-    transition: opacity .2s ease;
-    font-family: inherit;
-  }
+.btn-book{ 
+  width:100%; padding:0.75rem 1.25rem; background:var(--accent); color:#fff; border:none;
+  border-radius:0.5rem; font-weight:600; font-size:0.9375rem; cursor:pointer; transition:opacity .2s ease; font-family:inherit;
+  text-decoration:none; display:inline-block; text-align:center;
+}
+
 
   .btn-book:hover{
     opacity: .9;
