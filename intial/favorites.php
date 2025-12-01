@@ -231,7 +231,7 @@ if ($stmt = $conn->prepare($sql)) {
     <div class="container header-inner">
       <a class="brand" href="index.php">Glammd</a>
       <nav class="nav">
-        <a href="index.php" class="nav-link">Log out</a>
+        <a href="logout.php" class="nav-link">Log out</a>
       </nav>
     </div>
   </header>

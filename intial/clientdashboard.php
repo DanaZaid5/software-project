@@ -107,7 +107,7 @@ $history = $his_stmt->get_result();
       <nav class="nav">
         <a href="MarketPlace.php" class="nav-link">Market</a>
         <a href="favorites.php" class="nav-link">Favorites</a>
-        <a href="index.php" class="nav-link">Log out</a>
+        <a href="logout.php" class="nav-link">Log out</a>
       </nav>
     </div>
 </header>
