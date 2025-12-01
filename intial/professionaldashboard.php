@@ -473,7 +473,8 @@ $reviewRes = $reviewStmt->get_result();
           </div>
           <div>
             <label>Duration (min)</label>
-            <input type="number" name="duration" id="edit_duration" min="15" step="15" required />
+            <input type="number" name="duration" min="1" step="1" required>
+
           </div>
         </div>
 

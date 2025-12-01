@@ -83,21 +83,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $dateTime = $preferred_date . " " . $preferred_time;
 
     // Insert booking
-    $insert = "
-        INSERT INTO Booking (client_id, professional_id, service_id, time, client_notes, status)
-        VALUES (?, ?, ?, ?, ?, 'confirmed')
-    ";
+   // Insert booking *request* instead of confirmed booking
+$insert = "
+    INSERT INTO BookingRequest 
+    (client_id, professional_id, service_id, preferred_date, preferred_time, status)
+    VALUES (?, ?, ?, ?, ?, 'pending')
+";
 
-    $stmt = mysqli_prepare($conn, $insert);
-    mysqli_stmt_bind_param(
-        $stmt,
-        "iiiss",
-        $client_id,
-        $professional_id,
-        $service_id,
-        $dateTime,
-        $notes
-    );
+$stmt = mysqli_prepare($conn, $insert);
+mysqli_stmt_bind_param(
+    $stmt,
+    "iiiss",
+    $client_id,
+    $professional_id,
+    $service_id,
+    $preferred_date,
+    $preferred_time
+);
+
+
 
     if (mysqli_stmt_execute($stmt)) {
         header("Location: booking.php?service=$service_id&success=1");
