@@ -214,12 +214,12 @@ $reviewRes = $reviewStmt->get_result();
              style="width:100%; height:100%; object-fit:cover;">
     </div>
 
-<<<<<<< Updated upstream
+
       <!-- Professional profile card + Edit button -->
       <section class="professional-profile">
         <div class="professional-photo">
           <img src="img/pro1.jpg" alt="Sarah M." loading="lazy">
-=======
+
     <!-- Profile text -->
     <div style="flex:1;">
         <h2 style="margin:0; font-size:22px; font-weight:700;">
@@ -241,7 +241,7 @@ $reviewRes = $reviewStmt->get_result();
             <?php else: ?>
                 <span class="muted">(no reviews yet)</span>
             <?php endif; ?>
->>>>>>> Stashed changes
+
         </div>
     </div>
 </div>
