@@ -226,11 +226,11 @@ $result = mysqli_query($conn, $sql);
       <a href="clientdashboard.php" class="nav-link">Dashboard</a>
     <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'professional'): ?>
       <!-- Professional (if you want): -->
-      <a href="professionaldashboard.php" class="nav-link">Dashboard</a>
+      <a href="professionaldashboard.php" class="nav-link">sign up</a>
     <?php endif; ?>
 
     <!-- Common for any logged-in user -->
-    <a href="logout.php" class="cta">Log out</a>
+    <a href="logout.php" class="cta">Log in</a>
 
   <?php else: ?>
     <!-- Not logged in -->
