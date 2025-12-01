@@ -18,7 +18,8 @@ $sql = "
         u.user_id,
         u.name,
         p.img,
-        GROUP_CONCAT(DISTINCT s.category ORDER BY s.category SEPARATOR ', ') AS categories
+        GROUP_CONCAT(DISTINCT s.category ORDER BY s.category SEPARATOR ', ') AS categories,
+        MIN(s.price) AS min_price
     FROM User u
     INNER JOIN Professional p
         ON u.user_id = p.professional_id
@@ -225,11 +226,11 @@ $result = mysqli_query($conn, $sql);
       <a href="clientdashboard.php" class="nav-link">Dashboard</a>
     <?php elseif (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'professional'): ?>
       <!-- Professional (if you want): -->
-      <a href="professionaldashboard.php" class="nav-link">Dashboard</a>
+      <a href="professionaldashboard.php" class="nav-link">sign up</a>
     <?php endif; ?>
 
     <!-- Common for any logged-in user -->
-    <a href="logout.php" class="cta">Log out</a>
+    <a href="logout.php" class="cta">Log in</a>
 
   <?php else: ?>
     <!-- Not logged in -->
@@ -256,13 +257,22 @@ $result = mysqli_query($conn, $sql);
         <label class="filter-label">Service</label>
         <select class="filter-select" id="serviceFilter">
           <option value="">All</option>
-          <option value="Hair">Haircut</option>
+          <option value="Hair">Hair</option>
           <option value="Makeup">Makeup</option>
           <option value="Nails">Nails</option>
           <option value="Skincare">Skin Care</option>
           <option value="Bodycare">Bodycare</option>
         </select>
       </div>
+        <div class="filter-group">
+  <label class="filter-label">Price</label>
+  <select class="filter-select" id="priceFilter">
+    <option value="">Default</option>
+    <option value="low-to-high">Low → High</option>
+    <option value="high-to-low">High → Low</option>
+  </select>
+</div>
+
     </section>
 
     <!-- Dynamic Cards -->
@@ -271,10 +281,11 @@ $result = mysqli_query($conn, $sql);
           $categories = $row['categories'] ?? '';
       ?>
         <div
-          class="salon-card"
-          data-categories="<?= htmlspecialchars(strtolower($categories ?? ''), ENT_QUOTES, 'UTF-8') ?>"
-          onclick="window.location.href='services.php?professional_id=<?= (int)$row['user_id'] ?>'">
-          
+  class="salon-card"
+  data-categories="<?= htmlspecialchars(strtolower($categories ?? ''), ENT_QUOTES, 'UTF-8') ?>"
+  data-price="<?= (int)$row['min_price'] ?>"
+  onclick="window.location.href='services.php?professional_id=<?= (int)$row['user_id'] ?>'">
+
           <img src="img/<?= htmlspecialchars($row['img'], ENT_QUOTES, 'UTF-8') ?>" alt="Professional Image">
           
          <div class="salon-info">
@@ -305,23 +316,44 @@ $result = mysqli_query($conn, $sql);
   <script src="homeScript.js"></script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
-      const serviceSelect = document.getElementById("serviceFilter");
-      const salonCards = document.querySelectorAll(".salon-card");
+  const serviceSelect = document.getElementById("serviceFilter");
+  const priceSelect = document.getElementById("priceFilter");
+  const salonList = document.querySelector(".salon-list");
+  const salonCards = Array.from(document.querySelectorAll(".salon-card"));
 
-      function filterSalons() {
-        const selectedService = (serviceSelect.value || "").toLowerCase();
+  function filterAndSort() {
+    const selectedService = (serviceSelect.value || "").toLowerCase();
+    const priceSort = priceSelect.value;
 
-        salonCards.forEach(card => {
-          const categories = (card.dataset.categories || "").toLowerCase();
-          const matchesService =
-            !selectedService || categories.includes(selectedService.toLowerCase());
+    // 1 — الفلترة
+    salonCards.forEach(card => {
+      const categories = (card.dataset.categories || "").toLowerCase();
+      const matchesService =
+        !selectedService || categories.includes(selectedService);
 
-          card.style.display = matchesService ? "flex" : "none";
-        });
-      }
-
-      serviceSelect.addEventListener("change", filterSalons);
+      card.style.display = matchesService ? "flex" : "none";
     });
+
+    // 2 — الترتيب بالسعر
+    const visibleCards = salonCards.filter(card => card.style.display !== "none");
+
+    visibleCards.sort((a, b) => {
+      const priceA = parseFloat(a.dataset.price) || 0;
+      const priceB = parseFloat(b.dataset.price) || 0;
+
+      if (priceSort === "low-to-high") return priceA - priceB;
+      if (priceSort === "high-to-low") return priceB - priceA;
+      return 0;
+    });
+
+    // 3 — إعادة ترتيب الكروت على الصفحة
+    visibleCards.forEach(card => salonList.appendChild(card));
+  }
+
+  serviceSelect.addEventListener("change", filterAndSort);
+  priceSelect.addEventListener("change", filterAndSort);
+});
+
   </script>
 </body>
 </html>
